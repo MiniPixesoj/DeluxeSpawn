@@ -1,0 +1,11 @@
+##====================================##
+## DeluxeSpawn plugin by Pixesoj.     ##
+## Version: 3.1.0                     ##
+## Make sure to leave your            ##
+## thoughts on a review.              ##
+## www.spigotmc.org/resources/111403/ ##
+##====================================##
+
+# Spawn and lobby locations
+# I recommend not modifying anything here manually
+# better use the commands /setspawn, /setlobby, /delspawn and /dellobby

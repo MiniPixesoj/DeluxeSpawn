@@ -20,8 +20,8 @@ public class LocationsManager {
     public void loadLocationsFile() {
         file = new File(plugin.getDataFolder(), fileName);
         if (!file.exists()) {
-            file.getParentFile().mkdirs(); // Crear directorios si no existen
-            plugin.saveResource(fileName, false); // Guardar el archivo desde recursos
+            file.getParentFile().mkdirs();
+            plugin.saveResource(fileName, false);
         }
         fileConfiguration = YamlConfiguration.loadConfiguration(file);
     }

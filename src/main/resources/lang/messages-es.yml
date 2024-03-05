@@ -1,4 +1,14 @@
+#==============================================================================================#
+#                                                                                              #
+# Archivo de mensajes en español, puedes encontrar el default de este archivo en:              #
+# https://github.com/MiniPixesoj/DeluxeSpawn/blob/main/src/main/resources/lang/messages-es.yml #
+#                                                                                              #
+#==============================================================================================#
+
 Prefix: "&eDeluxeSpawn &8» "
+
+GlobalInCooldown: "&cDebes esperar &b%time% &csegundos antes de volver a teletransportarte"
+PermissionDenied: "&cNo tienes permiso."
 
 CommandReloadConfig: "&a¡La configuración se ha recargado correctamente!"
 CommandReloadMessages: "&a¡El archivo de mensajes se ha recargado correctamente!"
@@ -21,6 +31,7 @@ SpawnChatMessageInTeleport: "&aTeletransportando en &e%time% &asegundos"
 SpawnMessageDelayTeleport: "&aTeletransportando en &e%time% &asegundos"
 SpawnNullSound: "&cEl sonido no puede estar vacío."
 SpawnInvalidSound: "&6%sound% &cno es un sonido válido."
+SpawnInCooldown: "&cDebes esperar &b%time% &csegundos antes de volver a teletransportarte"
 
 LobbyIsNotEnabled: "&cEl lobby no está habilitado."
 LobbyDoesNotExist: "&cAún no se ha establecido un lobby."
@@ -31,6 +42,7 @@ LobbyChatMessageInTeleport: "&aTeletransportando en &e%time% &asegundos"
 LobbyInTeleport: "&cYa estás siendo teletransportado."
 LobbyNullSound: "&cEl sonido no puede estar vacío."
 LobbyInvalidSound: "&6%sound% &cno es un sonido válido."
+LobbyInCooldown: "&cDebes esperar &b%time% &csegundos antes de volver a teletransportarte"
 
 OnJoinSendMessage: "&aHas sido teletransportado a &b%destination%"
 OnJoinDoesNotExist: "&cNo existe el punto de destino &b%destination% &8(&7Usa &a/set%destination%&8)"
@@ -61,7 +73,9 @@ OnRespawnDoesNotExistByWorld: "&cNo existe el punto de destino en el mundo %worl
 OnRespawnNullSound: "&cEl sonido no puede estar vacío."
 OnRespawnInvalidSound: "&6%sound% &cno es un sonido válido."
 
-PermissionDenied: "&cNo tienes permiso."
+LastLocationNotFound: "&cNo se encontro una ubicacion guardada"
+LastLocationTeleport: "&aEnviandote ah tu ultima ubicacion"
+LastLocationOneTime: "&cSolo puedes teletransportarte una vez"
 
 CommandHelp:
   - "&eDeluxeSpawn &8- &aAyuda"
@@ -69,6 +83,7 @@ CommandHelp:
   - "&a/ds version &8- &7Ver la versión del plugin."
   - "&a/ds reload <config|messages|all> &8- &7Recargar las configuraciones."
   - "&a/ds help &8- &7Mostrar este mensaje de ayuda."
+  - "&a/ds lastlocation &8- &7Ir a la ultima ubicacion guardada"
   - "&a/spawn <world> &8- &7Ir al punto de inicio del mundo actual o de otro mundo."
   - "&a/setspawn &8- &7Establecer un punto de inicio."
   - "&a/lobby &8- &7Ir al lobby."

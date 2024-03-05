@@ -77,9 +77,16 @@ public class OnVoid implements Listener {
             String soundName = plugin.getMainConfigManager().getTeleportOnVoidSound();
             String prefix = plugin.getMainMessagesManager().getPrefix();
             if (soundName == null){
-                if (player.hasPermission("deluxespawn.notify") || player.isOp()){
+                String permission = plugin.getMainPermissionsManager().getNotify();
+                if (plugin.getMainPermissionsManager().isNotifyDefault()) {
                     String m = prefix + plugin.getMainMessagesManager().getSpawnNullSound();
                     player.sendMessage(MessagesUtils.getColoredMessage(m));
+                } else {
+                    if (player.hasPermission(permission)) {
+                        String m = prefix + plugin.getMainMessagesManager().getSpawnNullSound();
+                        player.sendMessage(MessagesUtils.getColoredMessage(m));
+                        return;
+                    }
                 }
                 return;
             }
@@ -107,7 +114,6 @@ public class OnVoid implements Listener {
             String prefix = plugin.getMainMessagesManager().getPrefix();
             String m = prefix + plugin.getMainMessagesManager().getOnVoidTeleportMessage().replace("%destination%", d);
             player.sendMessage(MessagesUtils.getColoredMessage(m));
-            return;
         }
     }
 
@@ -116,7 +122,6 @@ public class OnVoid implements Listener {
         int time = plugin.getMainConfigManager().getTeleportOnVoidBlindnessTime();
         if (plugin.getMainConfigManager().isTeleportOnVoidBlindness()){
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * time, 2));
-            return;
         }
     }
 
@@ -148,16 +153,20 @@ public class OnVoid implements Listener {
                     Location spawnLocation = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
 
                     player.teleport(spawnLocation);
-                    return;
                 } else {
-                    if (player.hasPermission("deluxespawn.notify") || player.isOp()){
+                    String permission = plugin.getMainPermissionsManager().getNotify();
+                    if (plugin.getMainPermissionsManager().isNotifyDefault()) {
                         String destination = plugin.getMainConfigManager().getTeleportOnVoidDestinationPlace();
                         String message = prefix + plugin.getMainMessagesManager().getOnVoidDestinationInvalid().replace("%destination%", destination);
                         player.sendMessage(MessagesUtils.getColoredMessage(message));
-                        return;
+                    } else {
+                        if (player.hasPermission(permission)) {
+                            String destination = plugin.getMainConfigManager().getTeleportOnVoidDestinationPlace();
+                            String message = prefix + plugin.getMainMessagesManager().getOnVoidDestinationInvalid().replace("%destination%", destination);
+                            player.sendMessage(MessagesUtils.getColoredMessage(message));
+                        }
                     }
                 }
-                return;
             } else {
                 String world = locations.getString("Spawn.world");
                 double x = locations.getDouble("Spawn.x");
@@ -168,15 +177,20 @@ public class OnVoid implements Listener {
                 Location spawnLocation = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
 
                 player.teleport(spawnLocation);
-                return;
             }
         } else {
-            if (player.hasPermission("deluxespawn.notify") || player.isOp()) {
+            String permission = plugin.getMainPermissionsManager().getNotify();
+            if (plugin.getMainPermissionsManager().isNotifyDefault()) {
                 String destination = plugin.getMainConfigManager().getTeleportOnVoidDestinationPlace();
                 String message = prefix + plugin.getMainMessagesManager().getOnVoidDestinationInvalid().replace("%destination%", destination);
                 player.sendMessage(MessagesUtils.getColoredMessage(message));
+            } else {
+                if (player.hasPermission(permission)) {
+                    String destination = plugin.getMainConfigManager().getTeleportOnVoidDestinationPlace();
+                    String message = prefix + plugin.getMainMessagesManager().getOnVoidDestinationInvalid().replace("%destination%", destination);
+                    player.sendMessage(MessagesUtils.getColoredMessage(message));
+                }
             }
-            return;
         }
     }
 }

@@ -16,58 +16,56 @@ public class SetSpawn implements CommandExecutor {
         this.plugin = deluxeSpawn;
     }
 
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-        String player = sender.getName();
-        String prefix = plugin.getMainMessagesManager().getPrefix();
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getCommandDeniedConsole()));
+            sender.sendMessage(MessagesUtils.getColoredMessage(getConsoleDeniedMessage()));
             return true;
         }
-        if (!sender.hasPermission("deluxespawn.command.setspawn")) {
-            sender.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getPermissionDenied()));
-            return true;
-        }
-        if (!plugin.getMainConfigManager().isSpawnByWorld()){
-            SetSpawnGlobal(sender);
-            return true;
+
+        Player player = (Player) sender;
+        String permission = plugin.getMainPermissionsManager().getSetSpawn();
+
+        if (plugin.getMainPermissionsManager().isSetSpawnDefault() || player.hasPermission(permission)) {
+            setSpawn(sender);
         } else {
-            SetSpawnByWorld(sender);
-            return true;
+            noPermission(sender);
         }
+
+        return true;
     }
 
-    public void SetSpawnGlobal (CommandSender sender){
-        FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
-        Location l = ((Player) sender).getLocation();
-        locations.set("Spawn.world", l.getWorld().getName());
-        locations.set("Spawn.x", l.getX());
-        locations.set("Spawn.y", l.getY());
-        locations.set("Spawn.z", l.getZ());
-        locations.set("Spawn.yaw", l.getYaw());
-        locations.set("Spawn.pitch", l.getPitch());
-
-        plugin.getLocationsManager().saveLocationsFile();
-
-        String world = ((Player) sender).getWorld().getName();
-        String message = plugin.getMainMessagesManager().getPrefix() + plugin.getMainMessagesManager().getCommandSetSpawnSuccessfully().replace("%world%", world);
-        sender.sendMessage(MessagesUtils.getColoredMessage(message));
-        return;
+    private String getConsoleDeniedMessage() {
+        return plugin.getMainMessagesManager().getPrefix() + plugin.getMainMessagesManager().getCommandDeniedConsole();
     }
 
-    public void SetSpawnByWorld (CommandSender sender){
+    public void setSpawn(CommandSender sender) {
         FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
-        Location l = ((Player) sender).getLocation();
-        locations.set("SpawnByWorld." + l.getWorld().getName() + ".x", l.getX());
-        locations.set("SpawnByWorld." + l.getWorld().getName() + ".y", l.getY());
-        locations.set("SpawnByWorld." + l.getWorld().getName() + ".z", l.getZ());
-        locations.set("SpawnByWorld." + l.getWorld().getName() + ".yaw", l.getYaw());
-        locations.set("SpawnByWorld." + l.getWorld().getName() + ".pitch", l.getPitch());
+        Location location = ((Player) sender).getLocation();
+
+        if (!plugin.getMainConfigManager().isSpawnByWorld()) {
+            setLocation(locations, "Spawn", location);
+        } else {
+            String worldName = location.getWorld().getName();
+            setLocation(locations, "SpawnByWorld." + worldName, location);
+        }
 
         plugin.getLocationsManager().saveLocationsFile();
-
-        String world = ((Player) sender).getWorld().getName();
+        String world = location.getWorld().getName();
         String message = plugin.getMainMessagesManager().getPrefix() + plugin.getMainMessagesManager().getCommandSetSpawnSuccessfully().replace("%world%", world);
         sender.sendMessage(MessagesUtils.getColoredMessage(message));
-        return;
+    }
+
+    private void setLocation(FileConfiguration locations, String path, Location location) {
+        locations.set(path + ".world", location.getWorld().getName());
+        locations.set(path + ".x", location.getX());
+        locations.set(path + ".y", location.getY());
+        locations.set(path + ".z", location.getZ());
+        locations.set(path + ".yaw", location.getYaw());
+        locations.set(path + ".pitch", location.getPitch());
+    }
+
+    public void noPermission(CommandSender sender) {
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+        sender.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getPermissionDenied()));
     }
 }

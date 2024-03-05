@@ -1,14 +1,14 @@
 package com.pixesoj.deluxespawn;
 
 import com.pixesoj.commands.*;
-import com.pixesoj.config.LocationsManager;
-import com.pixesoj.config.MainConfigManager;
-import com.pixesoj.config.MainMessagesManager;
-import com.pixesoj.listeners.OnJoin;
-import com.pixesoj.listeners.OnRespawn;
-import com.pixesoj.listeners.OnVoid;
-import com.pixesoj.managers.UpdateCheckerManager;
-import com.pixesoj.model.internal.UpdateCheckerResult;
+import com.pixesoj.filesmanager.LocationsManager;
+import com.pixesoj.filesmanager.MainConfigManager;
+import com.pixesoj.filesmanager.MainMessagesManager;
+import com.pixesoj.filesmanager.MainPermissionsManager;
+import com.pixesoj.listeners.*;
+import com.pixesoj.managers.PlayerDataManager;
+import com.pixesoj.managers.UpdateCheckManager;
+import com.pixesoj.model.internal.UpdateCheckResult;
 import com.pixesoj.utils.MessagesUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -17,6 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 public class DeluxeSpawn extends JavaPlugin {
 
@@ -24,27 +25,36 @@ public class DeluxeSpawn extends JavaPlugin {
     public static String prefix;
     private MainConfigManager mainConfigManager;
     private MainMessagesManager mainMessagesManager;
-    private UpdateCheckerManager updateCheckerManager;
+    private UpdateCheckManager updateCheckerManager;
     private LocationsManager locationsManager;
+    private MainPermissionsManager mainPermissionsManager;
+    private PlayerDataManager playerDataManager;
 
     public void onEnable() {
 
         version = getDescription().getVersion();
         prefix = ChatColor.translateAlternateColorCodes('&', "&8[&eDeluxeSpawn&8] ");
 
-        registerCommands();
-        registerEvents();
-
-        registerMessages();
         mainConfigManager = new MainConfigManager(this);
         mainMessagesManager = new MainMessagesManager(this);
+        mainPermissionsManager = new MainPermissionsManager(this);
+        playerDataManager = new PlayerDataManager(this);
         locationsManager = new LocationsManager(this);
+
+        registerCommands();
+        registerEvents();
+        registerMessages();
+
         locationsManager.loadLocationsFile();
-        this.updateCheckerManager = new UpdateCheckerManager(this.version);
+
+        this.updateCheckerManager = new UpdateCheckManager(this.version);
         if (this.getMainConfigManager().isCheckUpdate()) {
             this.updateMessage(this.updateCheckerManager.check());
         }
-        players = new ArrayList<>();
+
+        delayPlayers = new ArrayList<>();
+        cooldownPlayers = new ArrayList<>();
+
         Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage("&6╔═══╦═══╦╗  ╔╗ ╔╦═╗╔═╦═══╦═══╦═══╦═══╦╗╔╗╔╦═╗ ╔╗"));
         Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage("&6╚╗╔╗║╔══╣║  ║║ ║╠╗╚╝╔╣╔══╣╔═╗║╔═╗║╔═╗║║║║║║║╚╗║║"));
         Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage("&6 ║║║║╚══╣║  ║║ ║║╚╗╔╝║╚══╣╚══╣╚═╝║║ ║║║║║║║╔╗╚╝║"));
@@ -73,6 +83,8 @@ public class DeluxeSpawn extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new OnJoin(this), this);
         getServer().getPluginManager().registerEvents(new OnVoid(this), this);
         getServer().getPluginManager().registerEvents(new OnRespawn(this), this);
+        getServer().getPluginManager().registerEvents(new OnQuit(this), this);
+        getServer().getPluginManager().registerEvents(new LastLocation(this), this);
     }
 
     public MainConfigManager getMainConfigManager() {
@@ -83,11 +95,15 @@ public class DeluxeSpawn extends JavaPlugin {
         return mainMessagesManager;
     }
 
-    public UpdateCheckerManager getUpdateCheckerManager() {
+    public UpdateCheckManager getUpdateCheckerManager() {
         return this.updateCheckerManager;
     }
 
-    public void updateMessage(UpdateCheckerResult result) {
+    public MainPermissionsManager getMainPermissionsManager() {
+        return mainPermissionsManager;
+    }
+
+    public void updateMessage(UpdateCheckResult result) {
         if (!result.isError()) {
             String latestVersion = result.getLatestVersion();
             if (latestVersion != null) {
@@ -160,22 +176,43 @@ public class DeluxeSpawn extends JavaPlugin {
         }
     }
 
-    private ArrayList<String> players;
+    private ArrayList<String> delayPlayers;
+    private ArrayList<String> cooldownPlayers;
 
     public void addPlayer(Player player){
-        players.add(player.getName());
+        delayPlayers.add(player.getName());
     }
 
     public void removePlayer(Player player){
-        players.remove(player.getName());
+        delayPlayers.remove(player.getName());
     }
 
     public boolean playerInDelay(Player player){
-        if (players.contains(player.getName())){
+        if (delayPlayers.contains(player.getName())){
             return true;
         } else {
             return false;
         }
+    }
+
+    public void addLobbyCooldown (Player player){
+        cooldownPlayers.add(player.getName());
+    }
+
+    public void removeLobbyCooldown (Player player){
+        cooldownPlayers.remove(player.getName());
+    }
+
+    public boolean playerLobbyInCooldown(Player player){
+        if (cooldownPlayers.contains(player.getName())){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public PlayerDataManager getPlayerDataManager() {
+        return playerDataManager;
     }
 }
 

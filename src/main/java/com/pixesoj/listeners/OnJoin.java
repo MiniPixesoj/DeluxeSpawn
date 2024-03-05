@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.util.List;
+import java.util.UUID;
 
 public class OnJoin implements Listener {
     private DeluxeSpawn plugin;
@@ -24,18 +25,25 @@ public class OnJoin implements Listener {
 
     @EventHandler
     public void onJoin (PlayerJoinEvent event){
+        Player player = event.getPlayer();
         notifyUpdate(event);
         teleportOnJoin(event);
         teleportOnFirstJoin(event);
+        plugin.getPlayerDataManager().removeLastLocationTeleportOneTime(player);
     }
 
     public void notifyUpdate (PlayerJoinEvent event){
         Player player = event.getPlayer();
         String prefix = plugin.getMainMessagesManager().getPrefix();
-        String latestVersion = this.plugin.getUpdateCheckerManager().getLatestVersion();
-        if (player.hasPermission("deluxespawn.notify.update") && !plugin.version.equals(latestVersion) && plugin.getMainConfigManager().isCheckUpdate()) {
+        String permission = plugin.getMainPermissionsManager().getNotifyUpdate();
+        if (plugin.getMainPermissionsManager().isNotifyUpdateDefault()) {
             player.sendMessage(MessagesUtils.getColoredMessage(prefix + " &cThere is a new version available. &6(&8" + plugin.getUpdateCheckerManager().getLatestVersion() + "&6)"));
             player.sendMessage(MessagesUtils.getColoredMessage("&cYou can download it at: &ahttps://spigotmc.org/resources/111403/"));
+        } else {
+            if (player.hasPermission(permission)) {
+                player.sendMessage(MessagesUtils.getColoredMessage(prefix + " &cThere is a new version available. &6(&8" + plugin.getUpdateCheckerManager().getLatestVersion() + "&6)"));
+                player.sendMessage(MessagesUtils.getColoredMessage("&cYou can download it at: &ahttps://spigotmc.org/resources/111403/"));
+            }
         }
     }
 
@@ -47,10 +55,12 @@ public class OnJoin implements Listener {
     }
 
     public void teleportOnFirstJoin (PlayerJoinEvent event){
-        playerTeleportOnFirstJoin(event);
-        onFirstJoinSendMessage(event);
-        onFirstJoinSound(event);
-        onFirstJoinExecuteCommands(event);
+        if (!event.getPlayer().hasPlayedBefore()) {
+            playerTeleportOnFirstJoin(event);
+            onFirstJoinSendMessage(event);
+            onFirstJoinSound(event);
+            onFirstJoinExecuteCommands(event);
+        }
     }
 
     public void playerTeleportOnJoin(PlayerJoinEvent event){
@@ -68,7 +78,7 @@ public class OnJoin implements Listener {
     }
 
     public void playerTeleportOnFirstJoin (PlayerJoinEvent event){
-        if (!event.getPlayer().hasPlayedBefore()){
+
             if (plugin.getMainConfigManager().isTeleportOnFirstJoinJoinEnabled()){
                 if (plugin.getMainConfigManager().getTeleportOnFirstJoinDestinationPlace().equals("Lobby")){
                     onFirstJoinGetLobby(event);
@@ -80,7 +90,6 @@ public class OnJoin implements Listener {
                     onFirstJoinDestinationInvalid(event);
                 }
             }
-        }
     }
 
     public void onJoinGetLobby (PlayerJoinEvent event){
@@ -159,10 +168,17 @@ public class OnJoin implements Listener {
     public void onJoinDestinationInvalid(PlayerJoinEvent event){
         Player player = event.getPlayer();
         String prefix = plugin.getMainMessagesManager().getPrefix();
-        if (player.hasPermission("deluxespawn.notify") || player.isOp()) {
+        String permission = plugin.getMainPermissionsManager().getNotify();
+        if (plugin.getMainPermissionsManager().isNotifyDefault()) {
             String destination = plugin.getMainConfigManager().getTeleportOnJoinDestinationPlace();
             String message = prefix + plugin.getMainMessagesManager().getOnJoinDestinationInvalid().replace("%destination%", destination);
             player.sendMessage(MessagesUtils.getColoredMessage(message));
+        } else {
+            if (player.hasPermission(permission)) {
+                String destination = plugin.getMainConfigManager().getTeleportOnJoinDestinationPlace();
+                String message = prefix + plugin.getMainMessagesManager().getOnJoinDestinationInvalid().replace("%destination%", destination);
+                player.sendMessage(MessagesUtils.getColoredMessage(message));
+            }
         }
     }
 
@@ -248,10 +264,17 @@ public class OnJoin implements Listener {
     public void onFirstJoinDestinationInvalid (PlayerJoinEvent event){
         Player player = event.getPlayer();
         String prefix = plugin.getMainMessagesManager().getPrefix();
-        if (player.hasPermission("deluxespawn.notify") || player.isOp()) {
+        String permission = plugin.getMainPermissionsManager().getNotify();
+        if (plugin.getMainPermissionsManager().isNotifyDefault()) {
             String destination = plugin.getMainConfigManager().getTeleportOnFirstJoinDestinationPlace();
             String message = prefix + plugin.getMainMessagesManager().getOnFirstJoinDestinationInvalid().replace("%destination%", destination);
             player.sendMessage(MessagesUtils.getColoredMessage(message));
+        } else {
+            if (player.hasPermission(permission)) {
+                String destination = plugin.getMainConfigManager().getTeleportOnFirstJoinDestinationPlace();
+                String message = prefix + plugin.getMainMessagesManager().getOnFirstJoinDestinationInvalid().replace("%destination%", destination);
+                player.sendMessage(MessagesUtils.getColoredMessage(message));
+            }
         }
     }
 
@@ -281,9 +304,15 @@ public class OnJoin implements Listener {
     public void onJoinNullSound (PlayerJoinEvent event){
         Player player = event.getPlayer();
         String prefix = plugin.getMainMessagesManager().getPrefix();
-        if (player.hasPermission("deluxespawn.notify") || player.isOp()){
+        String permission = plugin.getMainPermissionsManager().getNotify();
+        if (plugin.getMainPermissionsManager().isNotifyDefault()) {
             String m = prefix + plugin.getMainMessagesManager().getOnJoinNullSound();
             player.sendMessage(MessagesUtils.getColoredMessage(m));
+        } else {
+            if (player.hasPermission(permission)) {
+                String m = prefix + plugin.getMainMessagesManager().getOnJoinNullSound();
+                player.sendMessage(MessagesUtils.getColoredMessage(m));
+            }
         }
     }
 
@@ -313,9 +342,15 @@ public class OnJoin implements Listener {
     public void onFirstJoinNullSound (PlayerJoinEvent event){
         Player player = event.getPlayer();
         String prefix = plugin.getMainMessagesManager().getPrefix();
-        if (player.hasPermission("deluxespawn.notify") || player.isOp()){
+        String permission = plugin.getMainPermissionsManager().getNotify();
+        if (plugin.getMainPermissionsManager().isNotifyDefault()) {
             String m = prefix + plugin.getMainMessagesManager().getOnFirstJoinNullSound();
             player.sendMessage(MessagesUtils.getColoredMessage(m));
+        } else {
+            if (player.hasPermission(permission)) {
+                String m = prefix + plugin.getMainMessagesManager().getOnFirstJoinNullSound();
+                player.sendMessage(MessagesUtils.getColoredMessage(m));
+            }
         }
     }
 

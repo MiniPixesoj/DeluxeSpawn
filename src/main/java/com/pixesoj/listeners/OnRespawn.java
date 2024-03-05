@@ -95,7 +95,6 @@ public class OnRespawn implements Listener {
 
         if(!locations.contains("Lobby.x")){
             respawnDoesNotExist(event);
-            return;
         } else {
             player.teleport(lobbyLocation);
         }
@@ -115,7 +114,6 @@ public class OnRespawn implements Listener {
 
         if(!locations.contains("SpawnByWorld." + world + ".x")){
             respawnDoesNotExist(event);
-            return;
         } else {
             player.teleport(spawnLocation);
         }
@@ -159,20 +157,34 @@ public class OnRespawn implements Listener {
     public void destinationInvalid (PlayerRespawnEvent event){
         Player player = event.getPlayer();
         String prefix = plugin.getMainMessagesManager().getPrefix();
-        if (player.hasPermission("deluxespawn.notify") || player.isOp()) {
+        String permission = plugin.getMainPermissionsManager().getNotify();
+        if (plugin.getMainPermissionsManager().isNotifyDefault()) {
             String destination = plugin.getMainConfigManager().getTeleportOnRespawnDestinationPlace();
             String message = prefix + plugin.getMainMessagesManager().getOnRespawnDestinationInvalid().replace("%destination%", destination);
             player.sendMessage(MessagesUtils.getColoredMessage(message));
+        } else {
+            if (player.hasPermission(permission)) {
+                String destination = plugin.getMainConfigManager().getTeleportOnRespawnDestinationPlace();
+                String message = prefix + plugin.getMainMessagesManager().getOnRespawnDestinationInvalid().replace("%destination%", destination);
+                player.sendMessage(MessagesUtils.getColoredMessage(message));
+            }
         }
     }
 
     public void respawnDoesNotExist (PlayerRespawnEvent event){
         Player player = event.getPlayer();
         String prefix = plugin.getMainMessagesManager().getPrefix();
-        if (player.isOp() || player.hasPermission("deluxespawn.notify")){
+        String permission = plugin.getMainPermissionsManager().getNotify();
+        if (plugin.getMainPermissionsManager().isNotifyDefault()) {
             String destination = plugin.getMainConfigManager().getTeleportOnRespawnDestinationPlace();
             String message = prefix + plugin.getMainMessagesManager().getOnRespawnDoesNotExist().replace("%destination%", destination);
             player.sendMessage(MessagesUtils.getColoredMessage(message));
+        } else {
+            if (player.hasPermission(permission)) {
+                String destination = plugin.getMainConfigManager().getTeleportOnRespawnDestinationPlace();
+                String message = prefix + plugin.getMainMessagesManager().getOnRespawnDoesNotExist().replace("%destination%", destination);
+                player.sendMessage(MessagesUtils.getColoredMessage(message));
+            }
         }
     }
 
@@ -211,9 +223,15 @@ public class OnRespawn implements Listener {
     public void nullSound (PlayerRespawnEvent event){
         Player player = event.getPlayer();
         String prefix = plugin.getMainMessagesManager().getPrefix();
-        if (player.hasPermission("deluxespawn.notify") || player.isOp()){
+        String permission = plugin.getMainPermissionsManager().getNotify();
+        if (plugin.getMainPermissionsManager().isNotifyDefault()) {
             String m = prefix + plugin.getMainMessagesManager().getOnRespawnNullSound();
             player.sendMessage(MessagesUtils.getColoredMessage(m));
+        } else {
+            if (player.hasPermission(permission)) {
+                String m = prefix + plugin.getMainMessagesManager().getOnRespawnNullSound();
+                player.sendMessage(MessagesUtils.getColoredMessage(m));
+            }
         }
     }
 

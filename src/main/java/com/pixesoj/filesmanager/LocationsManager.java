@@ -1,4 +1,4 @@
-package com.pixesoj.config;
+package com.pixesoj.filesmanager;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
 import org.bukkit.configuration.file.FileConfiguration;

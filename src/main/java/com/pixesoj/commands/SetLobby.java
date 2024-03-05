@@ -17,26 +17,44 @@ public class SetLobby implements CommandExecutor {
     }
 
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-        String prefix = plugin.getMainMessagesManager().getPrefix();
         if (!(sender instanceof Player)) {
-            sender.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getCommandDeniedConsole()));
+            sender.sendMessage(MessagesUtils.getColoredMessage(getConsoleDeniedMessage()));
             return true;
         }
-        if (!sender.hasPermission("deluxespawn.command.setlobby")) {
-            sender.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getPermissionDenied()));
-            return true;
-        }
-        if(!plugin.getMainConfigManager().isLobbyEnabled()){
-            String message = prefix + plugin.getMainMessagesManager().getLobbyIsNotEnabled();
-            sender.sendMessage(MessagesUtils.getColoredMessage(message));
-            return true;
+
+        Player player = (Player) sender;
+        String permission = plugin.getMainPermissionsManager().getSetLobby();
+
+        if (plugin.getMainPermissionsManager().isSetLobbyDefault() || player.hasPermission(permission)) {
+            if (isLobbyEnabled(sender)) {
+                setLobby(sender);
+            }
         } else {
-            SetLobbyGlobal(sender);
-            return true;
+            noPermission(sender);
         }
+
+        return true;
     }
 
-    public void SetLobbyGlobal (CommandSender sender){
+    private String getConsoleDeniedMessage() {
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+        return prefix + plugin.getMainMessagesManager().getCommandDeniedConsole();
+    }
+
+    private boolean isLobbyEnabled(CommandSender sender) {
+        if (!plugin.getMainConfigManager().isLobbyEnabled()) {
+            String message = getPrefix() + plugin.getMainMessagesManager().getLobbyIsNotEnabled();
+            sender.sendMessage(MessagesUtils.getColoredMessage(message));
+            return false;
+        }
+        return true;
+    }
+
+    private String getPrefix() {
+        return plugin.getMainMessagesManager().getPrefix();
+    }
+
+    public void setLobby (CommandSender sender){
         String prefix = plugin.getMainMessagesManager().getPrefix();
         FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
         Location l = ((Player) sender).getLocation();
@@ -52,6 +70,10 @@ public class SetLobby implements CommandExecutor {
         String world = ((Player) sender).getWorld().getName();
         String message = prefix + plugin.getMainMessagesManager().getCommandSetLobbySuccessfully().replace("%world%", world);
         sender.sendMessage(MessagesUtils.getColoredMessage(message));
-        return;
+    }
+
+    public void noPermission (CommandSender sender){
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+        sender.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getPermissionDenied()));
     }
 }

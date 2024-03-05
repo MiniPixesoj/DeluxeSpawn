@@ -14,14 +14,14 @@ import org.bukkit.scheduler.BukkitScheduler;
 import java.util.List;
 import java.util.Objects;
 
-public class DelayManagerSpawn {
+public class DelayManagerSpawnWorld {
     int TaskID;
     private DeluxeSpawn plugin;
     int time;
     private Player player;
     private Location l;
 
-    public DelayManagerSpawn(DeluxeSpawn plugin, int time, Player player, Location l){
+    public DelayManagerSpawnWorld(DeluxeSpawn plugin, int time, Player player, Location l){
         this.plugin = plugin;
         this.time = time;
         this.player = player;
@@ -55,7 +55,7 @@ public class DelayManagerSpawn {
                         return;
                     }
                     if (Objects.equals(plugin.getMainConfigManager().getSpawnTeleportDelayMessageType(), "Chat")){
-                        String message = plugin.getMainMessagesManager().getSpawnChatMessageInTeleport();
+                        String message = plugin.getMainMessagesManager().getSpawnChatMessageInTeleport() + time;
                         message = message.replace("%time%", String.valueOf(time));
                         player.sendMessage(MessagesUtils.getColoredMessage(message));
                     }
@@ -65,15 +65,15 @@ public class DelayManagerSpawn {
         }, 0L, 20);
     }
 
-    public void getTeleport (){
+    public void getTeleport(){
         String prefix = plugin.getMainMessagesManager().getPrefix();
-        String message = prefix + plugin.getMainMessagesManager().getSpawnTeleported();
-        player.sendMessage(MessagesUtils.getColoredMessage(message));
+        String message = plugin.getMainMessagesManager().getSpawnTeleported();
+        player.teleport(l);
+        spawnSound(player);
         spawnExecuteCommands(player);
         plugin.removePlayer(player);
+        player.sendMessage(MessagesUtils.getColoredMessage(prefix + message));
         BlindnessTeleport(player);
-        spawnSound(player);
-        player.teleport(l);
     }
 
     public void BlindnessTeleport (CommandSender sender){
@@ -81,6 +81,7 @@ public class DelayManagerSpawn {
         int time = plugin.getMainConfigManager().getSpawnTeleportBlindnessTime();
         if (plugin.getMainConfigManager().isSpawnTeleportBlindness()){
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * time, 2));
+            return;
         }
     }
 
@@ -141,4 +142,3 @@ public class DelayManagerSpawn {
         }
     }
 }
-

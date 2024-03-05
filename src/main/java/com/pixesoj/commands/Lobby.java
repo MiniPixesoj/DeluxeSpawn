@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Lobby implements CommandExecutor {
     private DeluxeSpawn plugin;
@@ -22,105 +23,164 @@ public class Lobby implements CommandExecutor {
     }
 
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-        FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
         String prefix = plugin.getMainMessagesManager().getPrefix();
+
         if (!(sender instanceof Player)) {
             String message = prefix + plugin.getMainMessagesManager().getCommandDeniedConsole();
             sender.sendMessage(MessagesUtils.getColoredMessage(message));
             return true;
         }
+
         Player player = (Player) sender;
+        String lobbyPermission = plugin.getMainPermissionsManager().getLobby();
 
-        if(!plugin.getMainConfigManager().isLobbyEnabled()){
-            String message = prefix + plugin.getMainMessagesManager().getLobbyIsNotEnabled();
-            sender.sendMessage(MessagesUtils.getColoredMessage(message));
-            return true;
-        }
-
-        if (!player.hasPermission("deluxespawn.command.lobby")) {
-            sender.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getPermissionDenied()));
-            return true;
-        }
-
-        if (!locations.contains("Lobby.world")){
-            player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getLobbyDoesNotExist()));
-            return true;
+        if (plugin.getMainPermissionsManager().isLobbyDefault() || player.hasPermission(lobbyPermission)) {
+            teleportPlayer(player);
         } else {
-            LobbyGlobal(sender);
-            return true;
+            noPermission(player);
+        }
+
+        return true;
+    }
+
+    public void teleportPlayer (CommandSender sender){
+        getTeleport(sender);
+    }
+
+    public void getTeleport(CommandSender sender) {
+        Player player = (Player) sender;
+        FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+
+        if (!plugin.getMainConfigManager().isLobbyEnabled()) {
+            sendLobbyNotEnabledMessage(sender);
+            return;
+        }
+
+        if (!locations.contains("Lobby.world")) {
+            player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getLobbyDoesNotExist()));
+        } else {
+            getLobby(sender);
         }
     }
 
-    public void LobbyGlobal (CommandSender sender){
-        FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
+    private void sendLobbyNotEnabledMessage(CommandSender sender) {
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+        String message = prefix + plugin.getMainMessagesManager().getLobbyIsNotEnabled();
+        sender.sendMessage(MessagesUtils.getColoredMessage(message));
+    }
+
+    public void getLobby(CommandSender sender) {
         Player player = (Player) sender;
-        String world = locations.getString("Lobby.world");
+        FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
         String prefix = plugin.getMainMessagesManager().getPrefix();
 
-        if (world == null) {
-            player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getLobbyDoesNotExist()));
+        if (!validateLobbyWorld(locations, player, prefix)) {
             return;
         }
+
+        Location lobbyLocation = getLobbyLocation(locations);
+        int delay = plugin.getMainConfigManager().getLobbyTeleportDelay();
+        DelayManagerLobby delayManager = new DelayManagerLobby(plugin, delay, player, lobbyLocation);
+
+        String delayBypassPermission = plugin.getMainPermissionsManager().getLobbyBypassDelay();
+        boolean delayBypassDefault = plugin.getMainPermissionsManager().isLobbyBypassDelayDefault();
+
+        if (!plugin.getMainConfigManager().isLobbyTeleportDelayEnabled() || delayBypassDefault || player.hasPermission(delayBypassPermission)) {
+            teleportPlayer(player, lobbyLocation, prefix, sender);
+            return;
+        }
+
+        handleLobbyTeleportDelay(player, delayManager, prefix);
+    }
+
+    private boolean validateLobbyWorld(FileConfiguration locations, Player player, String prefix) {
+        String world = locations.getString("Lobby.world");
+
+        if (world == null) {
+            String message = prefix + plugin.getMainMessagesManager().getLobbyDoesNotExist();
+            player.sendMessage(MessagesUtils.getColoredMessage(message));
+            return false;
+        }
+
+        return true;
+    }
+
+    private Location getLobbyLocation(FileConfiguration locations) {
+        String world = locations.getString("Lobby.world");
         double x = locations.getDouble("Lobby.x");
         double y = locations.getDouble("Lobby.y");
         double z = locations.getDouble("Lobby.z");
         float yaw = (float) locations.getDouble("Lobby.yaw");
         float pitch = (float) locations.getDouble("Lobby.pitch");
-        Location lobbyLocation = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
-        int delay = plugin.getMainConfigManager().getLobbyTeleportDelay();
-        DelayManagerLobby d = new DelayManagerLobby(plugin, delay, player, lobbyLocation);
-
-        if (!plugin.getMainConfigManager().isLobbyTeleportDelayEnabled()){
-            player.teleport(lobbyLocation);
-            lobbySound(sender);
-            lobbyExecuteCommands(sender);
-            player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getLobbyTeleported()));
-            return;
-        }
-
-        if (!plugin.playerInDelay(player)){
-            int time = plugin.getMainConfigManager().getLobbyTeleportDelay();
-            String message = plugin.getMainMessagesManager().getLobbyMessageDelayTeleport();
-            message = message.replace("%time%", String.valueOf(time));
-            player.sendMessage(MessagesUtils.getColoredMessage(message));
-            plugin.addPlayer(player);
-            d.DelayLobbyGlobal();
-            return;
-        }
-        sender.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getLobbyInTeleport()));
+        return new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
     }
 
-    public void lobbySound(CommandSender sender) {
+    private void teleportPlayer(Player player, Location location, String prefix, CommandSender sender) {
+        sound(sender);
+        executeCommands(sender);
+        player.teleport(location);
+        String message = prefix + plugin.getMainMessagesManager().getLobbyTeleported();
+        player.sendMessage(MessagesUtils.getColoredMessage(message));
+    }
+
+    private void handleLobbyTeleportDelay(Player player, DelayManagerLobby delayManager, String prefix) {
+        if (!plugin.playerInDelay(player)) {
+            plugin.addPlayer(player);
+            delayManager.DelayLobby();
+            if (!Objects.equals(plugin.getMainConfigManager().getLobbyTeleportDelayMessageType(), "Chat")) {
+                int time = plugin.getMainConfigManager().getLobbyTeleportDelay();
+                String message = plugin.getMainMessagesManager().getLobbyMessageDelayTeleport().replace("%time%", String.valueOf(time));
+                player.sendMessage(MessagesUtils.getColoredMessage(message));
+            }
+        } else {
+            String message = prefix + plugin.getMainMessagesManager().getLobbyInTeleport();
+            player.sendMessage(MessagesUtils.getColoredMessage(message));
+        }
+    }
+
+    public void sound(CommandSender sender) {
         Player player = (Player) sender;
+        String prefix = plugin.getMainMessagesManager().getPrefix();
 
-        if (plugin.getMainConfigManager().isLobbyTeleportSoundEnabled()) {
-            String soundName = plugin.getMainConfigManager().getLobbyTeleportSound();
-            String prefix = plugin.getMainMessagesManager().getPrefix();
-            if (soundName == null){
-                if (player.hasPermission("deluxespawn.notify") || player.isOp()){
-                    String m = prefix + plugin.getMainMessagesManager().getLobbyNullSound();
-                    sender.sendMessage(MessagesUtils.getColoredMessage(m));
-                }
-                return;
-            }
+        if (!plugin.getMainConfigManager().isLobbyTeleportSoundEnabled()) {
+            return;
+        }
 
-            Sound sound;
-            try {
-                sound = Sound.valueOf(soundName);
-            } catch (IllegalArgumentException e) {
-                String m = prefix + plugin.getMainMessagesManager().getLobbyInvalidSound().replace("%sound%", soundName);
-                player.sendMessage(m);
-                return;
-            }
+        String soundName = plugin.getMainConfigManager().getLobbyTeleportSound();
 
+        if (soundName == null) {
+            handleNullSound(sender, prefix);
+            return;
+        }
+
+        try {
+            Sound sound = Sound.valueOf(soundName);
             float volume = plugin.getMainConfigManager().getLobbyTeleportSoundVolume();
             float pitch = plugin.getMainConfigManager().getLobbyTeleportSoundPitch();
 
             player.playSound(player.getLocation(), sound, volume, pitch);
+        } catch (IllegalArgumentException e) {
+            handleInvalidSound(player, prefix, soundName);
         }
     }
 
-    public void lobbyExecuteCommands(CommandSender sender) {
+    private void handleNullSound(CommandSender sender, String prefix) {
+        String permission = plugin.getMainPermissionsManager().getNotify();
+        if (plugin.getMainPermissionsManager().isNotifyDefault() || sender.hasPermission(permission)) {
+            String message = prefix + plugin.getMainMessagesManager().getLobbyNullSound();
+            sender.sendMessage(MessagesUtils.getColoredMessage(message));
+        } else {
+            noPermission(sender);
+        }
+    }
+
+    private void handleInvalidSound(Player player, String prefix, String soundName) {
+        String message = prefix + plugin.getMainMessagesManager().getLobbyInvalidSound().replace("%sound%", soundName);
+        player.sendMessage(message);
+    }
+
+    public void executeCommands(CommandSender sender) {
         if (plugin.getMainConfigManager().isLobbyCommandsEnabled()) {
 
             List<String> playerCommands = plugin.getMainConfigManager().getLobbyPlayerCommands();
@@ -138,5 +198,10 @@ public class Lobby implements CommandExecutor {
                 Bukkit.dispatchCommand(consoleSender, replacedCommand);
             }
         }
+    }
+
+    public void noPermission (CommandSender sender){
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+        sender.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getPermissionDenied()));
     }
 }

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class DelayManagerLobby {
+    public boolean playerLobbyMovedDuringDelay;
     int TaskID;
     private DeluxeSpawn plugin;
     int time;
@@ -28,7 +29,7 @@ public class DelayManagerLobby {
         this.l = l;
     }
 
-    public void DelayLobbyGlobal(){
+    public void DelayLobby(){
         String prefix = plugin.getMainMessagesManager().getPrefix();
         boolean cancelOnMove = plugin.getMainConfigManager().isLobbyTeleportDelayCancelOnMove();
 
@@ -43,20 +44,15 @@ public class DelayManagerLobby {
                 if (time == 0){
                     Bukkit.getScheduler().cancelTask(TaskID);
                     Bukkit.getScheduler().runTask(plugin, () -> {
-                        player.teleport(l);
-                        lobbySound(player);
-                        lobbyExecuteCommands(player);
-                        plugin.removePlayer(player);
-                        player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getLobbyTeleported()));
-                        BlindnessTeleport(player);
+                        getTeleport();
                     });
-                    return;
                 } else {
                     if (cancelOnMove && (player.getLocation().getBlockX() != initialX ||
                             player.getLocation().getBlockY() != initialY ||
                             player.getLocation().getBlockZ() != initialZ)) {
                         player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getLobbyMovementCanceledTeleport()));
                         Bukkit.getScheduler().cancelTask(TaskID);
+                        playerLobbyMovedDuringDelay = true;
                         plugin.removePlayer(player);
                         return;
                     }
@@ -71,6 +67,17 @@ public class DelayManagerLobby {
         }, 0L, 20);
     }
 
+    public void getTeleport (){
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+        player.teleport(l);
+        lobbySound(player);
+        lobbyExecuteCommands(player);
+        plugin.removePlayer(player);
+        player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getLobbyTeleported()));
+        BlindnessTeleport(player);
+        playerLobbyMovedDuringDelay = false;
+    }
+
     public void BlindnessTeleport (CommandSender sender){
         Player player = (Player) sender;
         int time = plugin.getMainConfigManager().getLobbyTeleportBlindnessTime();
@@ -78,7 +85,6 @@ public class DelayManagerLobby {
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * time, 2));
             return;
         }
-        return;
     }
 
     public void lobbySound(CommandSender sender) {
@@ -88,9 +94,16 @@ public class DelayManagerLobby {
             String soundName = plugin.getMainConfigManager().getLobbyTeleportSound();
             String prefix = plugin.getMainMessagesManager().getPrefix();
             if (soundName == null){
-                if (player.hasPermission("deluxespawn.notify") || player.isOp()){
+                String permission = plugin.getMainPermissionsManager().getNotify();
+                if (plugin.getMainPermissionsManager().isNotifyDefault()) {
                     String m = prefix + plugin.getMainMessagesManager().getLobbyNullSound();
                     sender.sendMessage(MessagesUtils.getColoredMessage(m));
+                } else {
+                    if (player.hasPermission(permission)) {
+                        String m = prefix + plugin.getMainMessagesManager().getLobbyNullSound();
+                        sender.sendMessage(MessagesUtils.getColoredMessage(m));
+                        return;
+                    }
                 }
                 return;
             }

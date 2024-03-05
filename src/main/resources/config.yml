@@ -1,13 +1,15 @@
 ##====================================##
 ## DeluxeSpawn plugin by Pixesoj.     ##
-## Version: 3.1.0                     ##
+## Version: 3.2.0                     ##
 ## Make sure to leave your            ##
 ## thoughts on a review.              ##
 ## www.spigotmc.org/resources/111403/ ##
 ##====================================##
 
 #================================================================================#
+#                                                                                #
 #                                 GLOBAL OPTIONS                                 #
+#                                                                                #
 #================================================================================#
 
 # If this option is set to true, players with permission deluxespawn.notify.update permission
@@ -31,7 +33,9 @@ CheckUpdate: true
 Lang: en
 
 #================================================================================#
+#                                                                                #
 #                               SPAWN/LOBBY OPTIONS                              #
+#                                                                                #
 #================================================================================#
 
 # Add an alias to certain worlds to display in messages
@@ -62,6 +66,13 @@ SpawnSettings:
     # Available options: Chat (leave blank to disable)
     MessageType: []
 
+  # Cooldown settings between each use of the /spawn command
+  Cooldown:
+    # Will it be enabled?
+    Enabled: false
+    # Time in seconds between each use
+    Time: 30
+
   # Sound settings
   SoundSettings:
     # Whether or not a sound would be sent when teleporting the player
@@ -88,7 +99,57 @@ SpawnSettings:
 # Lobby settings
 LobbySettings:
   # Sets whether /lobby and /setlobby will be enabled
-  Enabled: true
+  Enabled: false
+
+  # Settings for the player's last location
+  # Useful for when you want to simulate a network on a single server
+  # For this to work TeleportOnJoin must be enabled and DestinationPlace must be Lobby
+  LastLocation:
+    # Select whether the player's last location will be saved
+    # Basically activate/deactivate this function
+    Save: false
+    # Enter this list the worlds where when the player disconnects then that location will not be saved
+    # Useful for when you have a Lobby world and a survival world and if the player previously disconnected
+    # in survival and then disconnected in the lobby then their location will still be saved in survival
+    IgnoredWorldsSave:
+      - Lobby
+      - OtherWorld
+
+    # Teleport settings
+    TeleportSettings:
+      # Will the player be teleported to the last saved location?
+      # Teleport: true
+      # When will the player teleport? Available options: OnChangeWorld, OnCommand
+
+      # OnChangeWorld: The player will be teleported when changing worlds, either any world or the specified worlds
+
+      # OnCommand: By selecting this option the player can teleport to his last location with
+      # the command /deluxespawn lastlocation
+      TeleportMode:
+        - OnCommand
+
+      # Settings after choosing OnChangeWorld
+      ChangeWorld:
+        # Which worlds will be taken into account to teleport the player?
+        # Available options: AnyWorld, SpecifiedWorlds
+
+        # AnyWorld: Any world the player goes to will be teleported to their saved location.
+        # (I do not recommend this option, since when TeleportOnJoin is true and the player is in another world
+        # they will be teleported to their last location without going to the spawn/lobby)
+
+        # SpecifiedWorlds: Only when the player goes to a world specified in this list will they be teleported
+        Type: SpecifiedWorlds
+        SpecifiedWorlds:
+          - myworld
+          - otherworld
+        # Only teleport the player the first time they change worlds?
+        OneTime: true
+
+      # Settings if you added the OnCommand option
+      Command:
+        # Select if the command will only work once, if you select true and the player executes
+        # the command more than once it will no longer work until they log in again
+        OneTime: true
 
   # Teleport delay settings
   TeleportDelay:
@@ -106,10 +167,17 @@ LobbySettings:
     # Available options: Chat (leave blank to disable)
     MessageType: []
 
+  # Cooldown settings between each use of the /lobby command
+  Cooldown:
+    # Will it be enabled?
+    Enabled: false
+    # Time in seconds between each use
+    Time: 30
+
   # Sound settings
   SoundSettings:
     # Whether or not a sound would be sent when teleporting the player
-    Enabled: false
+    Enabled: true
     # Sound that will be sent to the player
     # You can find a list of sounds at: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
     Sound: ENTITY_ENDERMAN_TELEPORT

@@ -1,0 +1,85 @@
+##====================================##
+## DeluxeSpawn plugin by Pixesoj.     ##
+## Version: 3.2.0                     ##
+## Make sure to leave your            ##
+## thoughts on a review.              ##
+## www.spigotmc.org/resources/111403/ ##
+##====================================##
+
+# In this place you can see/change all the permissions available in DeluxeSpawn
+# How to use this file
+# DeluxeSpawn:
+#   Permission: This is where the permission that you can give to your players goes, you can change this value
+#   Default: Here you choose whether this permission will be by default for everyone
+#     true: will be available to all players
+#     false: will only be available to OP players or those who have the permission above with some permissions plugin like LuckPerms
+
+# Use /lobby command to go to lobby
+Lobby:
+  Permission: deluxespawn.command.lobby
+  Default: true
+
+# Use /setlobby command to set a lobby
+SetLobby:
+  Permission: deluxespawn.command.setlobby
+  Default: false
+
+# Allows the player to ignore the lobby teleport delay
+LobbyBypassDelay:
+  Permission: deluxespawn.bypass.lobby
+  Default: false
+
+# Use /spawn command to go to spawn
+Spawn:
+  Permission: deluxespawn.command.spawn
+  Default: true
+
+# Use /setspawn command to set a spawn
+SetSpawn:
+  Permission: deluxespawn.command.setspawn
+  Default: false
+
+# Allows the player to ignore the spawn teleport delay
+SpawnBypassDelay:
+  Permission: deluxespawn.bypass.spawn
+  Default: false
+
+# Use /spawn <world> command to go to the spawn of the specified world
+SpawnWorld:
+  Permission: deluxespawn.command.spawn.world
+  Default: true
+
+# Use the /deluxespawn reload command
+Reload:
+  Permission: deluxespawn.command.reload
+  Default: false
+
+# Use the /deluxespawn version command
+Version:
+  Permission: deluxespawn.command.version
+  Default: false
+
+# Use the /deluxespawn help command
+Help:
+  Permission: deluxespawn.command.help
+  Default: true
+
+# Notify players of errors
+Notify:
+  Permission: deluxespawn.notify
+  Default: false
+
+# Notify players of new updates available
+NotifyUpdate:
+  Permission: deluxespawn.notify.update
+  Default: false
+
+# This is the permission to use the /deluxespawn lastlocation command
+LastLocation:
+  Permission: deluxespawn.command.lastlocation
+  Default: true
+
+# With this permission, players do not know if they have already used the command once
+LastLocationBypassCommand:
+  Permission: deluxespawn.bypass.command.lastlocation
+  Default: false

@@ -137,8 +137,8 @@ LobbySettings:
       # Will the player be teleported to the last saved location?
       # Teleport: true
       # When will the player teleport? Available options:
-      # OnChangeWorld: The player will be teleported when changing worlds, either any world or the specified worlds...
-      # OnCommand: By selecting this option the player can teleport to his last location with
+      # OnChangeWorld: The player will be teleported when changing worlds, either any world or the specified worlds
+      # OnCommand: By selecting this option the player can teleport to his last location with...
       # ...the command /deluxespawn lastlocation
       TeleportMode:
         - OnCommand

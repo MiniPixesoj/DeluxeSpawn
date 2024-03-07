@@ -145,11 +145,6 @@ public class DeluxeSpawn extends JavaPlugin {
             saveResource("lang/messages-zh.yml", false);
         }
 
-        File messagesHi = new File(langFolder, "messages-hi.yml");
-        if (!messagesHi.exists()){
-            saveResource("lang/messages-hi.yml", false);
-        }
-
         File messagesAr = new File(langFolder, "messages-ar.yml");
         if (!messagesAr.exists()){
             saveResource("lang/messages-ar.yml", false);

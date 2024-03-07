@@ -2,14 +2,15 @@ package com.pixesoj.deluxespawn;
 
 import com.pixesoj.commands.*;
 import com.pixesoj.filesmanager.LocationsManager;
-import com.pixesoj.filesmanager.MainConfigManager;
-import com.pixesoj.filesmanager.MainMessagesManager;
-import com.pixesoj.filesmanager.MainPermissionsManager;
+import com.pixesoj.filesmanager.config.MainConfigManager;
+import com.pixesoj.filesmanager.messages.MainMessagesManager;
+import com.pixesoj.filesmanager.permissions.MainPermissionsManager;
 import com.pixesoj.listeners.*;
-import com.pixesoj.managers.PlayerDataManager;
+import com.pixesoj.managers.playerdata.PlayerDataManager;
 import com.pixesoj.managers.UpdateCheckManager;
 import com.pixesoj.model.internal.UpdateCheckResult;
 import com.pixesoj.utils.MessagesUtils;
+import com.pixesoj.managers.dependencies.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -17,7 +18,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 public class DeluxeSpawn extends JavaPlugin {
 
@@ -53,7 +53,11 @@ public class DeluxeSpawn extends JavaPlugin {
         }
 
         delayPlayers = new ArrayList<>();
-        cooldownPlayers = new ArrayList<>();
+        cooldownLobbyPlayers = new ArrayList<>();
+        cooldownSpawnPlayers = new ArrayList<>();
+
+        int pluginId = 21247;
+        Metrics metrics = new Metrics(this, pluginId);
 
         Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage("&6╔═══╦═══╦╗  ╔╗ ╔╦═╗╔═╦═══╦═══╦═══╦═══╦╗╔╗╔╦═╗ ╔╗"));
         Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage("&6╚╗╔╗║╔══╣║  ║║ ║╠╗╚╝╔╣╔══╣╔═╗║╔═╗║╔═╗║║║║║║║╚╗║║"));
@@ -85,6 +89,7 @@ public class DeluxeSpawn extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new OnRespawn(this), this);
         getServer().getPluginManager().registerEvents(new OnQuit(this), this);
         getServer().getPluginManager().registerEvents(new LastLocation(this), this);
+        getServer().getPluginManager().registerEvents(new OnShutdown(this), this);
     }
 
     public MainConfigManager getMainConfigManager() {
@@ -177,13 +182,14 @@ public class DeluxeSpawn extends JavaPlugin {
     }
 
     private ArrayList<String> delayPlayers;
-    private ArrayList<String> cooldownPlayers;
+    private ArrayList<String> cooldownLobbyPlayers;
+    private ArrayList<String> cooldownSpawnPlayers;
 
-    public void addPlayer(Player player){
+    public void addPlayerTeleport(Player player){
         delayPlayers.add(player.getName());
     }
 
-    public void removePlayer(Player player){
+    public void removePlayerTeleport(Player player){
         delayPlayers.remove(player.getName());
     }
 
@@ -196,15 +202,31 @@ public class DeluxeSpawn extends JavaPlugin {
     }
 
     public void addLobbyCooldown (Player player){
-        cooldownPlayers.add(player.getName());
+        cooldownLobbyPlayers.add(player.getName());
     }
 
     public void removeLobbyCooldown (Player player){
-        cooldownPlayers.remove(player.getName());
+        cooldownLobbyPlayers.remove(player.getName());
     }
 
     public boolean playerLobbyInCooldown(Player player){
-        if (cooldownPlayers.contains(player.getName())){
+        if (cooldownLobbyPlayers.contains(player.getName())){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void addSpawnCooldown (Player player){
+        cooldownSpawnPlayers.add(player.getName());
+    }
+
+    public void removeSpawnCooldown (Player player){
+        cooldownSpawnPlayers.remove(player.getName());
+    }
+
+    public boolean playerSpawnInCooldown(Player player){
+        if (cooldownSpawnPlayers.contains(player.getName())){
             return true;
         } else {
             return false;

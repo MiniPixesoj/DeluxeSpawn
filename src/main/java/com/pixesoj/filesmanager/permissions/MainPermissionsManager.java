@@ -1,6 +1,7 @@
-package com.pixesoj.filesmanager;
+package com.pixesoj.filesmanager.permissions;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
+import com.pixesoj.filesmanager.permissions.CustomPermissions;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class MainPermissionsManager {
@@ -34,6 +35,10 @@ public class MainPermissionsManager {
     public boolean LastLocationBypassCommandDefault;
     public String LastLocation;
     public  boolean LastLocationDefault;
+    public String LobbyBypassCooldown;
+    public boolean LobbyBypassCooldownDefault;
+    public String SpawnBypassCooldown;
+    public boolean SpawnBypassCooldownDefault;
 
 
     public void reloadPermissions() {
@@ -77,6 +82,10 @@ public class MainPermissionsManager {
         LastLocationBypassCommandDefault = permissions.getBoolean("LastLocationBypassCommand.Default");
         LastLocation = permissions.getString("LastLocation.Permission");
         LastLocationDefault = permissions.getBoolean("LastLocation.Default");
+        LobbyBypassCooldown = permissions.getString("LobbyBypassCooldown.Permission");
+        LobbyBypassCooldownDefault = permissions.getBoolean("LobbyBypassCooldown.Default");
+        SpawnBypassCooldown = permissions.getString("SpawnBypassCooldown.Permission");
+        SpawnBypassCooldownDefault = permissions.getBoolean("SpawnBypassCooldown.Default");
     }
 
     public String getLobby() {
@@ -189,5 +198,21 @@ public class MainPermissionsManager {
 
     public boolean isLastLocationDefault() {
         return LastLocationDefault;
+    }
+
+    public String getLobbyBypassCooldown() {
+        return LobbyBypassCooldown;
+    }
+
+    public boolean isLobbyBypassCooldownDefault() {
+        return LobbyBypassCooldownDefault;
+    }
+
+    public String getSpawnBypassCooldown() {
+        return SpawnBypassCooldown;
+    }
+
+    public boolean isSpawnBypassCooldownDefault() {
+        return SpawnBypassCooldownDefault;
     }
 }

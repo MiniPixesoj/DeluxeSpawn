@@ -17,6 +17,16 @@ public class OnQuit implements Listener {
 
     @EventHandler
     public void saveLastLocation(PlayerQuitEvent event) {
+        boolean save = plugin.getMainConfigManager().isLastLocationSave();
+        if (!save){
+            return;
+        }
+
+        List<String> saveType = plugin.getMainConfigManager().getLastLocationSaveType();
+        if (!saveType.contains("OnPlayerQuit")){
+            return;
+        }
+
         Player player = event.getPlayer();
         String playerWorld = player.getWorld().getName();
 
@@ -28,15 +38,12 @@ public class OnQuit implements Listener {
             return;
         }
 
-        boolean save = plugin.getMainConfigManager().isLastLocationSave();
-        if (save) {
-            double x = player.getLocation().getX();
-            double y = player.getLocation().getY();
-            double z = player.getLocation().getZ();
-            float yaw = player.getLocation().getYaw();
-            float pitch = player.getLocation().getPitch();
+        double x = player.getLocation().getX();
+        double y = player.getLocation().getY();
+        double z = player.getLocation().getZ();
+        float yaw = player.getLocation().getYaw();
+        float pitch = player.getLocation().getPitch();
 
-            plugin.getPlayerDataManager().savePlayerLocation(player, x, y, z, yaw, pitch);
-        }
+        plugin.getPlayerDataManager().savePlayerLocation(player, x, y, z, yaw, pitch);
     }
 }

@@ -1,5 +1,5 @@
 main: com.pixesoj.deluxespawn.DeluxeSpawn
-version: 3.2.0
+version: 3.3.0
 name: DeluxeSpawn
 description: |
   Create world spawns and teleport to them with various configurable options.
@@ -20,6 +20,8 @@ commands:
     description: Set a world spawn
     usage: /setspawn
     permission-message: You do not have permission to set a spawn.
+    aliases:
+      - sets
 
   spawn:
     description: Teleport to the world spawn
@@ -30,8 +32,12 @@ commands:
     description: Set the lobby location
     usage: /setlobby
     permission-message: You do not have permission to set the lobby.
+    aliases:
+      - setl
 
   lobby:
     description: Teleport to the lobby
     usage: /lobby
     permission-message: You do not have permission to teleport to the lobby.
+    aliases:
+      - hub

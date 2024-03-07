@@ -4,6 +4,7 @@ import com.pixesoj.deluxespawn.DeluxeSpawn;
 import com.pixesoj.utils.MessagesUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -71,7 +72,68 @@ public class LastLocation implements Listener {
             float pitch = (float) playerConfig.getDouble("LastLocation.pitch");
 
             Location lastLocation = new Location(Bukkit.getWorld(worldName), x, y, z, yaw, pitch);
-            player.teleport(lastLocation);plugin.getPlayerDataManager().addLastLocationTeleportOneTime(player);
+            player.teleport(lastLocation);
+            plugin.getPlayerDataManager().addLastLocationTeleportOneTime(player);
+            soundLastLocation(player);
+            executeCommands(player);
+        }
+    }
+
+    public void soundLastLocation(Player player) {
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+        boolean enabled = plugin.getMainConfigManager().isLobbyLastLocationSoundEnabled();
+
+        if (!enabled) {
+            return;
+        }
+
+        String soundName = plugin.getMainConfigManager().getLobbyTeleportSound();
+
+        if (soundName == null) {
+            handleNullSound(player, prefix);
+            return;
+        }
+
+        try {
+            Sound sound = Sound.valueOf(soundName);
+            float volume = plugin.getMainConfigManager().getLobbyLastLocationSoundVolume();
+            float pitch = plugin.getMainConfigManager().getLobbyLastLocationSoundPitch();
+
+            player.playSound(player.getLocation(), sound, volume, pitch);
+        } catch (IllegalArgumentException e) {
+            handleInvalidSound(player, prefix, soundName);
+        }
+    }
+
+    private void handleNullSound(Player player, String prefix) {
+        String permission = plugin.getMainPermissionsManager().getNotify();
+        if (plugin.getMainPermissionsManager().isNotifyDefault() || player.hasPermission(permission)) {
+            String message = prefix + plugin.getMainMessagesManager().getLastLocationNullSound();
+            player.sendMessage(MessagesUtils.getColoredMessage(message));
+        }
+    }
+
+    private void handleInvalidSound(Player player, String prefix, String soundName) {
+        String message = prefix + plugin.getMainMessagesManager().getLastLocationInvalidSound().replace("%sound%", soundName);
+        player.sendMessage(message);
+    }
+
+    public void executeCommands(Player player) {
+        if (plugin.getMainConfigManager().isLobbyLastLocationCommandsEnabled()) {
+
+            List<String> playerCommands = plugin.getMainConfigManager().getLobbyLastLocationCommandsPlayer();
+            List<String> consoleCommands = plugin.getMainConfigManager().getLobbyLastLocationCommandsConsole();
+
+            for (String command : playerCommands) {
+                String replacedCommand = command.replace("%player%", player.getName());
+                Bukkit.dispatchCommand(player, replacedCommand);
+            }
+
+            CommandSender consoleSender = Bukkit.getConsoleSender();
+            for (String command : consoleCommands) {
+                String replacedCommand = command.replace("%player%", player.getName());
+                Bukkit.dispatchCommand(consoleSender, replacedCommand);
+            }
         }
     }
 }

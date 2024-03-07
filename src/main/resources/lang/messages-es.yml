@@ -1,7 +1,9 @@
 #==============================================================================================#
 #                                                                                              #
-# Archivo de mensajes en español, puedes encontrar el default de este archivo en:              #
+# Message file in Spanish, you can find the default of this file at:                           #
 # https://github.com/MiniPixesoj/DeluxeSpawn/blob/main/src/main/resources/lang/messages-es.yml #
+#                                                                                              #
+# You can use Minecraft version 1.16 colors in all messages                                    #
 #                                                                                              #
 #==============================================================================================#
 
@@ -15,7 +17,7 @@ CommandReloadMessages: "&a¡El archivo de mensajes se ha recargado correctamente
 CommandReloadAll: "&aTodos los archivos de configuración se han recargado en la versión &aV%version%"
 CommandInvalidArgument: "&cArgumento/s inválido/s. Usa:"
 CommandVersion: "&fLa versión de DeluxeSpawn es &aV%version% &8(&7La última versión es &a%last_version%&8)"
-CommandUsage: "&7Usa &a/help &7para obtener ayuda."
+CommandUsage: "&7Usa &a/ds help &7para obtener ayuda."
 CommandDeniedConsole: "&cEste comando solo puede ser usado por un jugador."
 CommandSetSpawnSuccessfully: "&aSe estableció el punto de inicio del mundo &b%world% &acorrectamente."
 CommandSetLobbySuccessfully: "&aSe estableció el lobby en el mundo &b%world% &acorrectamente."
@@ -76,6 +78,8 @@ OnRespawnInvalidSound: "&6%sound% &cno es un sonido válido."
 LastLocationNotFound: "&cNo se encontro una ubicacion guardada"
 LastLocationTeleport: "&aEnviandote ah tu ultima ubicacion"
 LastLocationOneTime: "&cSolo puedes teletransportarte una vez"
+LastLocationNullSound: "&cEl sonido no puede estar vacío."
+LastLocationInvalidSound: "&6%sound% &cno es un sonido válido."
 
 CommandHelp:
   - "&eDeluxeSpawn &8- &aAyuda"

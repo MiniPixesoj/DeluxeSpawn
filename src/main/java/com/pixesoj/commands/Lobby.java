@@ -1,7 +1,10 @@
 package com.pixesoj.commands;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
-import com.pixesoj.managers.DelayManagerLobby;
+import com.pixesoj.managers.cooldown.CooldownLobby;
+import com.pixesoj.managers.cooldown.LobbyCooldownProvider;
+import com.pixesoj.managers.delays.DelayLobby;
+import com.pixesoj.model.internal.CooldownTimeProvider;
 import com.pixesoj.utils.MessagesUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -22,25 +25,66 @@ public class Lobby implements CommandExecutor {
         this.plugin = deluxeSpawn;
     }
 
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         String prefix = plugin.getMainMessagesManager().getPrefix();
 
         if (!(sender instanceof Player)) {
-            String message = prefix + plugin.getMainMessagesManager().getCommandDeniedConsole();
-            sender.sendMessage(MessagesUtils.getColoredMessage(message));
+            sendConsoleCommandDeniedMessage(sender, prefix);
             return true;
         }
 
         Player player = (Player) sender;
         String lobbyPermission = plugin.getMainPermissionsManager().getLobby();
+        boolean lobbyPermissionDefault = plugin.getMainPermissionsManager().isLobbyDefault();
+        boolean playerInCooldown = plugin.playerLobbyInCooldown(player);
+        String bypassCooldownPermission = plugin.getMainPermissionsManager().getLobbyBypassCooldown();
+        boolean bypassCooldownDefault = plugin.getMainPermissionsManager().isLobbyBypassCooldownDefault();
+        boolean cooldownEnabled = plugin.getMainConfigManager().isLobbyCooldownEnabled();
 
-        if (plugin.getMainPermissionsManager().isLobbyDefault() || player.hasPermission(lobbyPermission)) {
-            teleportPlayer(player);
-        } else {
-            noPermission(player);
+        if (!permission(player, lobbyPermission, lobbyPermissionDefault)){
+            sendMessage(player, prefix, "NoPermission");
+            return true;
         }
-
+        if (cooldownEnabled){
+            if (cooldown(player, playerInCooldown, bypassCooldownPermission, bypassCooldownDefault)) {
+                teleportPlayer(player);
+                handleLobbyCooldown(player);
+                return true;
+            }
+            sendMessage(player, prefix, "InCooldown");
+            return true;
+        } else {
+            teleportPlayer(player);
+        }
         return true;
+    }
+
+
+    private void sendConsoleCommandDeniedMessage(CommandSender sender, String prefix) {
+        String message = prefix + plugin.getMainMessagesManager().getCommandDeniedConsole();
+        sender.sendMessage(MessagesUtils.getColoredMessage(message));
+    }
+
+    private boolean cooldown(Player player, boolean playerInCooldown, String bypassCooldownPermission, boolean bypassCooldownDefault) {
+        return ((!playerInCooldown || bypassCooldownDefault || player.hasPermission(bypassCooldownPermission)));
+    }
+
+    private boolean permission(Player player, String lobbyPermission, boolean lobbyPermissionDefault){
+        return (lobbyPermissionDefault || player.hasPermission(lobbyPermission));
+    }
+
+    private void sendMessage(Player player, String prefix, String reason) {
+        String message;
+        if (reason.equals("NoPermission")) {
+            message = prefix + plugin.getMainMessagesManager().getPermissionDenied();
+        } else if (reason.equals("InCooldown")) {
+            int remainingTime = CooldownLobby.getRemainingTime(player);
+            message = prefix + plugin.getMainMessagesManager().getLobbyInCooldown();
+            message = message.replace("%time%", String.valueOf(remainingTime));
+        } else {
+            return;
+        }
+        player.sendMessage(MessagesUtils.getColoredMessage(message));
     }
 
     public void teleportPlayer (CommandSender sender){
@@ -81,7 +125,7 @@ public class Lobby implements CommandExecutor {
 
         Location lobbyLocation = getLobbyLocation(locations);
         int delay = plugin.getMainConfigManager().getLobbyTeleportDelay();
-        DelayManagerLobby delayManager = new DelayManagerLobby(plugin, delay, player, lobbyLocation);
+        DelayLobby delayManager = new DelayLobby(plugin, delay, player, lobbyLocation);
 
         String delayBypassPermission = plugin.getMainPermissionsManager().getLobbyBypassDelay();
         boolean delayBypassDefault = plugin.getMainPermissionsManager().isLobbyBypassDelayDefault();
@@ -122,11 +166,12 @@ public class Lobby implements CommandExecutor {
         player.teleport(location);
         String message = prefix + plugin.getMainMessagesManager().getLobbyTeleported();
         player.sendMessage(MessagesUtils.getColoredMessage(message));
+        plugin.addLobbyCooldown(player);
     }
 
-    private void handleLobbyTeleportDelay(Player player, DelayManagerLobby delayManager, String prefix) {
+    private void handleLobbyTeleportDelay(Player player, DelayLobby delayManager, String prefix) {
         if (!plugin.playerInDelay(player)) {
-            plugin.addPlayer(player);
+            plugin.addPlayerTeleport(player);
             delayManager.DelayLobby();
             if (!Objects.equals(plugin.getMainConfigManager().getLobbyTeleportDelayMessageType(), "Chat")) {
                 int time = plugin.getMainConfigManager().getLobbyTeleportDelay();
@@ -203,5 +248,12 @@ public class Lobby implements CommandExecutor {
     public void noPermission (CommandSender sender){
         String prefix = plugin.getMainMessagesManager().getPrefix();
         sender.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getPermissionDenied()));
+    }
+
+    public void handleLobbyCooldown(Player player){
+        CooldownTimeProvider timeProvider = new LobbyCooldownProvider(plugin, player);
+        int time = plugin.getMainConfigManager().getLobbyCooldownTime();
+        CooldownLobby c = new CooldownLobby(plugin, timeProvider, time, player);
+        c.cooldownLobby();
     }
 }

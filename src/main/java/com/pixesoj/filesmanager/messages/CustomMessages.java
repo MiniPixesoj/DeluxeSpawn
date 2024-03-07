@@ -1,5 +1,4 @@
-package com.pixesoj.filesmanager;
-
+package com.pixesoj.filesmanager.messages;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -8,15 +7,17 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 
-public class CustomConfig {
+public class CustomMessages {
     private DeluxeSpawn plugin;
     private String fileName;
     private FileConfiguration fileConfiguration = null;
     private File file = null;
     private String folderName;
 
-    public CustomConfig(String fileName, String folderName, DeluxeSpawn plugin){
+    public CustomMessages(String fileName, String folderName, DeluxeSpawn plugin){
         this.fileName = fileName;
         this.folderName = folderName;
         this.plugin = plugin;
@@ -26,16 +27,16 @@ public class CustomConfig {
         return this.fileName;
     }
 
-    public void registerConfig(){
+    public void registerMessages(){
         if(folderName != null){
-            file = new File(plugin.getDataFolder() +File.separator + folderName,fileName);
+            file = new File(plugin.getDataFolder() + File.separator + folderName, fileName);
         }else{
             file = new File(plugin.getDataFolder(), fileName);
         }
 
         if(!file.exists()){
             if(folderName != null){
-                plugin.saveResource(folderName+File.separator+fileName, false);
+                plugin.saveResource(folderName + File.separator + fileName, false);
             }else{
                 plugin.saveResource(fileName, false);
             }
@@ -44,13 +45,12 @@ public class CustomConfig {
         fileConfiguration = new YamlConfiguration();
         try {
             fileConfiguration.load(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InvalidConfigurationException e) {
+        } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
         }
     }
-    public void saveConfig() {
+
+    public void saveMessages() {
         try {
             fileConfiguration.save(file);
         } catch (IOException e) {
@@ -58,28 +58,43 @@ public class CustomConfig {
         }
     }
 
-    public FileConfiguration getConfig() {
+    public FileConfiguration getMessages() {
         if (fileConfiguration == null) {
-            reloadConfig();
+            reloadMessages();
         }
         return fileConfiguration;
     }
 
-    public boolean reloadConfig() {
+    public boolean reloadMessages() {
         if (fileConfiguration == null) {
-            if(folderName != null){
-                file = new File(plugin.getDataFolder() +File.separator + folderName, fileName);
-            }else{
+            if (folderName != null) {
+                file = new File(plugin.getDataFolder() + File.separator + folderName, fileName);
+            } else {
                 file = new File(plugin.getDataFolder(), fileName);
             }
-
         }
+
+        if (!file.exists()) {
+            try (InputStream resource = plugin.getResource((folderName != null ? folderName + "/" : "") + fileName)) {
+                if (resource != null) {
+                    Files.copy(resource, file.toPath());
+                } else {
+                    return false;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            fileConfiguration = YamlConfiguration.loadConfiguration(file);
+            return true;
+        }
+
         fileConfiguration = YamlConfiguration.loadConfiguration(file);
-
-        if(file != null) {
-            YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(file);
-            fileConfiguration.setDefaults(defConfig);
-        }
         return true;
+    }
+
+    public File getFile() {
+        return file;
     }
 }

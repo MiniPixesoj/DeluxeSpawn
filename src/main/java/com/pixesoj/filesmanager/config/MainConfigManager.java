@@ -1,6 +1,7 @@
-package com.pixesoj.config;
+package com.pixesoj.filesmanager.config;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
+import com.pixesoj.filesmanager.config.CustomConfig;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.List;
@@ -92,6 +93,28 @@ public class MainConfigManager {
     public boolean TeleportOnJoinCommandsEnabled;
     public List<String> TeleportOnJoinCommandsPlayer;
     public List<String> TeleportOnJoinCommandsConsole;
+    public boolean LobbyCooldownEnabled;
+    public int LobbyCooldownTime;
+    public boolean SpawnCooldownEnabled;
+    public int SpawnCooldownTime;
+    public boolean LastLocationSave;
+    public boolean LastLocationTeleport;
+    public boolean LastLocationInTheSameWorld;
+    public List<String> LobbyLastLocationTeleportMode;
+    public List<String> LobbyLastLocationTeleportCommands;
+    public List<String> LobbyLastLocationIgnoredWorldsToSave;
+    public String LobbyLastLocationChangeWorldType;
+    public List<String> LobbyLastLocationChangeWorldsSpecified;
+    public boolean LobbyLastLocationChangeWorldsOneTime;
+    public boolean LobbyLastLocationCommandOneTime;
+    public boolean LobbyLastLocationSoundEnabled;
+    public String LobbyLastLocationSound;
+    public int LobbyLastLocationSoundVolume;
+    public int LobbyLastLocationSoundPitch;
+    public boolean LobbyLastLocationCommandsEnabled;
+    public List<String> LobbyLastLocationCommandsPlayer;
+    public List<String> LobbyLastLocationCommandsConsole;
+    public List<String> LastLocationSaveType;
 
 
     public void reloadConfig(){
@@ -191,6 +214,28 @@ public class MainConfigManager {
         TeleportOnJoinCommandsEnabled = config.getBoolean("TeleportOnJoin.Commands.Enabled");
         TeleportOnJoinCommandsPlayer = config.getStringList("TeleportOnJoin.Commands.Player");
         TeleportOnJoinCommandsConsole = config.getStringList("TeleportOnJoin.Commands.Console");
+        LobbyCooldownEnabled = config.getBoolean("LobbySettings.Cooldown.Enabled");
+        LobbyCooldownTime = config.getInt("LobbySettings.Cooldown.Time");
+        SpawnCooldownEnabled = config.getBoolean("SpawnSettings.Cooldown.Enabled");
+        SpawnCooldownTime = config.getInt("SpawnSettings.Cooldown.Time");
+        LastLocationSave = config.getBoolean("LobbySettings.LastLocation.SaveSettings.Enabled");
+        LastLocationTeleport = config.getBoolean("LobbySettings.LastLocation.TeleportSettings.Teleport");
+        LastLocationInTheSameWorld = config.getBoolean("LobbySettings.LastLocation.TeleportSettings.InTheSameWorld");
+        LobbyLastLocationTeleportMode = config.getStringList("LobbySettings.LastLocation.TeleportSettings.TeleportMode");
+        LobbyLastLocationTeleportCommands = config.getStringList("LobbySettings.LastLocation.TeleportSettings.TeleportCommands");
+        LobbyLastLocationIgnoredWorldsToSave = config.getStringList("LobbySettings.LastLocation.IgnoredWorldsSave");
+        LobbyLastLocationChangeWorldType = config.getString("LobbySettings.LastLocation.TeleportSettings.ChangeWorld.Type");
+        LobbyLastLocationChangeWorldsSpecified = config.getStringList("LobbySettings.LastLocation.TeleportSettings.ChangeWorld.SpecifiedWorlds");
+        LobbyLastLocationChangeWorldsOneTime = config.getBoolean("LobbySettings.LastLocation.TeleportSettings.ChangeWorld.OneTime");
+        LobbyLastLocationCommandOneTime = config.getBoolean("LobbySettings.LastLocation.TeleportSettings.Command.OneTime");
+        LobbyLastLocationSoundEnabled = config.getBoolean("LobbySettings.LastLocation.SoundSettings.Enabled");
+        LobbyLastLocationSound = config.getString("LobbySettings.LastLocation.SoundSettings.Sound");
+        LobbyLastLocationSoundVolume = config.getInt("LobbySettings.LastLocation.SoundSettings.Volume");
+        LobbyLastLocationSoundPitch = config.getInt("LobbySettings.LastLocation.SoundSettings.Pitch");
+        LobbyLastLocationCommandsEnabled = config.getBoolean("LobbySettings.LastLocation.Commands.Enabled");
+        LobbyLastLocationCommandsPlayer = config.getStringList("LobbySettings.LastLocation.Commands.Player");
+        LobbyLastLocationCommandsConsole = config.getStringList("LobbySettings.LastLocation.Commands.Console");
+        LastLocationSaveType = config.getStringList("LobbySettings.LastLocation.SaveSettings.SaveType");
     }
 
 
@@ -528,5 +573,93 @@ public class MainConfigManager {
 
     public List<String> getTeleportOnJoinCommandsConsole() {
         return TeleportOnJoinCommandsConsole;
+    }
+
+    public boolean isLobbyCooldownEnabled() {
+        return LobbyCooldownEnabled;
+    }
+
+    public int getLobbyCooldownTime() {
+        return LobbyCooldownTime;
+    }
+
+    public boolean isSpawnCooldownEnabled() {
+        return SpawnCooldownEnabled;
+    }
+
+    public int getSpawnCooldownTime() {
+        return SpawnCooldownTime;
+    }
+
+    public boolean isLastLocationSave() {
+        return LastLocationSave;
+    }
+
+    public boolean isLastLocationTeleport() {
+        return LastLocationTeleport;
+    }
+
+    public boolean isLastLocationInTheSameWorld() {
+        return LastLocationInTheSameWorld;
+    }
+
+    public List<String> getLobbyLastLocationTeleportMode() {
+        return LobbyLastLocationTeleportMode;
+    }
+
+    public List<String> getLobbyLastLocationTeleportCommands() {
+        return LobbyLastLocationTeleportCommands;
+    }
+
+    public List<String> getLobbyLastLocationIgnoredWorldsToSave() {
+        return LobbyLastLocationIgnoredWorldsToSave;
+    }
+
+    public String getLobbyLastLocationChangeWorldType() {
+        return LobbyLastLocationChangeWorldType;
+    }
+
+    public List<String> getLobbyLastLocationChangeWorldsSpecified() {
+        return LobbyLastLocationChangeWorldsSpecified;
+    }
+
+    public boolean isLobbyLastLocationChangeWorldsOneTime() {
+        return LobbyLastLocationChangeWorldsOneTime;
+    }
+
+    public boolean isLobbyLastLocationCommandOneTime() {
+        return LobbyLastLocationCommandOneTime;
+    }
+
+    public boolean isLobbyLastLocationSoundEnabled() {
+        return LobbyLastLocationSoundEnabled;
+    }
+
+    public String getLobbyLastLocationSound() {
+        return LobbyLastLocationSound;
+    }
+
+    public int getLobbyLastLocationSoundVolume() {
+        return LobbyLastLocationSoundVolume;
+    }
+
+    public int getLobbyLastLocationSoundPitch() {
+        return LobbyLastLocationSoundPitch;
+    }
+
+    public boolean isLobbyLastLocationCommandsEnabled() {
+        return LobbyLastLocationCommandsEnabled;
+    }
+
+    public List<String> getLobbyLastLocationCommandsPlayer() {
+        return LobbyLastLocationCommandsPlayer;
+    }
+
+    public List<String> getLobbyLastLocationCommandsConsole() {
+        return LobbyLastLocationCommandsConsole;
+    }
+
+    public List<String> getLastLocationSaveType() {
+        return LastLocationSaveType;
     }
 }

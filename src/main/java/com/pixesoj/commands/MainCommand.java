@@ -1,16 +1,17 @@
 package com.pixesoj.commands;
 
+import com.pixesoj.commands.tabcompleter.MainCommandTabCompleter;
 import com.pixesoj.deluxespawn.DeluxeSpawn;
 import com.pixesoj.utils.MessagesUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,7 +22,7 @@ public class MainCommand implements CommandExecutor {
     public MainCommand(DeluxeSpawn deluxeSpawn) {
         this.plugin = deluxeSpawn;
         plugin.getCommand("deluxespawn").setExecutor(this);
-        plugin.getCommand("deluxespawn").setTabCompleter(new MainCommandTabCompleter());
+        plugin.getCommand("deluxespawn").setTabCompleter(new MainCommandTabCompleter(deluxeSpawn));
     }
 
     @Override
@@ -93,6 +94,8 @@ public class MainCommand implements CommandExecutor {
                 boolean permissionDefault = plugin.getMainPermissionsManager().isLastLocationDefault();
                 if (permissionDefault || player.hasPermission(permission)){
                     getLastTeleportLocation(sender, args);
+                    soundLastLocation(sender);
+                    executeCommandsLastLocation(sender);
                 } else {
                     noPermission(sender);
                 }
@@ -117,7 +120,7 @@ public class MainCommand implements CommandExecutor {
 
     public void reload(CommandSender sender, String[] args) {
         if (args.length == 1) {
-            sender.sendMessage(MessagesUtils.getColoredMessage(plugin.getMainMessagesManager().getPrefix() + plugin.getMainMessagesManager().getCommandInvalidArgument() + " &a/deluxespawn reload <config|messages|all>"));
+            sender.sendMessage(MessagesUtils.getColoredMessage(plugin.getMainMessagesManager().getPrefix() + plugin.getMainMessagesManager().getCommandInvalidArgument() + " &a/deluxespawn reload &8<&aconfig&8|&amessages&8|&apermissions&8|&aall&8>"));
             return;
         }
         if (args[1].equalsIgnoreCase("config")) {
@@ -211,25 +214,65 @@ public class MainCommand implements CommandExecutor {
         }
         teleportLastLocation(sender, args);
     }
-}
 
+    public void soundLastLocation(CommandSender sender) {
+        Player player = (Player) sender;
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+        boolean enabled = plugin.getMainConfigManager().isLobbyLastLocationSoundEnabled();
 
-class MainCommandTabCompleter implements org.bukkit.command.TabCompleter {
-    @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        List<String> completions = new ArrayList<>();
-
-        if (args.length == 1) {
-            completions.add("reload");
-            completions.add("version");
-            completions.add("help");
-            completions.add("lastlocation");
-        } else if (args.length == 2 && args[0].equalsIgnoreCase("reload")) {
-            completions.add("all");
-            completions.add("config");
-            completions.add("messages");
-            completions.add("permissions");
+        if (!enabled) {
+            return;
         }
-        return completions;
+
+        String soundName = plugin.getMainConfigManager().getLobbyTeleportSound();
+
+        if (soundName == null) {
+            handleNullSound(sender, prefix);
+            return;
+        }
+
+        try {
+            Sound sound = Sound.valueOf(soundName);
+            float volume = plugin.getMainConfigManager().getLobbyLastLocationSoundVolume();
+            float pitch = plugin.getMainConfigManager().getLobbyLastLocationSoundPitch();
+
+            player.playSound(player.getLocation(), sound, volume, pitch);
+        } catch (IllegalArgumentException e) {
+            handleInvalidSound(player, prefix, soundName);
+        }
+    }
+
+    private void handleNullSound(CommandSender sender, String prefix) {
+        String permission = plugin.getMainPermissionsManager().getNotify();
+        if (plugin.getMainPermissionsManager().isNotifyDefault() || sender.hasPermission(permission)) {
+            String message = prefix + plugin.getMainMessagesManager().getLastLocationNullSound();
+            sender.sendMessage(MessagesUtils.getColoredMessage(message));
+        }
+    }
+
+    private void handleInvalidSound(Player player, String prefix, String soundName) {
+        String message = prefix + plugin.getMainMessagesManager().getLastLocationInvalidSound().replace("%sound%", soundName);
+        player.sendMessage(message);
+    }
+
+    public void executeCommandsLastLocation(CommandSender sender) {
+        if (plugin.getMainConfigManager().isLobbyLastLocationCommandsEnabled()) {
+
+            List<String> playerCommands = plugin.getMainConfigManager().getLobbyLastLocationCommandsPlayer();
+            List<String> consoleCommands = plugin.getMainConfigManager().getLobbyLastLocationCommandsConsole();
+
+            for (String command : playerCommands) {
+                String replacedCommand = command.replace("%player%", sender.getName());
+                Bukkit.dispatchCommand(sender, replacedCommand);
+            }
+
+            CommandSender consoleSender = Bukkit.getConsoleSender();
+            for (String command : consoleCommands) {
+                String replacedCommand = command.replace("%player%", sender.getName());
+                Bukkit.dispatchCommand(consoleSender, replacedCommand);
+            }
+        }
     }
 }
+
+

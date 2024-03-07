@@ -1,4 +1,4 @@
-package com.pixesoj.config;
+package com.pixesoj.filesmanager.config;
 
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;

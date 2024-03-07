@@ -1,4 +1,4 @@
-package com.pixesoj.managers;
+package com.pixesoj.managers.playerdata;
 
 import org.bukkit.configuration.file.FileConfiguration;
 

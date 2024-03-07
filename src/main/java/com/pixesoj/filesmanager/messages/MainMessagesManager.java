@@ -1,6 +1,7 @@
-package com.pixesoj.filesmanager;
+package com.pixesoj.filesmanager.messages;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
+import com.pixesoj.filesmanager.messages.CustomMessages;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.List;
@@ -68,6 +69,8 @@ public class MainMessagesManager {
     private String LastLocationNotFound;
     private String LastLocationTeleport;
     private String LastLocationOneTime;
+    private String LastLocationNullSound;
+    private String LastLocationInvalidSound;
 
     public void reloadMessages(){
         messageFile.reloadMessages();
@@ -153,6 +156,8 @@ public class MainMessagesManager {
         LastLocationNotFound = messages.getString("LastLocationNotFound");
         LastLocationTeleport = messages.getString("LastLocationTeleport");
         LastLocationOneTime = messages.getString("LastLocationOneTime");
+        LastLocationNullSound = messages.getString("LastLocationNullSound");
+        LastLocationInvalidSound = messages.getString("LastLocationInvalidSound");
     }
 
     public String getPrefix() {
@@ -385,5 +390,13 @@ public class MainMessagesManager {
 
     public String getLastLocationOneTime() {
         return LastLocationOneTime;
+    }
+
+    public String getLastLocationNullSound() {
+        return LastLocationNullSound;
+    }
+
+    public String getLastLocationInvalidSound() {
+        return LastLocationInvalidSound;
     }
 }

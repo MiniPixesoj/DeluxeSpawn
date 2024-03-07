@@ -1,4 +1,4 @@
-package com.pixesoj.managers;
+package com.pixesoj.managers.delays;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
 import com.pixesoj.utils.MessagesUtils;
@@ -14,14 +14,14 @@ import org.bukkit.scheduler.BukkitScheduler;
 import java.util.List;
 import java.util.Objects;
 
-public class DelayManagerSpawn {
+public class DelaySpawn {
     int TaskID;
     private DeluxeSpawn plugin;
     int time;
     private Player player;
     private Location l;
 
-    public DelayManagerSpawn(DeluxeSpawn plugin, int time, Player player, Location l){
+    public DelaySpawn(DeluxeSpawn plugin, int time, Player player, Location l){
         this.plugin = plugin;
         this.time = time;
         this.player = player;
@@ -51,7 +51,7 @@ public class DelayManagerSpawn {
                             player.getLocation().getBlockZ() != initialZ)) {
                         player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getSpawnMovementCanceledTeleport()));
                         Bukkit.getScheduler().cancelTask(TaskID);
-                        plugin.removePlayer(player);
+                        plugin.removePlayerTeleport(player);
                         return;
                     }
                     if (Objects.equals(plugin.getMainConfigManager().getSpawnTeleportDelayMessageType(), "Chat")){
@@ -70,10 +70,11 @@ public class DelayManagerSpawn {
         String message = prefix + plugin.getMainMessagesManager().getSpawnTeleported();
         player.sendMessage(MessagesUtils.getColoredMessage(message));
         spawnExecuteCommands(player);
-        plugin.removePlayer(player);
+        plugin.removePlayerTeleport(player);
         BlindnessTeleport(player);
         spawnSound(player);
         player.teleport(l);
+        plugin.addSpawnCooldown(player);
     }
 
     public void BlindnessTeleport (CommandSender sender){

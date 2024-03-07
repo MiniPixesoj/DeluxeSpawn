@@ -15,7 +15,7 @@ CommandReloadMessages: "&aメッセージファイルが正常にリロードさ
 CommandReloadAll: "&aすべての設定ファイルがバージョン &aV%version% でリロードされました"
 CommandInvalidArgument: "&c無効な引数。次を使用してください:"
 CommandVersion: "&fDeluxeSpawnのバージョンは &aV%version% &8(最新バージョンは &a%last_version%&8)"
-CommandUsage: "&7/help &7でヘルプを表示します."
+CommandUsage: "&a/ds help &7でヘルプを表示します."
 CommandDeniedConsole: "&cこのコマンドはプレイヤーのみ使用できます."
 CommandSetSpawnSuccessfully: "&a世界 &b%world% のスポーン地点が正常に設定されました."
 CommandSetLobbySuccessfully: "&a世界 &b%world% のロビーが正常に設定されました."

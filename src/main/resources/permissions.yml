@@ -1,6 +1,6 @@
 ##====================================##
 ## DeluxeSpawn plugin by Pixesoj.     ##
-## Version: 3.2.0                     ##
+## Version: 3.3.0                     ##
 ## Make sure to leave your            ##
 ## thoughts on a review.              ##
 ## www.spigotmc.org/resources/111403/ ##
@@ -26,7 +26,12 @@ SetLobby:
 
 # Allows the player to ignore the lobby teleport delay
 LobbyBypassDelay:
-  Permission: deluxespawn.bypass.lobby
+  Permission: deluxespawn.bypass.delay.lobby
+  Default: false
+
+# With this permission you can ignore the cooldown between /lobby commands
+LobbyBypassCooldown:
+  Permission: deluxespawn.bypass.cooldown.lobby
   Default: false
 
 # Use /spawn command to go to spawn
@@ -41,7 +46,12 @@ SetSpawn:
 
 # Allows the player to ignore the spawn teleport delay
 SpawnBypassDelay:
-  Permission: deluxespawn.bypass.spawn
+  Permission: deluxespawn.bypass.delay.spawn
+  Default: false
+
+# With this permission you can ignore the cooldown between /spawn commands
+SpawnBypassCooldown:
+  Permission: deluxespawn.bypass.cooldown.spawn
   Default: false
 
 # Use /spawn <world> command to go to the spawn of the specified world

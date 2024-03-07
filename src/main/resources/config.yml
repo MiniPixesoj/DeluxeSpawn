@@ -1,6 +1,6 @@
 ##====================================##
 ## DeluxeSpawn plugin by Pixesoj.     ##
-## Version: 3.2.0                     ##
+## Version: 3.3.0                     ##
 ## Make sure to leave your            ##
 ## thoughts on a review.              ##
 ## www.spigotmc.org/resources/111403/ ##
@@ -8,7 +8,7 @@
 
 #================================================================================#
 #                                                                                #
-#                                 GLOBAL OPTIONS                                 #
+#                             GLOBAL PLUGIN OPTIONS                              #
 #                                                                                #
 #================================================================================#
 
@@ -34,7 +34,7 @@ Lang: en
 
 #================================================================================#
 #                                                                                #
-#                               SPAWN/LOBBY OPTIONS                              #
+#                                  SPAWN OPTIONS                                 #
 #                                                                                #
 #================================================================================#
 
@@ -96,6 +96,12 @@ SpawnSettings:
       - give %player% dirt 1
       - eco take %player% 100
 
+#================================================================================#
+#                                                                                #
+#                                  LOBBY OPTIONS                                 #
+#                                                                                #
+#================================================================================#
+
 # Lobby settings
 LobbySettings:
   # Sets whether /lobby and /setlobby will be enabled
@@ -105,9 +111,20 @@ LobbySettings:
   # Useful for when you want to simulate a network on a single server
   # For this to work TeleportOnJoin must be enabled and DestinationPlace must be Lobby
   LastLocation:
-    # Select whether the player's last location will be saved
-    # Basically activate/deactivate this function
-    Save: false
+
+    # Location saving settings
+    SaveSettings:
+      # Select whether the player's last location will be saved
+      # Basically activate/deactivate this function
+      Enabled: false
+      # When will the player's last location be saved?
+      # Available options
+      # OnPlayerQuit: This is when the player leaves the server on their own
+      # OnServerStop: this is when you turn off the server (from the console)
+      SaveType:
+        - OnServerStop
+        - OnPlayerQuit
+
     # Enter this list the worlds where when the player disconnects then that location will not be saved
     # Useful for when you have a Lobby world and a survival world and if the player previously disconnected
     # in survival and then disconnected in the lobby then their location will still be saved in survival
@@ -119,12 +136,10 @@ LobbySettings:
     TeleportSettings:
       # Will the player be teleported to the last saved location?
       # Teleport: true
-      # When will the player teleport? Available options: OnChangeWorld, OnCommand
-
-      # OnChangeWorld: The player will be teleported when changing worlds, either any world or the specified worlds
-
+      # When will the player teleport? Available options:
+      # OnChangeWorld: The player will be teleported when changing worlds, either any world or the specified worlds...
       # OnCommand: By selecting this option the player can teleport to his last location with
-      # the command /deluxespawn lastlocation
+      # ...the command /deluxespawn lastlocation
       TeleportMode:
         - OnCommand
 
@@ -150,6 +165,29 @@ LobbySettings:
         # Select if the command will only work once, if you select true and the player executes
         # the command more than once it will no longer work until they log in again
         OneTime: true
+
+      # Sound settings
+    SoundSettings:
+      # Whether or not a sound will be sent when teleporting the player to their last location
+      Enabled: false
+      # Sound that will be sent to the player
+      # You can find a list of sounds at: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
+      Sound: ENTITY_ENDERMAN_TELEPORT
+      # Sound volume and tone
+      Volume: 1
+      Pitch: 1
+
+    # Commands that will be executed when the player goes to their last location
+    Commands:
+      # Enable or disable this option
+      Enabled: false
+      # Run commands from the player or from the console, you can use the %player% variable
+      # Run commands from the player
+      Player: [ ]
+      # run commands from the console
+      Console:
+        - give %player% dirt 1
+        - eco take %player% 100
 
   # Teleport delay settings
   TeleportDelay:
@@ -196,6 +234,12 @@ LobbySettings:
     Console:
       - give %player% dirt 1
       - eco take %player% 100
+
+#================================================================================#
+#                                                                                #
+#                                 ON JOIN OPTIONS                                #
+#                                                                                #
+#================================================================================#
 
 # Teleport settings when joining the server
 TeleportOnJoin:
@@ -275,6 +319,12 @@ TeleportOnJoin:
         - give %player% dirt 1
         - eco take %player% 100
 
+#================================================================================#
+#                                                                                #
+#                                 ON VOID OPTIONS                                #
+#                                                                                #
+#================================================================================#
+
 # Teleport adjustments when falling into the void
 # Unfortunately I couldn't solve the fact that the player receives fall damage
 # (if you know how to solve it, contact me)
@@ -326,6 +376,12 @@ TeleportOnVoid:
       - give %player% dirt 1
       - eco take %player% 100
 
+#================================================================================#
+#                                                                                #
+#                               ON RESPAWN OPTIONS                               #
+#                                                                                #
+#================================================================================#
+
 # Teleport adjustments when respawning after dying
 TeleportOnRespawn:
   # If this feature will be enabled?
@@ -340,6 +396,7 @@ TeleportOnRespawn:
   Blindness: false
   # How many seconds will the effect last?
   BlindnessTime: 3
+
   # Adjustments to where the player will go when respawning
   DestinationPlaceSettings:
     # Where will the player be teleported to?

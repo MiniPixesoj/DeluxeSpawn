@@ -1,8 +1,14 @@
 package com.pixesoj.commands;
 
+import com.pixesoj.commands.tabcompleter.SpawnTabCompleter;
 import com.pixesoj.deluxespawn.DeluxeSpawn;
-import com.pixesoj.managers.DelayManagerSpawn;
-import com.pixesoj.managers.DelayManagerSpawnWorld;
+import com.pixesoj.managers.cooldown.CooldownLobby;
+import com.pixesoj.managers.cooldown.CooldownSpawn;
+import com.pixesoj.managers.cooldown.LobbyCooldownProvider;
+import com.pixesoj.managers.cooldown.SpawnCooldownProvider;
+import com.pixesoj.managers.delays.DelaySpawn;
+import com.pixesoj.managers.delays.DelaySpawnWorld;
+import com.pixesoj.model.internal.CooldownTimeProvider;
 import com.pixesoj.utils.MessagesUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -22,30 +28,73 @@ public class Spawn implements CommandExecutor {
 
     public Spawn(DeluxeSpawn deluxeSpawn) {
         this.plugin = deluxeSpawn;
+        plugin.getCommand("spawn").setExecutor(this);
+        plugin.getCommand("spawn").setTabCompleter(new SpawnTabCompleter(deluxeSpawn));
     }
 
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+
         if (!(sender instanceof Player)) {
-            String prefix = plugin.getMainMessagesManager().getPrefix();
-            String message = prefix + plugin.getMainMessagesManager().getCommandDeniedConsole();
-            sender.sendMessage(MessagesUtils.getColoredMessage(message));
+            sendConsoleCommandDeniedMessage(sender, prefix);
             return true;
         }
 
         Player player = (Player) sender;
-        String permission = plugin.getMainPermissionsManager().getSpawn();
+        String spawnPermission = plugin.getMainPermissionsManager().getSpawn();
+        boolean spawnPermissionDefault = plugin.getMainPermissionsManager().isSpawnDefault();
+        boolean playerInCooldown = plugin.playerSpawnInCooldown(player);
+        String bypassCooldownPermission = plugin.getMainPermissionsManager().getSpawnBypassCooldown();
+        boolean bypassCooldownDefault = plugin.getMainPermissionsManager().isSpawnBypassCooldownDefault();
+        boolean cooldownEnabled = plugin.getMainConfigManager().isSpawnCooldownEnabled();
 
-        if (plugin.getMainPermissionsManager().isSpawnDefault() || player.hasPermission(permission)) {
-            teleportPlayer(sender, args);
-        } else {
-            noPermission(sender);
+        if (!permission(player, spawnPermission, spawnPermissionDefault)){
+            sendMessage(player, prefix, "NoPermission");
+            return true;
         }
-
+        if (cooldownEnabled){
+            if (cooldown(player, playerInCooldown, bypassCooldownPermission, bypassCooldownDefault)) {
+                teleportPlayer(player, args);
+                handleSpawnCooldown(player);
+                return true;
+            }
+            sendMessage(player, prefix, "InCooldown");
+            return true;
+        } else {
+            teleportPlayer(player, args);
+        }
         return true;
     }
 
     public void teleportPlayer (CommandSender sender, String[] args){
         getTeleport(sender, args);
+    }
+
+    private void sendConsoleCommandDeniedMessage(CommandSender sender, String prefix) {
+        String message = prefix + plugin.getMainMessagesManager().getCommandDeniedConsole();
+        sender.sendMessage(MessagesUtils.getColoredMessage(message));
+    }
+
+    private boolean cooldown(Player player, boolean playerInCooldown, String bypassCooldownPermission, boolean bypassCooldownDefault) {
+        return ((!playerInCooldown || bypassCooldownDefault || player.hasPermission(bypassCooldownPermission)));
+    }
+
+    private boolean permission(Player player, String spawnPermission, boolean spawnPermissionDefault){
+        return (spawnPermissionDefault || player.hasPermission(spawnPermission));
+    }
+
+    private void sendMessage(Player player, String prefix, String reason) {
+        String message;
+        if (reason.equals("NoPermission")) {
+            message = prefix + plugin.getMainMessagesManager().getPermissionDenied();
+        } else if (reason.equals("InCooldown")) {
+            int remainingTime = CooldownSpawn.getRemainingTime(player);
+            message = prefix + plugin.getMainMessagesManager().getSpawnInCooldown();
+            message = message.replace("%time%", String.valueOf(remainingTime));
+        } else {
+            return;
+        }
+        player.sendMessage(MessagesUtils.getColoredMessage(message));
     }
 
     public void getTeleport(CommandSender sender, String[] args) {
@@ -116,13 +165,14 @@ public class Spawn implements CommandExecutor {
 
         Location spawnLocation = new Location(Bukkit.getWorld(worldName), x, y, z, yaw, pitch);
         int delay = plugin.getMainConfigManager().getSpawnTeleportDelay();
-        DelayManagerSpawn d = new DelayManagerSpawn(plugin, delay, player, spawnLocation);
+        DelaySpawn d = new DelaySpawn(plugin, delay, player, spawnLocation);
 
         String delayBypassPermission = plugin.getMainPermissionsManager().getSpawnBypassDelay();
         boolean delayBypassDefault = plugin.getMainPermissionsManager().isSpawnBypassDelayDefault();
 
         if (!plugin.getMainConfigManager().isSpawnTeleportDelayEnabled()  || delayBypassDefault || player.hasPermission(delayBypassPermission)) {
             player.teleport(spawnLocation);
+            plugin.addSpawnCooldown(player);
             sound(sender);
             executeCommands(sender);
             player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getSpawnTeleported()));
@@ -130,7 +180,7 @@ public class Spawn implements CommandExecutor {
         }
 
         if (!plugin.playerInDelay(player)) {
-            plugin.addPlayer(player);
+            plugin.addPlayerTeleport(player);
             d.DelaySpawnGlobal();
             sendMessage(sender);
             return;
@@ -167,13 +217,14 @@ public class Spawn implements CommandExecutor {
 
         Location spawnLocation = new Location(player.getWorld(), x, y, z, yaw, pitch);
         int delay = plugin.getMainConfigManager().getSpawnTeleportDelay();
-        DelayManagerSpawn d = new DelayManagerSpawn(plugin, delay, player, spawnLocation);
+        DelaySpawn d = new DelaySpawn(plugin, delay, player, spawnLocation);
 
         String delayBypassPermission = plugin.getMainPermissionsManager().getSpawnBypassDelay();
         boolean delayBypassDefault = plugin.getMainPermissionsManager().isSpawnBypassDelayDefault();
 
         if (!plugin.getMainConfigManager().isSpawnTeleportDelayEnabled()  || delayBypassDefault || player.hasPermission(delayBypassPermission)) {
             player.teleport(spawnLocation);
+            plugin.addSpawnCooldown(player);
             sound(sender);
             executeCommands(sender);
             player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getSpawnTeleported()));
@@ -181,7 +232,7 @@ public class Spawn implements CommandExecutor {
         }
 
         if (!plugin.playerInDelay(player)) {
-            plugin.addPlayer(player);
+            plugin.addPlayerTeleport(player);
             d.DelaySpawnGlobal();
             sendMessage(sender);
             return;
@@ -213,13 +264,14 @@ public class Spawn implements CommandExecutor {
 
         Location spawnLocation = new Location(targetWorld, x, y, z, yaw, pitch);
         int delay = plugin.getMainConfigManager().getSpawnTeleportDelay();
-        DelayManagerSpawnWorld d = new DelayManagerSpawnWorld(plugin, delay, player, spawnLocation);
+        DelaySpawnWorld d = new DelaySpawnWorld(plugin, delay, player, spawnLocation);
 
         String delayBypassPermission = plugin.getMainPermissionsManager().getSpawnBypassDelay();
         boolean delayBypassDefault = plugin.getMainPermissionsManager().isSpawnBypassDelayDefault();
 
         if (!plugin.getMainConfigManager().isSpawnTeleportDelayEnabled()  || delayBypassDefault || player.hasPermission(delayBypassPermission)) {
             player.teleport(spawnLocation);
+            plugin.addSpawnCooldown(player);
             sound(sender);
             executeCommands(sender);
             String teleportMessage = prefix + plugin.getMainMessagesManager().getSpawnOtherTeleported().replace("%world%", aliasName);
@@ -228,7 +280,7 @@ public class Spawn implements CommandExecutor {
         }
 
         if (!plugin.playerInDelay(player)) {
-            plugin.addPlayer(player);
+            plugin.addPlayerTeleport(player);
             d.DelaySpawnGlobal();
             sendMessage(sender);
             return;
@@ -316,4 +368,12 @@ public class Spawn implements CommandExecutor {
         String prefix = plugin.getMainMessagesManager().getPrefix();
         sender.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getPermissionDenied()));
     }
+
+    public void handleSpawnCooldown(Player player){
+        CooldownTimeProvider timeProvider = new SpawnCooldownProvider(plugin, player);
+        int time = plugin.getMainConfigManager().getSpawnCooldownTime();
+        CooldownSpawn c = new CooldownSpawn(plugin, timeProvider, time, player);
+        c.cooldownSpawn();
+    }
 }
+

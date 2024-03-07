@@ -15,7 +15,7 @@ CommandReloadMessages: "&aLe fichier de messages a été rechargé avec succès 
 CommandReloadAll: "&aTous les fichiers de configuration ont été rechargés en version &aV%version%."
 CommandInvalidArgument: "&cArgument(s) invalide(s). Utilisez :"
 CommandVersion: "&fLa version de DeluxeSpawn est &aV%version% &8(&7La dernière version est &a%last_version%&8)"
-CommandUsage: "&7Utilisez &a/help &7pour obtenir de l'aide."
+CommandUsage: "&7Utilisez &a/ds help &7pour obtenir de l'aide."
 CommandDeniedConsole: "&cCette commande ne peut être utilisée que par un joueur."
 CommandSetSpawnSuccessfully: "&aLe point de départ pour le monde &b%world% &aa été défini avec succès."
 CommandSetLobbySuccessfully: "&aLe lobby a été défini avec succès pour le monde &b%world%."

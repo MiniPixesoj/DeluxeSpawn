@@ -15,7 +15,7 @@ CommandReloadMessages: "&aसंदेश फ़ाइल सफलता पू
 CommandReloadAll: "&aसभी कॉन्फ़िगरेशन फ़ाइलें संस्करण &aV%version%&8 में पुनः लोड हो गईं हैं।"
 CommandInvalidArgument: "&cअमान्य तर्क. इस्तेमाल करें:"
 CommandVersion: "&fDeluxeSpawn का संस्करण है &aV%version% &8(&7आख़िरी संस्करण है &a%last_version%&8)"
-CommandUsage: "&7मदद के लिए &a/help &7इस्तेमाल करें।"
+CommandUsage: "&7मदद के लिए &a/ds help &7इस्तेमाल करें।"
 CommandDeniedConsole: "&cयह कमांड केवल खिलाड़ी द्वारा इस्तेमाल किया जा सकता है।"
 CommandSetSpawnSuccessfully: "&aविश्व &b%world% &cका शुरुआती स्थान सफलता पूर्वक सेट किया गया।"
 CommandSetLobbySuccessfully: "&aलॉबी &b%world% &cके लिए सफलता पूर्वक सेट की गई है।"

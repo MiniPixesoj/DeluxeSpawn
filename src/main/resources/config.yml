@@ -432,4 +432,10 @@ TeleportOnRespawn:
     # Run commands from the player
     Player: [ ]
     # run commands from the console
+<<<<<<< HEAD
     Console: [ ]
+=======
+    Console:
+      - give %player% dirt 1
+      - eco take %player% 100
+>>>>>>> 79d39cb862547375b8346a0db6bc8284515570fd

@@ -11,13 +11,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.List;
 import java.util.UUID;
 
 public class LastLocation implements Listener {
-    private DeluxeSpawn plugin;
+    private final DeluxeSpawn plugin;
 
     public LastLocation(DeluxeSpawn plugin) {
         this.plugin = plugin;
@@ -33,7 +32,9 @@ public class LastLocation implements Listener {
                 UUID uuid = player.getUniqueId();
                 FileConfiguration playerConfig = plugin.getPlayerDataManager().getPlayerConfig(uuid);
                 String OneTime = playerConfig.getString("LastLocation.OneTime");
-                if (OneTime.equals("yes")){
+                boolean inOneTime = plugin.playerLastLocationOneTime(player);
+                assert OneTime != null;
+                if (inOneTime){
                     return;
                 }
                     teleportPlayer(player, event);
@@ -71,9 +72,10 @@ public class LastLocation implements Listener {
             float yaw = (float) playerConfig.getDouble("LastLocation.yaw");
             float pitch = (float) playerConfig.getDouble("LastLocation.pitch");
 
+            assert worldName != null;
             Location lastLocation = new Location(Bukkit.getWorld(worldName), x, y, z, yaw, pitch);
             player.teleport(lastLocation);
-            plugin.getPlayerDataManager().addLastLocationTeleportOneTime(player);
+            plugin.addLastLocationOneTime(player);
             soundLastLocation(player);
             executeCommands(player);
         }

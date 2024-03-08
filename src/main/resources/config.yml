@@ -1,6 +1,6 @@
 ##====================================##
 ## DeluxeSpawn plugin by Pixesoj.     ##
-## Version: 3.3.0                     ##
+## Version: 3.4.0                     ##
 ## Make sure to leave your            ##
 ## thoughts on a review.              ##
 ## www.spigotmc.org/resources/111403/ ##
@@ -23,7 +23,6 @@ CheckUpdate: true
 # en - English
 # es - Spanish
 # zh - Chinese (Mandarin)
-# hi - Hindi
 # ar - Arabic
 # pt - Portuguese
 # ru - Russian
@@ -31,6 +30,11 @@ CheckUpdate: true
 # de - German
 # ja - Japanese
 Lang: en
+
+# Here you can change/replace some messages
+ReplacedMessages:
+  # This is shown when the player is teleported from the console
+  Console: Console
 
 #================================================================================#
 #                                                                                #
@@ -67,6 +71,7 @@ SpawnSettings:
     MessageType: []
 
   # Cooldown settings between each use of the /spawn command
+  # Restart the server if the counter reaches 0 and nothing happens from there
   Cooldown:
     # Will it be enabled?
     Enabled: false
@@ -93,8 +98,7 @@ SpawnSettings:
     Player: []
     # run commands from the console
     Console:
-      - give %player% dirt 1
-      - eco take %player% 100
+      - eco take %player% 500
 
 #================================================================================#
 #                                                                                #
@@ -137,8 +141,8 @@ LobbySettings:
       # Will the player be teleported to the last saved location?
       # Teleport: true
       # When will the player teleport? Available options:
-      # OnChangeWorld: The player will be teleported when changing worlds, either any world or the specified worlds...
-      # OnCommand: By selecting this option the player can teleport to his last location with
+      # OnChangeWorld: The player will be teleported when changing worlds, either any world or the specified worlds
+      # OnCommand: By selecting this option the player can teleport to his last location with...
       # ...the command /deluxespawn lastlocation
       TeleportMode:
         - OnCommand
@@ -165,6 +169,14 @@ LobbySettings:
         # Select if the command will only work once, if you select true and the player executes
         # the command more than once it will no longer work until they log in again
         OneTime: true
+        # Where the player will be sent if a location does not exist (usually if it is the first time entering)
+        # Available options:
+        # Spawn: Send the user to spawn
+        # SendMessage: Sends the user a message that a last location does not exist
+        # DoNothing: Do nothing
+        LocationNotExist: SendMessage
+        # If in LocationNotExist you selected Spawn and SpawnByWorld is true, which world should the player go to spawn?
+        Spawn: world
 
       # Sound settings
     SoundSettings:
@@ -185,9 +197,7 @@ LobbySettings:
       # Run commands from the player
       Player: [ ]
       # run commands from the console
-      Console:
-        - give %player% dirt 1
-        - eco take %player% 100
+      Console: [ ]
 
   # Teleport delay settings
   TeleportDelay:
@@ -206,6 +216,7 @@ LobbySettings:
     MessageType: []
 
   # Cooldown settings between each use of the /lobby command
+  # Restart the server if the counter reaches 0 and nothing happens from there
   Cooldown:
     # Will it be enabled?
     Enabled: false
@@ -232,8 +243,7 @@ LobbySettings:
     Player: [ ]
     # run commands from the console
     Console:
-      - give %player% dirt 1
-      - eco take %player% 100
+      - eco take %player% 500
 
 #================================================================================#
 #                                                                                #
@@ -275,9 +285,7 @@ TeleportOnJoin:
     # Run commands from the player
     Player: [ ]
     # run commands from the console
-    Console:
-      - give %player% dirt 1
-      - eco take %player% 100
+    Console: [ ]
 
   # Teleport adjustments for players joining the server for the first time
   OnlyFirstJoin:
@@ -316,8 +324,7 @@ TeleportOnJoin:
       Player: [ ]
       # run commands from the console
       Console:
-        - give %player% dirt 1
-        - eco take %player% 100
+        - give %player% diamond 1
 
 #================================================================================#
 #                                                                                #
@@ -373,8 +380,7 @@ TeleportOnVoid:
     Player: [ ]
     # run commands from the console
     Console:
-      - give %player% dirt 1
-      - eco take %player% 100
+      - eco take %player% 500
 
 #================================================================================#
 #                                                                                #
@@ -426,6 +432,4 @@ TeleportOnRespawn:
     # Run commands from the player
     Player: [ ]
     # run commands from the console
-    Console:
-      - give %player% dirt 1
-      - eco take %player% 100
+    Console: [ ]

@@ -71,6 +71,19 @@ public class MainMessagesManager {
     private String LastLocationOneTime;
     private String LastLocationNullSound;
     private String LastLocationInvalidSound;
+    private String DelSpawnNotExist;
+    private String DelSpawnNotExistWorld;
+    private String DelSpawnSuccessfullyRemoved;
+    private String DelSpawnSuccessfullyRemovedWorld;
+    private String DelSpawnNotSpecified;
+    private String DelLobbyNotExist;
+    private String DelLobbySuccessfullyRemoved;
+    private String LobbyOtherConsoleUsage;
+    private String LobbyOtherPlayerOffline;
+    private String LobbyOtherConsoleTeleported;
+    private String LobbyOtherConsolePlayerTeleport;
+    private String LobbyOtherPlayerTeleport;
+    private String LobbyOtherPlayerTeleported;
 
     public void reloadMessages(){
         messageFile.reloadMessages();
@@ -82,6 +95,8 @@ public class MainMessagesManager {
         messageFile.registerMessages();
         loadMessages();
     }
+
+
 
     public void loadMessages() {
         FileConfiguration config = plugin.getConfig();
@@ -158,6 +173,19 @@ public class MainMessagesManager {
         LastLocationOneTime = messages.getString("LastLocationOneTime");
         LastLocationNullSound = messages.getString("LastLocationNullSound");
         LastLocationInvalidSound = messages.getString("LastLocationInvalidSound");
+        DelSpawnNotExist = messages.getString("DelSpawnNotExist");
+        DelSpawnNotExistWorld = messages.getString("DelSpawnNotExistWorld");
+        DelSpawnSuccessfullyRemoved = messages.getString("DelSpawnSuccessfullyRemoved");
+        DelSpawnSuccessfullyRemovedWorld = messages.getString("DelSpawnSuccessfullyRemovedWorld");
+        DelSpawnNotSpecified = messages.getString("DelSpawnNotSpecified");
+        DelLobbyNotExist = messages.getString("DelLobbyNotExist");
+        DelLobbySuccessfullyRemoved = messages.getString("DelLobbySuccessfullyRemoved");
+        LobbyOtherConsoleUsage = messages.getString("LobbyOtherConsoleUsage");
+        LobbyOtherPlayerOffline = messages.getString("LobbyOtherPlayerOffline");
+        LobbyOtherConsoleTeleported = messages.getString("LobbyOtherConsoleTeleported");
+        LobbyOtherConsolePlayerTeleport = messages.getString("LobbyOtherConsolePlayerTeleport");
+        LobbyOtherPlayerTeleport = messages.getString("LobbyOtherPlayerTeleport");
+        LobbyOtherPlayerTeleported = messages.getString("LobbyOtherPlayerTeleported");
     }
 
     public String getPrefix() {
@@ -398,5 +426,57 @@ public class MainMessagesManager {
 
     public String getLastLocationInvalidSound() {
         return LastLocationInvalidSound;
+    }
+
+    public String getDelSpawnNotExist() {
+        return DelSpawnNotExist;
+    }
+
+    public String getDelSpawnNotExistWorld() {
+        return DelSpawnNotExistWorld;
+    }
+
+    public String getDelSpawnSuccessfullyRemoved() {
+        return DelSpawnSuccessfullyRemoved;
+    }
+
+    public String getDelSpawnSuccessfullyRemovedWorld() {
+        return DelSpawnSuccessfullyRemovedWorld;
+    }
+
+    public String getDelSpawnNotSpecified() {
+        return DelSpawnNotSpecified;
+    }
+
+    public String getDelLobbyNotExist() {
+        return DelLobbyNotExist;
+    }
+
+    public String getDelLobbySuccessfullyRemoved() {
+        return DelLobbySuccessfullyRemoved;
+    }
+
+    public String getLobbyOtherConsoleUsage() {
+        return LobbyOtherConsoleUsage;
+    }
+
+    public String getLobbyOtherPlayerOffline() {
+        return LobbyOtherPlayerOffline;
+    }
+
+    public String getLobbyOtherConsoleTeleported() {
+        return LobbyOtherConsoleTeleported;
+    }
+
+    public String getLobbyOtherConsolePlayerTeleport() {
+        return LobbyOtherConsolePlayerTeleport;
+    }
+
+    public String getLobbyOtherPlayerTeleport() {
+        return LobbyOtherPlayerTeleport;
+    }
+
+    public String getLobbyOtherPlayerTeleported() {
+        return LobbyOtherPlayerTeleported;
     }
 }

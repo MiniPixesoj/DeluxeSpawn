@@ -27,42 +27,141 @@ public class Lobby implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         String prefix = plugin.getMainMessagesManager().getPrefix();
-
         if (!(sender instanceof Player)) {
-            sendConsoleCommandDeniedMessage(sender, prefix);
-            return true;
-        }
-
-        Player player = (Player) sender;
-        String lobbyPermission = plugin.getMainPermissionsManager().getLobby();
-        boolean lobbyPermissionDefault = plugin.getMainPermissionsManager().isLobbyDefault();
-        boolean playerInCooldown = plugin.playerLobbyInCooldown(player);
-        String bypassCooldownPermission = plugin.getMainPermissionsManager().getLobbyBypassCooldown();
-        boolean bypassCooldownDefault = plugin.getMainPermissionsManager().isLobbyBypassCooldownDefault();
-        boolean cooldownEnabled = plugin.getMainConfigManager().isLobbyCooldownEnabled();
-
-        if (!permission(player, lobbyPermission, lobbyPermissionDefault)){
-            sendMessage(player, prefix, "NoPermission");
-            return true;
-        }
-        if (cooldownEnabled){
-            if (cooldown(player, playerInCooldown, bypassCooldownPermission, bypassCooldownDefault)) {
-                teleportPlayer(player);
-                handleLobbyCooldown(player);
+            if (args.length > 0) {
+                commandConsole(sender, args);
                 return true;
             }
-            sendMessage(player, prefix, "InCooldown");
+
+            sendMessage(sender, prefix, args, "ConsoleUsage");
             return true;
-        } else {
-            teleportPlayer(player);
         }
+
+        commandPlayer(sender, args);
         return true;
     }
 
+    public void commandConsole (CommandSender sender, String[] args){
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+        String targetPlayerName = args[0];
+        Player targetPlayer = Bukkit.getPlayer(targetPlayerName);
+        boolean enabled = plugin.getMainConfigManager().isLobbyEnabled();
 
-    private void sendConsoleCommandDeniedMessage(CommandSender sender, String prefix) {
-        String message = prefix + plugin.getMainMessagesManager().getCommandDeniedConsole();
-        sender.sendMessage(MessagesUtils.getColoredMessage(message));
+        if (!enabled) {
+            sendMessage(sender, prefix, args, "LobbyNoEnabled");
+            return;
+        }
+
+        if (targetPlayer == null || !targetPlayer.isOnline()) {
+            sendMessage(sender, prefix, args, "PlayerOffline");
+            return;
+        }
+
+        getTeleportConsole(sender, targetPlayer, args);
+    }
+
+    public void getTeleportConsole(CommandSender sender, Player player, String[] args) {
+        FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+        String targetPlayerName = args[0];
+        Player targetPlayer = Bukkit.getPlayer(targetPlayerName);
+
+        if (!locations.contains("Lobby.world")) {
+            sendMessage(sender, prefix, args, "NotExist");
+            return;
+        }
+
+        getLobbyConsole(sender, targetPlayer, args);
+    }
+
+    public void getLobbyConsole(CommandSender sender, Player player, String[] args) {
+        FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+        Location location = getLobbyLocation(locations);
+
+        String targetPlayerName = args[0];
+        Player targetPlayer = Bukkit.getPlayer(targetPlayerName);
+        assert targetPlayer != null;
+
+        sendMessage(sender, prefix, args, "ConsolePlayerTeleported");
+        sendMessage(targetPlayer, prefix, args, "ConsolePlayerTeleport");
+        targetPlayer.teleport(location);
+    }
+
+    public void commandPlayer(CommandSender sender, String[] args){
+        Player player = (Player) sender;
+        if (args.length > 0) {
+            String permission = plugin.getMainPermissionsManager().getLobbyOther();
+            boolean permissionDefault = plugin.getMainPermissionsManager().isLobbyOtherDefault();
+
+            if (permissionDefault || player.hasPermission(permission)){
+                getTeleportOtherPlayer(sender, args);
+                return;
+            }
+        }
+
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+        String lobbyPermission = plugin.getMainPermissionsManager().getLobby();
+        String bypassCooldownPermission = plugin.getMainPermissionsManager().getLobbyBypassCooldown();
+        boolean bypassCooldownDefault = plugin.getMainPermissionsManager().isLobbyBypassCooldownDefault();
+        boolean cooldownEnabled = plugin.getMainConfigManager().isLobbyCooldownEnabled();
+        boolean lobbyPermissionDefault = plugin.getMainPermissionsManager().isLobbyDefault();
+        boolean playerInCooldown = plugin.playerLobbyInCooldown(player);
+
+        if (!permission(player, lobbyPermission, lobbyPermissionDefault)){
+            sendMessage(sender, prefix, args, "NoPermission");
+            return;
+        }
+        if (cooldownEnabled){
+            if (cooldown(player, playerInCooldown, bypassCooldownPermission, bypassCooldownDefault)) {
+                getTeleport(player, args);
+                handleLobbyCooldown(player);
+                return;
+            }
+            sendMessage(player, prefix, args, "InCooldown");
+        } else {
+            getTeleport(player, args);
+        }
+    }
+
+    public void getTeleportOtherPlayer(CommandSender sender, String[] args) {
+        FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+        String targetPlayerName = args[0];
+        Player targetPlayer = Bukkit.getPlayer(targetPlayerName);
+
+        if (!plugin.getMainConfigManager().isLobbyEnabled()) {
+            sendMessage(sender, prefix, args, "LobbyNoEnabled");
+            return;
+        }
+
+        if (targetPlayer == null || !targetPlayer.isOnline()) {
+            sendMessage(sender, prefix, args, "PlayerOffline");
+            return;
+        }
+
+        if (!locations.contains("Lobby.world")) {
+            sendMessage(sender, prefix, args, "NotExist");
+            return;
+        }
+
+        getLobbyOtherPlayer(sender, targetPlayer, args);
+    }
+
+    public void getLobbyOtherPlayer(CommandSender sender, Player player, String[] args) {
+        FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+        Location location = getLobbyLocation(locations);
+
+        String targetPlayerName = args[0];
+        Player targetPlayer = Bukkit.getPlayer(targetPlayerName);
+        assert targetPlayer != null;
+
+        sendMessage(player, prefix, args, "PlayerTeleport");
+
+        sendMessage(sender, prefix, args, "PlayerTeleported");
+
+        targetPlayer.teleport(location);
     }
 
     private boolean cooldown(Player player, boolean playerInCooldown, String bypassCooldownPermission, boolean bypassCooldownDefault) {
@@ -73,53 +172,28 @@ public class Lobby implements CommandExecutor {
         return (lobbyPermissionDefault || player.hasPermission(lobbyPermission));
     }
 
-    private void sendMessage(Player player, String prefix, String reason) {
-        String message;
-        if (reason.equals("NoPermission")) {
-            message = prefix + plugin.getMainMessagesManager().getPermissionDenied();
-        } else if (reason.equals("InCooldown")) {
-            int remainingTime = CooldownLobby.getRemainingTime(player);
-            message = prefix + plugin.getMainMessagesManager().getLobbyInCooldown();
-            message = message.replace("%time%", String.valueOf(remainingTime));
-        } else {
-            return;
-        }
-        player.sendMessage(MessagesUtils.getColoredMessage(message));
-    }
-
-    public void teleportPlayer (CommandSender sender){
-        getTeleport(sender);
-    }
-
-    public void getTeleport(CommandSender sender) {
-        Player player = (Player) sender;
+    public void getTeleport(CommandSender sender, String[] args) {
         FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
         String prefix = plugin.getMainMessagesManager().getPrefix();
 
         if (!plugin.getMainConfigManager().isLobbyEnabled()) {
-            sendLobbyNotEnabledMessage(sender);
+            sendMessage(sender, prefix, args, "LobbyNoEnabled");
             return;
         }
 
         if (!locations.contains("Lobby.world")) {
-            player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getLobbyDoesNotExist()));
+            sendMessage(sender, prefix, args, "NotExist");
         } else {
-            getLobby(sender);
+            getLobby(sender, args);
         }
     }
 
-    private void sendLobbyNotEnabledMessage(CommandSender sender) {
-        String prefix = plugin.getMainMessagesManager().getPrefix();
-        String message = prefix + plugin.getMainMessagesManager().getLobbyIsNotEnabled();
-        sender.sendMessage(MessagesUtils.getColoredMessage(message));
-    }
-
-    public void getLobby(CommandSender sender) {
+    public void getLobby(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
         String prefix = plugin.getMainMessagesManager().getPrefix();
 
-        if (!validateLobbyWorld(locations, player, prefix)) {
+        if (!validateLobbyWorld(locations, player, prefix, args)) {
             return;
         }
 
@@ -131,19 +205,18 @@ public class Lobby implements CommandExecutor {
         boolean delayBypassDefault = plugin.getMainPermissionsManager().isLobbyBypassDelayDefault();
 
         if (!plugin.getMainConfigManager().isLobbyTeleportDelayEnabled() || delayBypassDefault || player.hasPermission(delayBypassPermission)) {
-            teleportPlayer(player, lobbyLocation, prefix, sender);
+            teleportPlayer(player, lobbyLocation, prefix, sender, args);
             return;
         }
 
-        handleLobbyTeleportDelay(player, delayManager, prefix);
+        handleLobbyTeleportDelay(player, delayManager, prefix, args);
     }
 
-    private boolean validateLobbyWorld(FileConfiguration locations, Player player, String prefix) {
+    private boolean validateLobbyWorld(FileConfiguration locations, CommandSender sender, String prefix, String[] args) {
         String world = locations.getString("Lobby.world");
 
         if (world == null) {
-            String message = prefix + plugin.getMainMessagesManager().getLobbyDoesNotExist();
-            player.sendMessage(MessagesUtils.getColoredMessage(message));
+            sendMessage(sender, prefix, args, "NotExist");
             return false;
         }
 
@@ -157,34 +230,31 @@ public class Lobby implements CommandExecutor {
         double z = locations.getDouble("Lobby.z");
         float yaw = (float) locations.getDouble("Lobby.yaw");
         float pitch = (float) locations.getDouble("Lobby.pitch");
+        assert world != null;
         return new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
     }
 
-    private void teleportPlayer(Player player, Location location, String prefix, CommandSender sender) {
-        sound(sender);
+    private void teleportPlayer(Player player, Location location, String prefix, CommandSender sender, String[] args) {
+        sound(sender, args);
         executeCommands(sender);
         player.teleport(location);
-        String message = prefix + plugin.getMainMessagesManager().getLobbyTeleported();
-        player.sendMessage(MessagesUtils.getColoredMessage(message));
+        sendMessage(sender, prefix, args, "Teleported");
         plugin.addLobbyCooldown(player);
     }
 
-    private void handleLobbyTeleportDelay(Player player, DelayLobby delayManager, String prefix) {
+    private void handleLobbyTeleportDelay(Player player, DelayLobby delayManager, String prefix, String[] args) {
         if (!plugin.playerInDelay(player)) {
             plugin.addPlayerTeleport(player);
             delayManager.DelayLobby();
             if (!Objects.equals(plugin.getMainConfigManager().getLobbyTeleportDelayMessageType(), "Chat")) {
-                int time = plugin.getMainConfigManager().getLobbyTeleportDelay();
-                String message = plugin.getMainMessagesManager().getLobbyMessageDelayTeleport().replace("%time%", String.valueOf(time));
-                player.sendMessage(MessagesUtils.getColoredMessage(message));
+                sendMessage(player, prefix, args, "MessageDelay");
             }
         } else {
-            String message = prefix + plugin.getMainMessagesManager().getLobbyInTeleport();
-            player.sendMessage(MessagesUtils.getColoredMessage(message));
+            sendMessage(player, prefix, args, "InTeleport");
         }
     }
 
-    public void sound(CommandSender sender) {
+    public void sound(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         String prefix = plugin.getMainMessagesManager().getPrefix();
 
@@ -195,7 +265,7 @@ public class Lobby implements CommandExecutor {
         String soundName = plugin.getMainConfigManager().getLobbyTeleportSound();
 
         if (soundName == null) {
-            handleNullSound(sender, prefix);
+            handleNullSound(sender, prefix, args);
             return;
         }
 
@@ -206,23 +276,19 @@ public class Lobby implements CommandExecutor {
 
             player.playSound(player.getLocation(), sound, volume, pitch);
         } catch (IllegalArgumentException e) {
-            handleInvalidSound(player, prefix, soundName);
+            handleInvalidSound(player, prefix, args);
         }
     }
 
-    private void handleNullSound(CommandSender sender, String prefix) {
+    private void handleNullSound(CommandSender sender, String prefix, String[] args) {
         String permission = plugin.getMainPermissionsManager().getNotify();
         if (plugin.getMainPermissionsManager().isNotifyDefault() || sender.hasPermission(permission)) {
-            String message = prefix + plugin.getMainMessagesManager().getLobbyNullSound();
-            sender.sendMessage(MessagesUtils.getColoredMessage(message));
-        } else {
-            noPermission(sender);
+            sendMessage(sender, prefix, args, "NullSound");
         }
     }
 
-    private void handleInvalidSound(Player player, String prefix, String soundName) {
-        String message = prefix + plugin.getMainMessagesManager().getLobbyInvalidSound().replace("%sound%", soundName);
-        player.sendMessage(message);
+    private void handleInvalidSound(Player player, String prefix, String[] args) {
+        sendMessage(player, prefix, args, "InvalidSound");
     }
 
     public void executeCommands(CommandSender sender) {
@@ -245,15 +311,118 @@ public class Lobby implements CommandExecutor {
         }
     }
 
-    public void noPermission (CommandSender sender){
-        String prefix = plugin.getMainMessagesManager().getPrefix();
-        sender.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getPermissionDenied()));
-    }
-
     public void handleLobbyCooldown(Player player){
         CooldownTimeProvider timeProvider = new LobbyCooldownProvider(plugin, player);
         int time = plugin.getMainConfigManager().getLobbyCooldownTime();
         CooldownLobby c = new CooldownLobby(plugin, timeProvider, time, player);
         c.cooldownLobby();
+    }
+
+    public void sendMessage (CommandSender sender, String prefix, String[] args, String reason){
+        switch (reason) {
+            case "NoPermission": {
+                String message = plugin.getMainMessagesManager().getPermissionDenied();
+                message = prefix + message;
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "ConsoleUsage": {
+                String message = plugin.getMainMessagesManager().getLobbyOtherConsoleUsage();
+                message = prefix + message;
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "PlayerOffline": {
+                String message = plugin.getMainMessagesManager().getLobbyOtherPlayerOffline();
+                message = prefix + message;
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "ConsolePlayerTeleport": {
+                String replaced = plugin.getMainConfigManager().getReplacedMessagesConsole();
+                String message = plugin.getMainMessagesManager().getLobbyOtherConsolePlayerTeleport();
+                message = prefix + message.replace("%sender%", replaced);
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "LobbyNoEnabled": {
+                String message = plugin.getMainMessagesManager().getLobbyIsNotEnabled();
+                message = prefix + message;
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "NotExist": {
+                String message = plugin.getMainMessagesManager().getLobbyDoesNotExist();
+                message = prefix + message;
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "PlayerTeleported": {
+                String targetPlayerName = args[0];
+                Player targetPlayer = Bukkit.getPlayer(targetPlayerName);
+                assert targetPlayer != null;
+
+                String message = plugin.getMainMessagesManager().getLobbyOtherPlayerTeleported();
+                message = prefix + message.replace("%player%", targetPlayer.getName());
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "PlayerTeleport": {
+                String message = plugin.getMainMessagesManager().getLobbyOtherPlayerTeleport();
+                message = prefix + message.replace("%player%", sender.getName());
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "InCooldown": {
+                Player player = (Player) sender;
+                String message = plugin.getMainMessagesManager().getLobbyInCooldown();
+                int remainingTime = CooldownLobby.getRemainingTime(player);
+                message = prefix + message.replace("%time%", String.valueOf(remainingTime));
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "Teleported": {
+                String message = plugin.getMainMessagesManager().getLobbyTeleported();
+                message = prefix + message;
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "MessageDelay": {
+                int time = plugin.getMainConfigManager().getLobbyTeleportDelay();
+                String message = plugin.getMainMessagesManager().getLobbyMessageDelayTeleport();
+                message = prefix + message.replace("%time%", String.valueOf(time));
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "InTeleport": {
+                String message = plugin.getMainMessagesManager().getLobbyInTeleport();
+                message = prefix + message;
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "NullSound": {
+                String message = plugin.getMainMessagesManager().getLobbyNullSound();
+                message = prefix + message;
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "InvalidSound": {
+                String soundName = plugin.getMainConfigManager().getLobbyTeleportSound();
+                String message = plugin.getMainMessagesManager().getLobbyInvalidSound();
+                message = prefix + message.replace("%sound%", soundName);
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "ConsolePlayerTeleported": {
+                String targetPlayerName = args[0];
+                Player targetPlayer = Bukkit.getPlayer(targetPlayerName);
+                assert targetPlayer != null;
+
+                String message = plugin.getMainMessagesManager().getLobbyOtherConsoleTeleported();
+                message = prefix + message.replace("%player%", targetPlayer.getName());
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+        }
     }
 }

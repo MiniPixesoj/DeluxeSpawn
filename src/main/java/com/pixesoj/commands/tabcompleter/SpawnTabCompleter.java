@@ -32,6 +32,24 @@ public class SpawnTabCompleter implements TabCompleter {
                 return Collections.emptyList();
             }
         }
+
+        if (command.getName().equalsIgnoreCase("delspawn") && spawnWorldEnabled) {
+            if (args.length == 1) {
+                List<String> completions = new ArrayList<>();
+                completions.add("global");
+
+                List<String> worldNames = new ArrayList<>();
+                for (World world : Bukkit.getWorlds()) {
+                    worldNames.add(world.getName());
+                }
+
+                completions.addAll(worldNames);
+                return completions;
+            } else {
+                return Collections.emptyList();
+            }
+        }
+
         return null;
     }
 }

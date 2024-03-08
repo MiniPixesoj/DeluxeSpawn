@@ -39,6 +39,12 @@ public class MainPermissionsManager {
     public boolean LobbyBypassCooldownDefault;
     public String SpawnBypassCooldown;
     public boolean SpawnBypassCooldownDefault;
+    public String DelSpawn;
+    public boolean DelSpawnDefault;
+    public String DelLobby;
+    public boolean DelLobbyDefault;
+    public String LobbyOther;
+    public boolean LobbyOtherDefault;
 
 
     public void reloadPermissions() {
@@ -86,6 +92,12 @@ public class MainPermissionsManager {
         LobbyBypassCooldownDefault = permissions.getBoolean("LobbyBypassCooldown.Default");
         SpawnBypassCooldown = permissions.getString("SpawnBypassCooldown.Permission");
         SpawnBypassCooldownDefault = permissions.getBoolean("SpawnBypassCooldown.Default");
+        DelSpawn = permissions.getString("DelSpawn.Permission");
+        DelSpawnDefault = permissions.getBoolean("DelSpawn.Default");
+        DelLobby = permissions.getString("DelLobby.Permission");
+        DelLobbyDefault = permissions.getBoolean("DelLobby.Default");
+        LobbyOther = permissions.getString("LobbyOther.Permission");
+        LobbyOtherDefault = permissions.getBoolean("LobbyOther.Default");
     }
 
     public String getLobby() {
@@ -214,5 +226,29 @@ public class MainPermissionsManager {
 
     public boolean isSpawnBypassCooldownDefault() {
         return SpawnBypassCooldownDefault;
+    }
+
+    public String getDelSpawn() {
+        return DelSpawn;
+    }
+
+    public boolean isDelSpawnDefault() {
+        return DelSpawnDefault;
+    }
+
+    public String getDelLobby() {
+        return DelLobby;
+    }
+
+    public boolean isDelLobbyDefault() {
+        return DelLobbyDefault;
+    }
+
+    public String getLobbyOther() {
+        return LobbyOther;
+    }
+
+    public boolean isLobbyOtherDefault() {
+        return LobbyOtherDefault;
     }
 }

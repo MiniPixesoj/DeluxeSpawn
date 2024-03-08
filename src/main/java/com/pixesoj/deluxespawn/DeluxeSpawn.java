@@ -55,6 +55,7 @@ public class DeluxeSpawn extends JavaPlugin {
         delayPlayers = new ArrayList<>();
         cooldownLobbyPlayers = new ArrayList<>();
         cooldownSpawnPlayers = new ArrayList<>();
+        lastLocationOneTime = new ArrayList<>();
 
         int pluginId = 21247;
         Metrics metrics = new Metrics(this, pluginId);
@@ -81,6 +82,8 @@ public class DeluxeSpawn extends JavaPlugin {
         this.getCommand("spawn").setExecutor(new Spawn(this));
         this.getCommand("setlobby").setExecutor(new SetLobby(this));
         this.getCommand("lobby").setExecutor(new Lobby(this));
+        this.getCommand("delspawn").setExecutor(new DelSpawn(this));
+        this.getCommand("dellobby").setExecutor(new DelLobby(this));
     }
 
     public void registerEvents(){
@@ -179,6 +182,7 @@ public class DeluxeSpawn extends JavaPlugin {
     private ArrayList<String> delayPlayers;
     private ArrayList<String> cooldownLobbyPlayers;
     private ArrayList<String> cooldownSpawnPlayers;
+    private ArrayList<String> lastLocationOneTime;
 
     public void addPlayerTeleport(Player player){
         delayPlayers.add(player.getName());
@@ -222,6 +226,22 @@ public class DeluxeSpawn extends JavaPlugin {
 
     public boolean playerSpawnInCooldown(Player player){
         if (cooldownSpawnPlayers.contains(player.getName())){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void addLastLocationOneTime (Player player){
+        lastLocationOneTime.add(player.getName());
+    }
+
+    public void removeLastLocationOneTime (Player player){
+        lastLocationOneTime.remove(player.getName());
+    }
+
+    public boolean playerLastLocationOneTime(Player player){
+        if (lastLocationOneTime.contains(player.getName())){
             return true;
         } else {
             return false;

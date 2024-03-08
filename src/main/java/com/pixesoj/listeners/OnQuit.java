@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.util.List;
 
 public class OnQuit implements Listener {
-    private DeluxeSpawn plugin;
+    private final DeluxeSpawn plugin;
 
     public OnQuit(DeluxeSpawn plugin) {
         this.plugin = plugin;
@@ -31,7 +31,7 @@ public class OnQuit implements Listener {
         String playerWorld = player.getWorld().getName();
 
         plugin.getPlayerDataManager().savePlayer(player);
-        plugin.getPlayerDataManager().removeLastLocationTeleportOneTime(player);
+        plugin.removeLastLocationOneTime(player);
 
         List<String> ignoredWorlds = plugin.getMainConfigManager().getLobbyLastLocationIgnoredWorldsToSave();
         if (ignoredWorlds.contains(playerWorld)){

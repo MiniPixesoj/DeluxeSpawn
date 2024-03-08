@@ -1,6 +1,6 @@
 ##====================================##
 ## DeluxeSpawn plugin by Pixesoj.     ##
-## Version: 3.3.0                     ##
+## Version: 3.4.0                     ##
 ## Make sure to leave your            ##
 ## thoughts on a review.              ##
 ## www.spigotmc.org/resources/111403/ ##
@@ -19,9 +19,19 @@ Lobby:
   Permission: deluxespawn.command.lobby
   Default: true
 
+# Use the /lobby <player> command to send another player to the lobby
+LobbyOther:
+  Permission: deluxespawn.command.lobby.other
+  Default: false
+
 # Use /setlobby command to set a lobby
 SetLobby:
   Permission: deluxespawn.command.setlobby
+  Default: false
+
+# Permission required to use the /lobby command (delete lobby)
+DelLobby:
+  Permission: deluxespawn.command.dellobby
   Default: false
 
 # Allows the player to ignore the lobby teleport delay
@@ -42,6 +52,11 @@ Spawn:
 # Use /setspawn command to set a spawn
 SetSpawn:
   Permission: deluxespawn.command.setspawn
+  Default: false
+
+# Permission required to use the /delspawn command (delete the specified spawn)
+DelSpawn:
+  Permission: deluxespawn.command.delspawn
   Default: false
 
 # Allows the player to ignore the spawn teleport delay

@@ -17,7 +17,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.List;
 
 public class OnRespawn implements Listener {
-    private DeluxeSpawn plugin;
+    private final DeluxeSpawn plugin;
 
     public OnRespawn(DeluxeSpawn plugin) {
         this.plugin = plugin;
@@ -91,6 +91,7 @@ public class OnRespawn implements Listener {
         float yaw = (float) locations.getDouble("Lobby.yaw");
         float pitch = (float) locations.getDouble("Lobby.pitch");
         String world = locations.getString("Lobby.world");
+        assert world != null;
         Location lobbyLocation = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
 
         if(!locations.contains("Lobby.x")){
@@ -144,6 +145,7 @@ public class OnRespawn implements Listener {
             float yaw = (float) locations.getDouble("Spawn.yaw");
             float pitch = (float) locations.getDouble("Spawn.pitch");
             String world = locations.getString("Spawn.world");
+            assert world != null;
             Location spawnLocation = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
 
             if(!locations.contains("Spawn.world")){
@@ -193,7 +195,6 @@ public class OnRespawn implements Listener {
         int time = plugin.getMainConfigManager().getTeleportOnRespawnBlindnessTime();
         if (plugin.getMainConfigManager().isTeleportOnRespawnBlindness()){
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * time, 2));
-            return;
         }
     }
 

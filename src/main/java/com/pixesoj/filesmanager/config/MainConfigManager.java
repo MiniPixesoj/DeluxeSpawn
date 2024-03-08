@@ -115,6 +115,9 @@ public class MainConfigManager {
     public List<String> LobbyLastLocationCommandsPlayer;
     public List<String> LobbyLastLocationCommandsConsole;
     public List<String> LastLocationSaveType;
+    public String LobbyLastLocationCommandLocationNotExist;
+    public String LobbyLastLocationCommandSpawn;
+    public String ReplacedMessagesConsole;
 
 
     public void reloadConfig(){
@@ -236,6 +239,9 @@ public class MainConfigManager {
         LobbyLastLocationCommandsPlayer = config.getStringList("LobbySettings.LastLocation.Commands.Player");
         LobbyLastLocationCommandsConsole = config.getStringList("LobbySettings.LastLocation.Commands.Console");
         LastLocationSaveType = config.getStringList("LobbySettings.LastLocation.SaveSettings.SaveType");
+        LobbyLastLocationCommandLocationNotExist = config.getString("LobbySettings.LastLocation.TeleportSettings.Command.LocationNotExist");
+        LobbyLastLocationCommandSpawn = config.getString("LobbySettings.LastLocation.TeleportSettings.Command.Spawn");
+        ReplacedMessagesConsole = config.getString("ReplacedMessages.Console");
     }
 
 
@@ -661,5 +667,17 @@ public class MainConfigManager {
 
     public List<String> getLastLocationSaveType() {
         return LastLocationSaveType;
+    }
+
+    public String getLobbyLastLocationCommandLocationNotExist() {
+        return LobbyLastLocationCommandLocationNotExist;
+    }
+
+    public String getLobbyLastLocationCommandSpawn() {
+        return LobbyLastLocationCommandSpawn;
+    }
+
+    public String getReplacedMessagesConsole() {
+        return ReplacedMessagesConsole;
     }
 }

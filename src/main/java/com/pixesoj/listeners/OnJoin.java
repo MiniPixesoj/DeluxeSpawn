@@ -2,6 +2,7 @@ package com.pixesoj.listeners;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
 import com.pixesoj.utils.MessagesUtils;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -11,13 +12,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.util.List;
-import java.util.UUID;
 
 public class OnJoin implements Listener {
-    private DeluxeSpawn plugin;
+    private final DeluxeSpawn plugin;
 
     public OnJoin(DeluxeSpawn plugin) {
         this.plugin = plugin;
@@ -29,7 +28,7 @@ public class OnJoin implements Listener {
         notifyUpdate(event);
         teleportOnJoin(event);
         teleportOnFirstJoin(event);
-        plugin.getPlayerDataManager().removeLastLocationTeleportOneTime(player);
+        plugin.removeLastLocationOneTime(player);
     }
 
     public void notifyUpdate (PlayerJoinEvent event){
@@ -101,6 +100,7 @@ public class OnJoin implements Listener {
         float yaw = (float) locations.getDouble("Lobby.yaw");
         float pitch = (float) locations.getDouble("Lobby.pitch");
         String world = locations.getString("Lobby.world");
+        assert world != null;
         Location lobbyLocation = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
 
         if(!locations.contains("Lobby.x")){
@@ -155,6 +155,7 @@ public class OnJoin implements Listener {
             float yaw = (float) locations.getDouble("Spawn.yaw");
             float pitch = (float) locations.getDouble("Spawn.pitch");
             String world = locations.getString("Spawn.world");
+            assert world != null;
             Location spawnLocation = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
 
             if(!locations.contains("Spawn.world")){
@@ -191,6 +192,7 @@ public class OnJoin implements Listener {
         float yaw = (float) locations.getDouble("Lobby.yaw");
         float pitch = (float) locations.getDouble("Lobby.pitch");
         String world = locations.getString("Lobby.world");
+        assert world != null;
         Location lobbyLocation = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
 
         if(!locations.contains("Lobby.x")){
@@ -218,10 +220,15 @@ public class OnJoin implements Listener {
             String message = prefix + plugin.getMainMessagesManager().getOnFirstJoinSendMessage().replace("%destination%", destination);
             player.sendMessage(MessagesUtils.getColoredMessage(message));
         }
-        if (plugin.getMainConfigManager().isTeleportOnFirstJoinWelcomeMessage()){
+        if (plugin.getMainConfigManager().isTeleportOnFirstJoinWelcomeMessage()) {
             List<String> message = plugin.getMainMessagesManager().getOnFirstJoinSendWelcomeMessage();
-            for(String m : message){
+
+            for (String m : message) {
                 String replacedMessage = m.replace("%player%", player.getName());
+
+                if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+                    replacedMessage = PlaceholderAPI.setPlaceholders(player, replacedMessage);
+                }
                 player.sendMessage(MessagesUtils.getColoredMessage(replacedMessage));
             }
         }
@@ -251,6 +258,7 @@ public class OnJoin implements Listener {
             float yaw = (float) locations.getDouble("Spawn.yaw");
             float pitch = (float) locations.getDouble("Spawn.pitch");
             String world = locations.getString("Spawn.world");
+            assert world != null;
             Location spawnLocation = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
 
             if(!locations.contains("Spawn.world")){

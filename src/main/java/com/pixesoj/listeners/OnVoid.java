@@ -17,7 +17,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.List;
 
 public class OnVoid implements Listener {
-    private DeluxeSpawn plugin;
+    private final DeluxeSpawn plugin;
 
     public OnVoid(DeluxeSpawn plugin) {
         this.plugin = plugin;
@@ -136,6 +136,7 @@ public class OnVoid implements Listener {
             double z = locations.getDouble("Lobby.z");
             float yaw = (float) locations.getDouble("Lobby.yaw");
             float pitch = (float) locations.getDouble("Lobby.pitch");
+            assert world != null;
             Location lobbyLocation = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
 
             player.teleport(lobbyLocation);
@@ -174,6 +175,7 @@ public class OnVoid implements Listener {
                 double z = locations.getDouble("Spawn.z");
                 float yaw = (float) locations.getDouble("Spawn.yaw");
                 float pitch = (float) locations.getDouble("Spawn.pitch");
+                assert world != null;
                 Location spawnLocation = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
 
                 player.teleport(spawnLocation);

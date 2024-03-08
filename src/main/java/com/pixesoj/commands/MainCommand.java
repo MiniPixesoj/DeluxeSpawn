@@ -94,8 +94,6 @@ public class MainCommand implements CommandExecutor {
                 boolean permissionDefault = plugin.getMainPermissionsManager().isLastLocationDefault();
                 if (permissionDefault || player.hasPermission(permission)){
                     getLastTeleportLocation(sender, args);
-                    soundLastLocation(sender);
-                    executeCommandsLastLocation(sender);
                 } else {
                     noPermission(sender);
                 }
@@ -137,7 +135,6 @@ public class MainCommand implements CommandExecutor {
         } else if (args[1].equalsIgnoreCase("all")) {
             plugin.getMainMessagesManager().reloadMessages();
             plugin.getMainConfigManager().reloadConfig();
-            plugin.getLocationsManager().saveLocationsFile();
             plugin.getMainPermissionsManager().reloadPermissions();
             sender.sendMessage(MessagesUtils.getColoredMessage(plugin.getMainMessagesManager().getPrefix() + plugin.getMainMessagesManager().getCommandReloadAll().replace("%version%", plugin.getDescription().getVersion())));
 
@@ -168,7 +165,8 @@ public class MainCommand implements CommandExecutor {
 
     public void getLastLocation(UUID uuid, Player player, CommandSender sender) {
         FileConfiguration playerConfig = plugin.getPlayerDataManager().getPlayerConfig(uuid);
-        if (playerConfig.contains("LastLocation")) {
+        String notExistType = plugin.getMainConfigManager().getLobbyLastLocationCommandLocationNotExist();
+        if (playerConfig.contains("LastLocation.world")) {
             String worldName = playerConfig.getString("LastLocation.world");
             double x = playerConfig.getDouble("LastLocation.x");
             double y = playerConfig.getDouble("LastLocation.y");
@@ -179,12 +177,45 @@ public class MainCommand implements CommandExecutor {
             Location lastLocation = new Location(Bukkit.getWorld(worldName), x, y, z, yaw, pitch);
 
             player.teleport(lastLocation);
+            soundLastLocation(sender);
+            executeCommandsLastLocation(sender);
             sendMessage(sender);
-        } else {
+        }
+
+        else if (notExistType.equals("SendMessage")) {
             String prefix = plugin.getMainMessagesManager().getPrefix();
             String message = prefix + plugin.getMainMessagesManager().getLastLocationNotFound();
             sender.sendMessage(MessagesUtils.getColoredMessage(message));
+        }
 
+        else if (notExistType.equals("Spawn")) {
+            boolean spawnByWorld = plugin.getMainConfigManager().isSpawnByWorld();
+            FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
+            if (!spawnByWorld){
+                double x = locations.getDouble("Spawn.x");
+                double y = locations.getDouble("Spawn.y");
+                double z = locations.getDouble("Spawn.z");
+                float yaw = (float) locations.getDouble("Spawn.yaw");
+                float pitch = (float) locations.getDouble("Spawn.pitch");
+                String worldName = locations.getString("Spawn.world");
+                Location spawnLocation = new Location(Bukkit.getWorld(worldName), x, y, z, yaw, pitch);
+
+                player.teleport(spawnLocation);
+                return;
+            }
+
+            String world = plugin.getMainConfigManager().getLobbyLastLocationCommandSpawn();
+            String spawnKey = "Spawn." + world;
+            double x = locations.getDouble(spawnKey + ".x");
+            double y = locations.getDouble(spawnKey + ".y");
+            double z = locations.getDouble(spawnKey + ".z");
+            float yaw = (float) locations.getDouble(spawnKey + ".yaw");
+            float pitch = (float) locations.getDouble(spawnKey + ".pitch");
+            Location spawnLocation = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
+
+            player.teleport(spawnLocation);
+        } else if (notExistType.equals("DoNothing")) {
+            return;
         }
     }
 
@@ -198,12 +229,11 @@ public class MainCommand implements CommandExecutor {
         Player player = (Player) sender;
         boolean oneTime = plugin.getMainConfigManager().isLobbyLastLocationCommandOneTime();
         if (oneTime){
-            UUID uuid = player.getUniqueId();
-            FileConfiguration playerConfig = plugin.getPlayerDataManager().getPlayerConfig(uuid);
-            String OneTime = playerConfig.getString("LastLocation.OneTime");
             boolean defaultPermission = plugin.getMainPermissionsManager().isLastLocationBypassCommandDefault();
             String permission = plugin.getMainPermissionsManager().getLastLocationBypassCommand();
-            if (!OneTime.equals("yes") || defaultPermission || player.hasPermission(permission)){
+            boolean inLastLocationOneTime = plugin.playerLastLocationOneTime(player);
+
+            if (!inLastLocationOneTime || defaultPermission || player.hasPermission(permission)){
                 teleportLastLocation(sender, args);
                 return;
             }

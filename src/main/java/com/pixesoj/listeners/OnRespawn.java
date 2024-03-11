@@ -123,7 +123,7 @@ public class OnRespawn implements Listener {
     public void getSpawnLocation (PlayerRespawnEvent event){
         Player player = event.getPlayer();
         FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
-        if (plugin.getMainConfigManager().isSpawnByWorld()){
+        if (plugin.getMainSpawnConfigManager().isByWorld()){
             String world = plugin.getMainConfigManager().getTeleportOnRespawnDestinationSpawn();
 
             double x = locations.getDouble("SpawnByWorld." + world + ".x");

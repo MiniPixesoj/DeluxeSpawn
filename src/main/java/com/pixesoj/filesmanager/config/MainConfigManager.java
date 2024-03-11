@@ -1,7 +1,6 @@
 package com.pixesoj.filesmanager.config;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
-import com.pixesoj.filesmanager.config.CustomConfig;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.List;
@@ -11,20 +10,6 @@ public class MainConfigManager {
 
     private boolean CheckUpdate;
     private String Lang;
-    private boolean SpawnByWorld;
-    private int SpawnTeleportDelay;
-    private boolean SpawnTeleportDelayEnabled;
-    private boolean SpawnTeleportDelayCancelOnMove;
-    private String SpawnTeleportDelayMessageType;
-    private boolean SpawnTeleportBlindness;
-    private int SpawnTeleportBlindnessTime;
-    private boolean LobbySettingsEnabled;
-    private int LobbyTeleportDelay;
-    private boolean LobbyTeleportDelayEnabled;
-    private boolean LobbyTeleportDelayCancelOnMove;
-    private String LobbyTeleportDelayMessageType;
-    public boolean LobbyTeleportBlindness;
-    public int LobbyTeleportBlindnessTime;
     public boolean TeleportOnJoinEnabled;
     public String TeleportOnJoinDestinationPlace;
     public boolean TeleportOnJoinSendMessage;
@@ -34,20 +19,6 @@ public class MainConfigManager {
     public boolean TeleportOnFirstJoinSendMessage;
     public String TeleportOnFirstJoinSpawn;
     public boolean TeleportOnFirstJoinWelcomeMessage;
-    public boolean SpawnTeleportSoundEnabled;
-    public String SpawnTeleportSound;
-    public int SpawnTeleportSoundVolume;
-    public int SpawnTeleportSoundPitch;
-    public boolean LobbyTeleportSoundEnabled;
-    public String LobbyTeleportSound;
-    public int LobbyTeleportSoundVolume;
-    public int LobbyTeleportSoundPitch;
-    public boolean SpawnCommandsEnabled;
-    public List<String> SpawnPlayerCommands;
-    public List<String> SpawnConsoleCommands;
-    public boolean LobbyCommandsEnabled;
-    public List<String> LobbyPlayerCommands;
-    public List<String> LobbyConsoleCommands;
     public boolean TeleportOnVoidEnabled;
     public boolean TeleportOnVoidDamage;
     public boolean TeleportOnVoidBlindness;
@@ -93,31 +64,8 @@ public class MainConfigManager {
     public boolean TeleportOnJoinCommandsEnabled;
     public List<String> TeleportOnJoinCommandsPlayer;
     public List<String> TeleportOnJoinCommandsConsole;
-    public boolean LobbyCooldownEnabled;
-    public int LobbyCooldownTime;
-    public boolean SpawnCooldownEnabled;
-    public int SpawnCooldownTime;
-    public boolean LastLocationSave;
-    public boolean LastLocationTeleport;
-    public boolean LastLocationInTheSameWorld;
-    public List<String> LobbyLastLocationTeleportMode;
-    public List<String> LobbyLastLocationTeleportCommands;
-    public List<String> LobbyLastLocationIgnoredWorldsToSave;
-    public String LobbyLastLocationChangeWorldType;
-    public List<String> LobbyLastLocationChangeWorldsSpecified;
-    public boolean LobbyLastLocationChangeWorldsOneTime;
-    public boolean LobbyLastLocationCommandOneTime;
-    public boolean LobbyLastLocationSoundEnabled;
-    public String LobbyLastLocationSound;
-    public int LobbyLastLocationSoundVolume;
-    public int LobbyLastLocationSoundPitch;
-    public boolean LobbyLastLocationCommandsEnabled;
-    public List<String> LobbyLastLocationCommandsPlayer;
-    public List<String> LobbyLastLocationCommandsConsole;
-    public List<String> LastLocationSaveType;
-    public String LobbyLastLocationCommandLocationNotExist;
-    public String LobbyLastLocationCommandSpawn;
     public String ReplacedMessagesConsole;
+    public boolean Update;
 
 
     public void reloadConfig(){
@@ -130,118 +78,71 @@ public class MainConfigManager {
         loadConfig();
     }
 
-    public void loadConfig(){
+    public void loadConfig() {
         FileConfiguration config = configFile.getConfig();
 
-        CheckUpdate = config.getBoolean("CheckUpdate");
-        Lang = config.getString("Lang");
-        SpawnByWorld = config.getBoolean("SpawnSettings.SpawnByWorld");
-        SpawnTeleportDelay = config.getInt("SpawnSettings.TeleportDelay.Seconds");
-        SpawnTeleportDelayEnabled = config.getBoolean("SpawnSettings.TeleportDelay.Enabled");
-        SpawnTeleportDelayCancelOnMove = config.getBoolean("SpawnSettings.TeleportDelay.CancelOnMove");
-        SpawnTeleportDelayMessageType = config.getString("SpawnSettings.TeleportDelay.MessageType");
-        SpawnTeleportBlindness = config.getBoolean("SpawnSettings.TeleportDelay.Blindness");
-        SpawnTeleportBlindnessTime = config.getInt("SpawnSettings.TeleportDelay.BlindnessTime");
-        LobbySettingsEnabled = config.getBoolean("LobbySettings.Enabled");
-        LobbyTeleportDelay = config.getInt("LobbySettings.TeleportDelay.Seconds");
-        LobbyTeleportDelayEnabled = config.getBoolean("LobbySettings.TeleportDelay.Enabled");
-        LobbyTeleportDelayCancelOnMove = config.getBoolean("LobbySettings.TeleportDelay.CancelOnMove");
-        LobbyTeleportDelayMessageType = config.getString("LobbySettings.TeleportDelay.MessageType");
-        LobbyTeleportBlindness = config.getBoolean("LobbySettings.TeleportDelay.Blindness");
-        LobbyTeleportBlindnessTime = config.getInt("LobbySettings.TeleportDelay.BlindnessTime");
-        TeleportOnJoinEnabled = config.getBoolean("TeleportOnJoin.Enabled");
-        TeleportOnJoinDestinationPlace = config.getString("TeleportOnJoin.DestinationPlaceSettings.DestinationPlace");
-        TeleportOnJoinSendMessage = config.getBoolean("TeleportOnJoin.DestinationPlaceSettings.SendMessageTeleport");
-        TeleportOnJoinSpawn = config.getString("TeleportOnJoin.DestinationPlaceSettings.Spawn");
-        TeleportOnFirstJoinJoinEnabled = config.getBoolean("TeleportOnJoin.OnlyFirstJoin.Enabled");
-        TeleportOnFirstJoinDestinationPlace = config.getString("TeleportOnJoin.OnlyFirstJoin.DestinationPlaceSettings.DestinationPlace");
-        TeleportOnFirstJoinSpawn = config.getString("TeleportOnJoin.OnlyFirstJoin.DestinationPlaceSettings.Spawn");
-        TeleportOnFirstJoinSendMessage = config.getBoolean("TeleportOnJoin.OnlyFirstJoin.DestinationPlaceSettings.SendMessageTeleport");
-        TeleportOnFirstJoinWelcomeMessage = config.getBoolean("TeleportOnJoin.OnlyFirstJoin.DestinationPlaceSettings.WelcomeMessage");
-        SpawnTeleportSoundEnabled = config.getBoolean("SpawnSettings.SoundSettings.Enabled");
-        SpawnTeleportSound = config.getString("SpawnSettings.SoundSettings.Sound");
-        SpawnTeleportSoundVolume = config.getInt("SpawnSettings.SoundSettings.Volume");
-        SpawnTeleportSoundPitch = config.getInt("SpawnSettings.SoundSettings.Pitch");
-        LobbyTeleportSoundEnabled = config.getBoolean("LobbySettings.SoundSettings.Enabled");
-        LobbyTeleportSound = config.getString("LobbySettings.SoundSettings.Sound");
-        LobbyTeleportSoundVolume = config.getInt("LobbySettings.SoundSettings.Volume");
-        LobbyTeleportSoundPitch = config.getInt("LobbySettings.SoundSettings.Pitch");
-        SpawnCommandsEnabled = config.getBoolean("SpawnSettings.Commands.Enabled");
-        SpawnPlayerCommands = config.getStringList("SpawnSettings.Commands.Player");
-        SpawnConsoleCommands = config.getStringList("SpawnSettings.Commands.Console");
-        LobbyCommandsEnabled = config.getBoolean("LobbySettings.Commands.Enabled");
-        LobbyPlayerCommands = config.getStringList("LobbySettings.Commands.Player");
-        LobbyConsoleCommands = config.getStringList("LobbySettings.Commands.Console");
-        TeleportOnVoidEnabled = config.getBoolean("TeleportOnVoid.Enabled");
-        TeleportOnVoidDamage = config.getBoolean("TeleportOnVoid.Damage");
-        TeleportOnVoidBlindness = config.getBoolean("TeleportOnVoid.Blindness");
-        TeleportOnVoidBlindnessTime = config.getInt("TeleportOnVoid.BlindnessTime");
-        TeleportOnVoidHeight = config.getInt("TeleportOnVoid.TeleportHeight");
-        TeleportOnVoidIgnoreWorlds = config.getStringList("TeleportOnVoid.IgnoredWorlds");
-        TeleportOnVoidDestinationPlace = config.getString("TeleportOnVoid.DestinationPlaceSettings.DestinationPlace");
-        TeleportOnVoidDestinationSpawn = config.getString("TeleportOnVoid.DestinationPlaceSettings.Spawn");
-        TeleportOnVoidSendMessage = config.getBoolean("TeleportOnVoid.DestinationPlaceSettings.SendMessageTeleport");
-        TeleportOnVoidSoundEnabled = config.getBoolean("TeleportOnVoid.SoundSettings.Enabled");
-        TeleportOnVoidSound = config.getString("TeleportOnVoid.SoundSettings.Sound");
-        TeleportOnVoidSoundVolume = config.getInt("TeleportOnVoid.SoundSettings.Volume");
-        TeleportOnVoidSoundPitch = config.getInt("TeleportOnVoid.SoundSettings.Pitch");
-        TeleportOnVoidCommandsEnabled = config.getBoolean("TeleportOnVoid.Commands.Enabled");
-        TeleportOnVoidCommandsPlayer = config.getStringList("TeleportOnVoid.Commands.Player");
-        TeleportOnVoidCommandsConsole = config.getStringList("TeleportOnVoid.Commands.Console");
-        TeleportOnRespawnEnabled = config.getBoolean("TeleportOnRespawn.Enabled");
-        TeleportOnRespawnIgnoreBed = config.getBoolean("TeleportOnRespawn.IgnoreBed");
-        TeleportOnRespawnBlindness = config.getBoolean("TeleportOnRespawn.Blindness");
-        TeleportOnRespawnBlindnessTime = config.getInt("TeleportOnRespawn.BlindnessTime");
-        TeleportOnRespawnIgnoredWorlds = config.getStringList("TeleportOnRespawn.IgnoredWorlds");
-        TeleportOnRespawnDestinationPlace = config.getString("TeleportOnRespawn.DestinationPlaceSettings.DestinationPlace");
-        TeleportOnRespawnDestinationSpawn = config.getString("TeleportOnRespawn.DestinationPlaceSettings.Spawn");
-        TeleportOnRespawnSendMessageTeleport = config.getBoolean("TeleportOnRespawn.DestinationPlaceSettings.SendMessageTeleport");
-        TeleportOnRespawnSoundEnabled = config.getBoolean("TeleportOnRespawn.SoundSettings.Enabled");
-        TeleportOnRespawnSound = config.getString("TeleportOnRespawn.SoundSettings.Sound");
-        TeleportOnRespawnSoundVolume = config.getInt("TeleportOnRespawn.SoundSettings.Volume");
-        TeleportOnRespawnSoundPitch = config.getInt("TeleportOnRespawn.SoundSettings.Pitch");
-        TeleportOnRespawnCommandsEnabled = config.getBoolean("TeleportOnRespawn.Commands.Enabled");
-        TeleportOnRespawnCommandsPlayer = config.getStringList("TeleportOnRespawn.Commands.Player");
-        TeleportOnRespawnCommandsConsole = config.getStringList("TeleportOnRespawn.Commands.Console");
-        TeleportOnJoinSoundEnabled = config.getBoolean("TeleportOnJoin.SoundSettings.Enabled");
-        TeleportOnJoinSound = config.getString("TeleportOnJoin.SoundSettings.Sound");
-        TeleportOnJoinSoundVolume = config.getInt("TeleportOnJoin.SoundSettings.Volume");
-        TeleportOnJoinSoundPitch = config.getInt("TeleportOnJoin.SoundSettings.Pitch");
-        TeleportOnFirstJoinSoundEnabled = config.getBoolean("TeleportOnJoin.OnlyFirstJoin.SoundSettings.Enabled");
-        TeleportOnFirstJoinSound = config.getString("TeleportOnJoin.OnlyFirstJoin.SoundSettings.Sound");
-        TeleportOnFirstJoinSoundVolume = config.getInt("TeleportOnJoin.OnlyFirstJoin.SoundSettings.Volume");
-        TeleportOnFirstJoinSoundPitch = config.getInt("TeleportOnJoin.OnlyFirstJoin.SoundSettings.Pitch");
-        TeleportOnFirstJoinCommandsEnabled = config.getBoolean("TeleportOnJoin.OnlyFirstJoin.Commands.Enabled");
-        TeleportOnFirstJoinCommandsPlayer = config.getStringList("TeleportOnJoin.OnlyFirstJoin.Commands.Player");
-        TeleportOnFirstJoinCommandsConsole = config.getStringList("TeleportOnJoin.OnlyFirstJoin.Commands.Console");
-        TeleportOnJoinCommandsEnabled = config.getBoolean("TeleportOnJoin.Commands.Enabled");
-        TeleportOnJoinCommandsPlayer = config.getStringList("TeleportOnJoin.Commands.Player");
-        TeleportOnJoinCommandsConsole = config.getStringList("TeleportOnJoin.Commands.Console");
-        LobbyCooldownEnabled = config.getBoolean("LobbySettings.Cooldown.Enabled");
-        LobbyCooldownTime = config.getInt("LobbySettings.Cooldown.Time");
-        SpawnCooldownEnabled = config.getBoolean("SpawnSettings.Cooldown.Enabled");
-        SpawnCooldownTime = config.getInt("SpawnSettings.Cooldown.Time");
-        LastLocationSave = config.getBoolean("LobbySettings.LastLocation.SaveSettings.Enabled");
-        LastLocationTeleport = config.getBoolean("LobbySettings.LastLocation.TeleportSettings.Teleport");
-        LastLocationInTheSameWorld = config.getBoolean("LobbySettings.LastLocation.TeleportSettings.InTheSameWorld");
-        LobbyLastLocationTeleportMode = config.getStringList("LobbySettings.LastLocation.TeleportSettings.TeleportMode");
-        LobbyLastLocationTeleportCommands = config.getStringList("LobbySettings.LastLocation.TeleportSettings.TeleportCommands");
-        LobbyLastLocationIgnoredWorldsToSave = config.getStringList("LobbySettings.LastLocation.IgnoredWorldsSave");
-        LobbyLastLocationChangeWorldType = config.getString("LobbySettings.LastLocation.TeleportSettings.ChangeWorld.Type");
-        LobbyLastLocationChangeWorldsSpecified = config.getStringList("LobbySettings.LastLocation.TeleportSettings.ChangeWorld.SpecifiedWorlds");
-        LobbyLastLocationChangeWorldsOneTime = config.getBoolean("LobbySettings.LastLocation.TeleportSettings.ChangeWorld.OneTime");
-        LobbyLastLocationCommandOneTime = config.getBoolean("LobbySettings.LastLocation.TeleportSettings.Command.OneTime");
-        LobbyLastLocationSoundEnabled = config.getBoolean("LobbySettings.LastLocation.SoundSettings.Enabled");
-        LobbyLastLocationSound = config.getString("LobbySettings.LastLocation.SoundSettings.Sound");
-        LobbyLastLocationSoundVolume = config.getInt("LobbySettings.LastLocation.SoundSettings.Volume");
-        LobbyLastLocationSoundPitch = config.getInt("LobbySettings.LastLocation.SoundSettings.Pitch");
-        LobbyLastLocationCommandsEnabled = config.getBoolean("LobbySettings.LastLocation.Commands.Enabled");
-        LobbyLastLocationCommandsPlayer = config.getStringList("LobbySettings.LastLocation.Commands.Player");
-        LobbyLastLocationCommandsConsole = config.getStringList("LobbySettings.LastLocation.Commands.Console");
-        LastLocationSaveType = config.getStringList("LobbySettings.LastLocation.SaveSettings.SaveType");
-        LobbyLastLocationCommandLocationNotExist = config.getString("LobbySettings.LastLocation.TeleportSettings.Command.LocationNotExist");
-        LobbyLastLocationCommandSpawn = config.getString("LobbySettings.LastLocation.TeleportSettings.Command.Spawn");
-        ReplacedMessagesConsole = config.getString("ReplacedMessages.Console");
+        CheckUpdate = config.getBoolean("check_update");
+        Update = config.getBoolean("auto_update");
+        Lang = config.getString("lang");
+        ReplacedMessagesConsole = config.getString("replaced_messages_console");
+
+        TeleportOnJoinEnabled = config.getBoolean("teleport_on_join.enabled");
+        TeleportOnJoinDestinationPlace = config.getString("teleport_on_join.destination_place_settings.destination_place");
+        TeleportOnJoinSendMessage = config.getBoolean("teleport_on_join.destination_place_settings.send_message_teleport");
+        TeleportOnJoinSpawn = config.getString("teleport_on_join.destination_place_settings.spawn");
+        TeleportOnJoinSoundEnabled = config.getBoolean("teleport_on_join.sound_settings.enabled");
+        TeleportOnJoinSound = config.getString("teleport_on_join.sound_settings.sound");
+        TeleportOnJoinSoundVolume = config.getInt("teleport_on_join.sound_settings.volume");
+        TeleportOnJoinSoundPitch = config.getInt("teleport_on_join.sound_settings.pitch");
+        TeleportOnJoinCommandsEnabled = config.getBoolean("teleport_on_join.commands.enabled");
+        TeleportOnJoinCommandsPlayer = config.getStringList("teleport_on_join.commands.player");
+        TeleportOnJoinCommandsConsole = config.getStringList("teleport_on_join.commands.console");
+
+        TeleportOnFirstJoinJoinEnabled = config.getBoolean("teleport_on_join.only_first_join.enabled");
+        TeleportOnFirstJoinDestinationPlace = config.getString("teleport_on_join.only_first_join.destination_place_settings.destination_place");
+        TeleportOnFirstJoinSpawn = config.getString("teleport_on_join.only_first_join.destination_place_settings.spawn");
+        TeleportOnFirstJoinSendMessage = config.getBoolean("teleport_on_join.only_first_join.destination_place_settings.send_message_teleport");
+        TeleportOnFirstJoinWelcomeMessage = config.getBoolean("teleport_on_join.only_first_join.destination_place_settings.welcome_message");
+        TeleportOnFirstJoinSoundEnabled = config.getBoolean("teleport_on_join.only_first_join.sound_settings.enabled");
+        TeleportOnFirstJoinSound = config.getString("teleport_on_join.only_first_join.sound_settings.sound");
+        TeleportOnFirstJoinSoundVolume = config.getInt("teleport_on_join.only_first_join.sound_settings.volume");
+        TeleportOnFirstJoinSoundPitch = config.getInt("teleport_on_join.only_first_join.sound_settings.pitch");
+        TeleportOnFirstJoinCommandsEnabled = config.getBoolean("teleport_on_join.only_first_join.commands.enabled");
+        TeleportOnFirstJoinCommandsPlayer = config.getStringList("teleport_on_join.only_first_join.commands.player");
+        TeleportOnFirstJoinCommandsConsole = config.getStringList("teleport_on_join.only_first_join.commands.console");
+
+        TeleportOnVoidEnabled = config.getBoolean("teleport_on_void.enabled");
+        TeleportOnVoidDamage = config.getBoolean("teleport_on_void.damage");
+        TeleportOnVoidBlindness = config.getBoolean("teleport_on_void.blindness");
+        TeleportOnVoidBlindnessTime = config.getInt("teleport_on_void.blindness_time");
+        TeleportOnVoidHeight = config.getInt("teleport_on_void.teleport_height");
+        TeleportOnVoidIgnoreWorlds = config.getStringList("teleport_on_void.ignored_worlds");
+        TeleportOnVoidDestinationPlace = config.getString("teleport_on_void.destination_place_settings.destination_place");
+        TeleportOnVoidDestinationSpawn = config.getString("teleport_on_void.destination_place_settings.spawn");
+        TeleportOnVoidSendMessage = config.getBoolean("teleport_on_void.destination_place_settings.send_message_teleport");
+        TeleportOnVoidSoundEnabled = config.getBoolean("teleport_on_void.sound_settings.enabled");
+        TeleportOnVoidSound = config.getString("teleport_on_void.sound_settings.sound");
+        TeleportOnVoidSoundVolume = config.getInt("teleport_on_void.sound_settings.volume");
+        TeleportOnVoidSoundPitch = config.getInt("teleport_on_void.sound_settings.pitch");
+        TeleportOnVoidCommandsEnabled = config.getBoolean("teleport_on_void.commands.enabled");
+        TeleportOnVoidCommandsPlayer = config.getStringList("teleport_on_void.commands.player");
+        TeleportOnVoidCommandsConsole = config.getStringList("teleport_on_void.commands.console");
+
+        TeleportOnRespawnEnabled = config.getBoolean("teleport_on_respawn.enabled");
+        TeleportOnRespawnIgnoreBed = config.getBoolean("teleport_on_respawn.ignore_bed");
+        TeleportOnRespawnBlindness = config.getBoolean("teleport_on_respawn.blindness");
+        TeleportOnRespawnBlindnessTime = config.getInt("teleport_on_respawn.blindness_time");
+        TeleportOnRespawnIgnoredWorlds = config.getStringList("teleport_on_respawn.ignored_worlds");
+        TeleportOnRespawnDestinationPlace = config.getString("teleport_on_respawn.destination_place_settings.destination_place");
+        TeleportOnRespawnDestinationSpawn = config.getString("teleport_on_respawn.destination_place_settings.spawn");
+        TeleportOnRespawnSendMessageTeleport = config.getBoolean("teleport_on_respawn.destination_place_settings.send_message_teleport");
+        TeleportOnRespawnSoundEnabled = config.getBoolean("teleport_on_respawn.sound_settings.enabled");
+        TeleportOnRespawnSound = config.getString("teleport_on_respawn.sound_settings.sound");
+        TeleportOnRespawnSoundVolume = config.getInt("teleport_on_respawn.sound_settings.volume");
+        TeleportOnRespawnSoundPitch = config.getInt("teleport_on_respawn.sound_settings.pitch");
+        TeleportOnRespawnCommandsEnabled = config.getBoolean("teleport_on_respawn.commands.enabled");
+        TeleportOnRespawnCommandsPlayer = config.getStringList("teleport_on_respawn.commands.player");
+        TeleportOnRespawnCommandsConsole = config.getStringList("teleport_on_respawn.commands.console");
     }
 
 
@@ -251,62 +152,6 @@ public class MainConfigManager {
 
     public String getLang() {
         return Lang;
-    }
-
-    public boolean isSpawnByWorld() {
-        return SpawnByWorld;
-    }
-
-    public int getSpawnTeleportDelay() {
-        return SpawnTeleportDelay;
-    }
-
-    public boolean isSpawnTeleportDelayEnabled() {
-        return SpawnTeleportDelayEnabled;
-    }
-
-    public boolean isSpawnTeleportDelayCancelOnMove() {
-        return SpawnTeleportDelayCancelOnMove;
-    }
-
-    public String getSpawnTeleportDelayMessageType() {
-        return SpawnTeleportDelayMessageType;
-    }
-
-    public boolean isSpawnTeleportBlindness() {
-        return SpawnTeleportBlindness;
-    }
-
-    public int getSpawnTeleportBlindnessTime() {
-        return SpawnTeleportBlindnessTime;
-    }
-
-    public boolean isLobbyEnabled() {
-        return LobbySettingsEnabled;
-    }
-
-    public int getLobbyTeleportDelay() {
-        return LobbyTeleportDelay;
-    }
-
-    public boolean isLobbyTeleportDelayEnabled() {
-        return LobbyTeleportDelayEnabled;
-    }
-
-    public boolean isLobbyTeleportDelayCancelOnMove() {
-        return LobbyTeleportDelayCancelOnMove;
-    }
-
-    public String getLobbyTeleportDelayMessageType() {
-        return LobbyTeleportDelayMessageType;
-    }
-
-    public boolean isLobbyTeleportBlindness() {
-        return LobbyTeleportBlindness;
-    }
-
-    public int getLobbyTeleportBlindnessTime() {
-        return LobbyTeleportBlindnessTime;
     }
 
     public boolean isTeleportOnJoinEnabled() {
@@ -343,62 +188,6 @@ public class MainConfigManager {
 
     public boolean isTeleportOnFirstJoinWelcomeMessage() {
         return TeleportOnFirstJoinWelcomeMessage;
-    }
-
-    public boolean isSpawnTeleportSoundEnabled() {
-        return SpawnTeleportSoundEnabled;
-    }
-
-    public String getSpawnTeleportSound() {
-        return SpawnTeleportSound;
-    }
-
-    public int getSpawnTeleportSoundVolume() {
-        return SpawnTeleportSoundVolume;
-    }
-
-    public int getSpawnTeleportSoundPitch() {
-        return SpawnTeleportSoundPitch;
-    }
-
-    public boolean isLobbyTeleportSoundEnabled() {
-        return LobbyTeleportSoundEnabled;
-    }
-
-    public String getLobbyTeleportSound() {
-        return LobbyTeleportSound;
-    }
-
-    public int getLobbyTeleportSoundVolume() {
-        return LobbyTeleportSoundVolume;
-    }
-
-    public int getLobbyTeleportSoundPitch() {
-        return LobbyTeleportSoundPitch;
-    }
-
-    public boolean isSpawnCommandsEnabled() {
-        return SpawnCommandsEnabled;
-    }
-
-    public List<String> getSpawnPlayerCommands() {
-        return SpawnPlayerCommands;
-    }
-
-    public List<String> getSpawnConsoleCommands() {
-        return SpawnConsoleCommands;
-    }
-
-    public boolean isLobbyCommandsEnabled() {
-        return LobbyCommandsEnabled;
-    }
-
-    public List<String> getLobbyPlayerCommands() {
-        return LobbyPlayerCommands;
-    }
-
-    public List<String> getLobbyConsoleCommands() {
-        return LobbyConsoleCommands;
     }
 
     public boolean isTeleportOnVoidEnabled() {
@@ -581,103 +370,11 @@ public class MainConfigManager {
         return TeleportOnJoinCommandsConsole;
     }
 
-    public boolean isLobbyCooldownEnabled() {
-        return LobbyCooldownEnabled;
-    }
-
-    public int getLobbyCooldownTime() {
-        return LobbyCooldownTime;
-    }
-
-    public boolean isSpawnCooldownEnabled() {
-        return SpawnCooldownEnabled;
-    }
-
-    public int getSpawnCooldownTime() {
-        return SpawnCooldownTime;
-    }
-
-    public boolean isLastLocationSave() {
-        return LastLocationSave;
-    }
-
-    public boolean isLastLocationTeleport() {
-        return LastLocationTeleport;
-    }
-
-    public boolean isLastLocationInTheSameWorld() {
-        return LastLocationInTheSameWorld;
-    }
-
-    public List<String> getLobbyLastLocationTeleportMode() {
-        return LobbyLastLocationTeleportMode;
-    }
-
-    public List<String> getLobbyLastLocationTeleportCommands() {
-        return LobbyLastLocationTeleportCommands;
-    }
-
-    public List<String> getLobbyLastLocationIgnoredWorldsToSave() {
-        return LobbyLastLocationIgnoredWorldsToSave;
-    }
-
-    public String getLobbyLastLocationChangeWorldType() {
-        return LobbyLastLocationChangeWorldType;
-    }
-
-    public List<String> getLobbyLastLocationChangeWorldsSpecified() {
-        return LobbyLastLocationChangeWorldsSpecified;
-    }
-
-    public boolean isLobbyLastLocationChangeWorldsOneTime() {
-        return LobbyLastLocationChangeWorldsOneTime;
-    }
-
-    public boolean isLobbyLastLocationCommandOneTime() {
-        return LobbyLastLocationCommandOneTime;
-    }
-
-    public boolean isLobbyLastLocationSoundEnabled() {
-        return LobbyLastLocationSoundEnabled;
-    }
-
-    public String getLobbyLastLocationSound() {
-        return LobbyLastLocationSound;
-    }
-
-    public int getLobbyLastLocationSoundVolume() {
-        return LobbyLastLocationSoundVolume;
-    }
-
-    public int getLobbyLastLocationSoundPitch() {
-        return LobbyLastLocationSoundPitch;
-    }
-
-    public boolean isLobbyLastLocationCommandsEnabled() {
-        return LobbyLastLocationCommandsEnabled;
-    }
-
-    public List<String> getLobbyLastLocationCommandsPlayer() {
-        return LobbyLastLocationCommandsPlayer;
-    }
-
-    public List<String> getLobbyLastLocationCommandsConsole() {
-        return LobbyLastLocationCommandsConsole;
-    }
-
-    public List<String> getLastLocationSaveType() {
-        return LastLocationSaveType;
-    }
-
-    public String getLobbyLastLocationCommandLocationNotExist() {
-        return LobbyLastLocationCommandLocationNotExist;
-    }
-
-    public String getLobbyLastLocationCommandSpawn() {
-        return LobbyLastLocationCommandSpawn;
-    }
-
     public String getReplacedMessagesConsole() {
         return ReplacedMessagesConsole;
+    }
+
+    public boolean isUpdate() {
+        return Update;
     }
 }

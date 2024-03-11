@@ -45,6 +45,8 @@ public class MainPermissionsManager {
     public boolean DelLobbyDefault;
     public String LobbyOther;
     public boolean LobbyOtherDefault;
+    public String Update;
+    public boolean UpdateDefault;
 
 
     public void reloadPermissions() {
@@ -98,6 +100,8 @@ public class MainPermissionsManager {
         DelLobbyDefault = permissions.getBoolean("DelLobby.Default");
         LobbyOther = permissions.getString("LobbyOther.Permission");
         LobbyOtherDefault = permissions.getBoolean("LobbyOther.Default");
+        Update = permissions.getString("Update.Permission");
+        UpdateDefault = permissions.getBoolean("Update.Default");
     }
 
     public String getLobby() {
@@ -250,5 +254,13 @@ public class MainPermissionsManager {
 
     public boolean isLobbyOtherDefault() {
         return LobbyOtherDefault;
+    }
+
+    public String getUpdate() {
+        return Update;
+    }
+
+    public boolean isUpdateDefault() {
+        return UpdateDefault;
     }
 }

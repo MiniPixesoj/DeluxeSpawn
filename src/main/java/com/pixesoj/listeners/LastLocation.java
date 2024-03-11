@@ -25,9 +25,9 @@ public class LastLocation implements Listener {
     @EventHandler
     public void changeWorld(PlayerChangedWorldEvent event) {
         Player player = event.getPlayer();
-        List<String> teleportMode = plugin.getMainConfigManager().getLobbyLastLocationTeleportMode();
+        List<String> teleportMode = plugin.getMainLobbyConfigManager().getLastLocationTeleportMode();
         if (teleportMode.contains("OnChangeWorld")){
-            boolean oneTime = plugin.getMainConfigManager().isLobbyLastLocationChangeWorldsOneTime();
+            boolean oneTime = plugin.getMainLobbyConfigManager().isLastLocationChangeWorldsOneTime();
             if (oneTime){
                 UUID uuid = player.getUniqueId();
                 FileConfiguration playerConfig = plugin.getPlayerDataManager().getPlayerConfig(uuid);
@@ -45,7 +45,7 @@ public class LastLocation implements Listener {
     }
 
     public void teleportPlayer(Player player, PlayerChangedWorldEvent event){
-        String changeWorldType = plugin.getMainConfigManager().getLobbyLastLocationChangeWorldType();
+        String changeWorldType = plugin.getMainLobbyConfigManager().getLastLocationChangeWorldType();
         if (changeWorldType.equals("AnyWorld")){
             getLastLocation(player);
             return;
@@ -53,7 +53,7 @@ public class LastLocation implements Listener {
 
         if (changeWorldType.equals("SpecifiedWorlds")){
             String playerWorld = event.getPlayer().getWorld().getName();
-            List<String> specifiedWorlds = plugin.getMainConfigManager().getLobbyLastLocationChangeWorldsSpecified();
+            List<String> specifiedWorlds = plugin.getMainLobbyConfigManager().getLastLocationChangeWorldsSpecified();
 
             if (specifiedWorlds.contains(playerWorld)) {
                 getLastLocation(player);
@@ -83,13 +83,13 @@ public class LastLocation implements Listener {
 
     public void soundLastLocation(Player player) {
         String prefix = plugin.getMainMessagesManager().getPrefix();
-        boolean enabled = plugin.getMainConfigManager().isLobbyLastLocationSoundEnabled();
+        boolean enabled = plugin.getMainLobbyConfigManager().isLastLocationSoundEnabled();
 
         if (!enabled) {
             return;
         }
 
-        String soundName = plugin.getMainConfigManager().getLobbyTeleportSound();
+        String soundName = plugin.getMainLobbyConfigManager().getTeleportSound();
 
         if (soundName == null) {
             handleNullSound(player, prefix);
@@ -98,8 +98,8 @@ public class LastLocation implements Listener {
 
         try {
             Sound sound = Sound.valueOf(soundName);
-            float volume = plugin.getMainConfigManager().getLobbyLastLocationSoundVolume();
-            float pitch = plugin.getMainConfigManager().getLobbyLastLocationSoundPitch();
+            float volume = plugin.getMainLobbyConfigManager().getLastLocationSoundVolume();
+            float pitch = plugin.getMainLobbyConfigManager().getLastLocationSoundPitch();
 
             player.playSound(player.getLocation(), sound, volume, pitch);
         } catch (IllegalArgumentException e) {
@@ -121,10 +121,10 @@ public class LastLocation implements Listener {
     }
 
     public void executeCommands(Player player) {
-        if (plugin.getMainConfigManager().isLobbyLastLocationCommandsEnabled()) {
+        if (plugin.getMainLobbyConfigManager().isLastLocationCommandsEnabled()) {
 
-            List<String> playerCommands = plugin.getMainConfigManager().getLobbyLastLocationCommandsPlayer();
-            List<String> consoleCommands = plugin.getMainConfigManager().getLobbyLastLocationCommandsConsole();
+            List<String> playerCommands = plugin.getMainLobbyConfigManager().getLastLocationCommandsPlayer();
+            List<String> consoleCommands = plugin.getMainLobbyConfigManager().getLastLocationCommandsConsole();
 
             for (String command : playerCommands) {
                 String replacedCommand = command.replace("%player%", player.getName());

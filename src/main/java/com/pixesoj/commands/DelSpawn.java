@@ -57,7 +57,7 @@ public class DelSpawn implements CommandExecutor {
 
     public void getRemoveSpawn(CommandSender sender, String[] args) {
         String prefix = plugin.getMainMessagesManager().getPrefix();
-        boolean spawnByWorld = plugin.getMainConfigManager().isSpawnByWorld();
+        boolean spawnByWorld = plugin.getMainSpawnConfigManager().isByWorld();
 
         if (spawnByWorld) {
             sendMessage(sender, prefix, "NotSpecified", args);

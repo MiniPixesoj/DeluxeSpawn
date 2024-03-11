@@ -46,7 +46,7 @@ public class Spawn implements CommandExecutor {
         boolean playerInCooldown = plugin.playerSpawnInCooldown(player);
         String bypassCooldownPermission = plugin.getMainPermissionsManager().getSpawnBypassCooldown();
         boolean bypassCooldownDefault = plugin.getMainPermissionsManager().isSpawnBypassCooldownDefault();
-        boolean cooldownEnabled = plugin.getMainConfigManager().isSpawnCooldownEnabled();
+        boolean cooldownEnabled = plugin.getMainSpawnConfigManager().isCooldownEnabled();
 
         if (!permission(player, spawnPermission, spawnPermissionDefault)){
             sendMessage(player, prefix, "NoPermission");
@@ -103,7 +103,7 @@ public class Spawn implements CommandExecutor {
         Player player = (Player) sender;
         String worldPlayer = player.getWorld().getName();
 
-        if (!plugin.getMainConfigManager().isSpawnByWorld()) {
+        if (!plugin.getMainSpawnConfigManager().isByWorld()) {
             if (!locations.contains("Spawn.world")) {
                 player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getSpawnDoesNotExist()));
                 return;
@@ -164,13 +164,13 @@ public class Spawn implements CommandExecutor {
         float pitch = (float) locations.getDouble("Spawn.pitch");
 
         Location spawnLocation = new Location(Bukkit.getWorld(worldName), x, y, z, yaw, pitch);
-        int delay = plugin.getMainConfigManager().getSpawnTeleportDelay();
+        int delay = plugin.getMainSpawnConfigManager().getTeleportDelay();
         DelaySpawn d = new DelaySpawn(plugin, delay, player, spawnLocation);
 
         String delayBypassPermission = plugin.getMainPermissionsManager().getSpawnBypassDelay();
         boolean delayBypassDefault = plugin.getMainPermissionsManager().isSpawnBypassDelayDefault();
 
-        if (!plugin.getMainConfigManager().isSpawnTeleportDelayEnabled()  || delayBypassDefault || player.hasPermission(delayBypassPermission)) {
+        if (!plugin.getMainSpawnConfigManager().isTeleportDelayEnabled()  || delayBypassDefault || player.hasPermission(delayBypassPermission)) {
             player.teleport(spawnLocation);
             plugin.addSpawnCooldown(player);
             sound(sender);
@@ -216,13 +216,13 @@ public class Spawn implements CommandExecutor {
         float pitch = (float) locations.getDouble(spawnKey + ".pitch");
 
         Location spawnLocation = new Location(player.getWorld(), x, y, z, yaw, pitch);
-        int delay = plugin.getMainConfigManager().getSpawnTeleportDelay();
+        int delay = plugin.getMainSpawnConfigManager().getTeleportDelay();
         DelaySpawn d = new DelaySpawn(plugin, delay, player, spawnLocation);
 
         String delayBypassPermission = plugin.getMainPermissionsManager().getSpawnBypassDelay();
         boolean delayBypassDefault = plugin.getMainPermissionsManager().isSpawnBypassDelayDefault();
 
-        if (!plugin.getMainConfigManager().isSpawnTeleportDelayEnabled()  || delayBypassDefault || player.hasPermission(delayBypassPermission)) {
+        if (!plugin.getMainSpawnConfigManager().isTeleportDelayEnabled()  || delayBypassDefault || player.hasPermission(delayBypassPermission)) {
             player.teleport(spawnLocation);
             plugin.addSpawnCooldown(player);
             sound(sender);
@@ -263,13 +263,13 @@ public class Spawn implements CommandExecutor {
         float pitch = (float) locations.getDouble(spawnKey + ".pitch");
 
         Location spawnLocation = new Location(targetWorld, x, y, z, yaw, pitch);
-        int delay = plugin.getMainConfigManager().getSpawnTeleportDelay();
+        int delay = plugin.getMainSpawnConfigManager().getTeleportDelay();
         DelaySpawnWorld d = new DelaySpawnWorld(plugin, delay, player, spawnLocation);
 
         String delayBypassPermission = plugin.getMainPermissionsManager().getSpawnBypassDelay();
         boolean delayBypassDefault = plugin.getMainPermissionsManager().isSpawnBypassDelayDefault();
 
-        if (!plugin.getMainConfigManager().isSpawnTeleportDelayEnabled()  || delayBypassDefault || player.hasPermission(delayBypassPermission)) {
+        if (!plugin.getMainSpawnConfigManager().isTeleportDelayEnabled()  || delayBypassDefault || player.hasPermission(delayBypassPermission)) {
             player.teleport(spawnLocation);
             plugin.addSpawnCooldown(player);
             sound(sender);
@@ -291,11 +291,11 @@ public class Spawn implements CommandExecutor {
     public void sound(CommandSender sender) {
         Player player = (Player) sender;
 
-        if (!plugin.getMainConfigManager().isSpawnTeleportSoundEnabled()) {
+        if (!plugin.getMainSpawnConfigManager().isTeleportSoundEnabled()) {
             return;
         }
 
-        String soundName = plugin.getMainConfigManager().getSpawnTeleportSound();
+        String soundName = plugin.getMainSpawnConfigManager().getTeleportSound();
         String prefix = plugin.getMainMessagesManager().getPrefix();
 
         if (soundName == null) {
@@ -311,8 +311,8 @@ public class Spawn implements CommandExecutor {
             return;
         }
 
-        float volume = plugin.getMainConfigManager().getSpawnTeleportSoundVolume();
-        float pitch = plugin.getMainConfigManager().getSpawnTeleportSoundPitch();
+        float volume = plugin.getMainSpawnConfigManager().getTeleportSoundVolume();
+        float pitch = plugin.getMainSpawnConfigManager().getTeleportSoundPitch();
 
         player.playSound(player.getLocation(), sound, volume, pitch);
     }
@@ -333,10 +333,10 @@ public class Spawn implements CommandExecutor {
     }
 
     public void executeCommands(CommandSender sender) {
-        if (plugin.getMainConfigManager().isSpawnCommandsEnabled()) {
+        if (plugin.getMainSpawnConfigManager().isCommandsEnabled()) {
 
-            List<String> playerCommands = plugin.getMainConfigManager().getSpawnPlayerCommands();
-            List<String> consoleCommands = plugin.getMainConfigManager().getSpawnConsoleCommands();
+            List<String> playerCommands = plugin.getMainSpawnConfigManager().getCommandsPlayer();
+            List<String> consoleCommands = plugin.getMainSpawnConfigManager().getCommandsConsole();
 
             Player player = (Player) sender;
             for (String command : playerCommands) {
@@ -354,10 +354,10 @@ public class Spawn implements CommandExecutor {
 
     public void sendMessage (CommandSender sender){
         Player player = (Player) sender;
-        if (Objects.equals(plugin.getMainConfigManager().getSpawnTeleportDelayMessageType(), "Chat")){
+        if (Objects.equals(plugin.getMainSpawnConfigManager().getTeleportDelayMessageType(), "Chat")){
             return;
         } else {
-            int time = plugin.getMainConfigManager().getSpawnTeleportDelay();
+            int time = plugin.getMainSpawnConfigManager().getTeleportDelay();
             String message = plugin.getMainMessagesManager().getSpawnMessageDelayTeleport();
             message = message.replace("%time%", String.valueOf(time));
             player.sendMessage(MessagesUtils.getColoredMessage(message));
@@ -371,7 +371,7 @@ public class Spawn implements CommandExecutor {
 
     public void handleSpawnCooldown(Player player){
         CooldownTimeProvider timeProvider = new SpawnCooldownProvider(plugin, player);
-        int time = plugin.getMainConfigManager().getSpawnCooldownTime();
+        int time = plugin.getMainSpawnConfigManager().getCooldownTime();
         CooldownSpawn c = new CooldownSpawn(plugin, timeProvider, time, player);
         c.cooldownSpawn();
     }

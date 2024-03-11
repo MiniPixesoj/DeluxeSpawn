@@ -3,18 +3,23 @@ package com.pixesoj.deluxespawn;
 import com.pixesoj.commands.*;
 import com.pixesoj.filesmanager.LocationsManager;
 import com.pixesoj.filesmanager.config.MainConfigManager;
+import com.pixesoj.filesmanager.lobby.MainLobbyConfigManager;
 import com.pixesoj.filesmanager.messages.MainMessagesManager;
 import com.pixesoj.filesmanager.permissions.MainPermissionsManager;
+import com.pixesoj.filesmanager.spawn.MainSpawnConfigManager;
 import com.pixesoj.listeners.*;
 import com.pixesoj.managers.playerdata.PlayerDataManager;
 import com.pixesoj.managers.UpdateCheckManager;
 import com.pixesoj.model.internal.UpdateCheckResult;
 import com.pixesoj.utils.MessagesUtils;
 import com.pixesoj.managers.dependencies.Metrics;
+import com.pixesoj.utils.ServerVersion;
+import com.pixesoj.utils.common.Updater;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.checkerframework.checker.units.qual.Prefix;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,18 +29,27 @@ public class DeluxeSpawn extends JavaPlugin {
     public String version;
     public static String prefix;
     private MainConfigManager mainConfigManager;
+    private MainLobbyConfigManager mainLobbyConfigManager;
+    private MainSpawnConfigManager mainSpawnConfigManager;
     private MainMessagesManager mainMessagesManager;
     private UpdateCheckManager updateCheckerManager;
     private LocationsManager locationsManager;
     private MainPermissionsManager mainPermissionsManager;
     private PlayerDataManager playerDataManager;
+    public static ServerVersion serverVersion;
+    private Updater updater;
+
+    public static void colored(String message) {
+        Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage(message));
+    }
 
     public void onEnable() {
-
         version = getDescription().getVersion();
         prefix = ChatColor.translateAlternateColorCodes('&', "&8[&eDeluxeSpawn&8] ");
 
         mainConfigManager = new MainConfigManager(this);
+        mainLobbyConfigManager = new MainLobbyConfigManager(this);
+        mainSpawnConfigManager = new MainSpawnConfigManager(this);
         mainMessagesManager = new MainMessagesManager(this);
         mainPermissionsManager = new MainPermissionsManager(this);
         playerDataManager = new PlayerDataManager(this);
@@ -60,14 +74,18 @@ public class DeluxeSpawn extends JavaPlugin {
         int pluginId = 21247;
         Metrics metrics = new Metrics(this, pluginId);
 
-        Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage("&6╔═══╦═══╦╗  ╔╗ ╔╦═╗╔═╦═══╦═══╦═══╦═══╦╗╔╗╔╦═╗ ╔╗"));
-        Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage("&6╚╗╔╗║╔══╣║  ║║ ║╠╗╚╝╔╣╔══╣╔═╗║╔═╗║╔═╗║║║║║║║╚╗║║"));
-        Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage("&6 ║║║║╚══╣║  ║║ ║║╚╗╔╝║╚══╣╚══╣╚═╝║║ ║║║║║║║╔╗╚╝║"));
-        Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage("&6 ║║║║╔══╣║ ╔╣║ ║║╔╝╚╗║╔══╩══╗║╔══╣╚═╝║╚╝╚╝║║╚╗║║"));
-        Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage("&6╔╝╚╝║╚══╣╚═╝║╚═╝╠╝╔╗╚╣╚══╣╚═╝║║  ║╔═╗╠╗╔╗╔╣║ ║║║"));
-        Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage("&6╚═══╩═══╩═══╩═══╩═╝╚═╩═══╩═══╩╝  ╚╝ ╚╝╚╝╚╝╚╝ ╚═╝"));
-        Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage(prefix + "&7Version: &a" + this.version));
-        Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage(prefix + "&7Author: &bPixesoj"));
+        getServer().getScheduler().runTaskLater(this, this::update, 20L);
+
+        colored("&6 ____   ___");
+        colored("&6(  _ \\ / __)  " + "&8By &bPixesoj &av" + this.version);
+        colored("&6 )(_) )\\__ \\  " + "&8Running on Bukkit - Paper");
+        colored("&6(____/ (___/");
+        colored(" ");
+        colored(prefix + "&aLoading configuration...");
+        colored(prefix + "&aLoading player data...");
+        colored(prefix + "&aLoading permissions...");
+        colored(prefix + "&aLoading locations...");
+        colored(prefix + "&aLoading messages...");
     }
 
 
@@ -99,6 +117,14 @@ public class DeluxeSpawn extends JavaPlugin {
         return mainConfigManager;
     }
 
+    public MainLobbyConfigManager getMainLobbyConfigManager() {
+        return mainLobbyConfigManager;
+    }
+
+    public MainSpawnConfigManager getMainSpawnConfigManager() {
+        return mainSpawnConfigManager;
+    }
+
     public MainMessagesManager getMainMessagesManager() {
         return mainMessagesManager;
     }
@@ -109,6 +135,10 @@ public class DeluxeSpawn extends JavaPlugin {
 
     public MainPermissionsManager getMainPermissionsManager() {
         return mainPermissionsManager;
+    }
+
+    public Updater getUpdater() {
+        return updater;
     }
 
     public void updateMessage(UpdateCheckResult result) {
@@ -125,6 +155,20 @@ public class DeluxeSpawn extends JavaPlugin {
 
     public LocationsManager getLocationsManager() {
         return locationsManager;
+    }
+
+    public void update(){
+        boolean enabled = getMainConfigManager().isUpdate();
+        if (!enabled){
+            return;
+        }
+        String currentVersion = version;
+        String jarName = getName();
+        int resourceID = 111403;
+        File pathName = new File("plugins");
+        String message = "&eDeluxeSpawn &8»  &bLooking for updates...";
+        colored(message);
+        updater = new Updater(currentVersion, jarName, true, resourceID, pathName, getServer().getConsoleSender());
     }
 
     public void registerMessages(){
@@ -177,6 +221,11 @@ public class DeluxeSpawn extends JavaPlugin {
         if (!messagesJa.exists()){
             saveResource("lang/messages-ja.yml", false);
         }
+    }
+
+    public void setVersion() {
+        String packageName = Bukkit.getServer().getClass().getPackage().getName();
+        serverVersion = ServerVersion.valueOf(packageName.replace("org.bukkit.craftbukkit.", ""));
     }
 
     private ArrayList<String> delayPlayers;

@@ -133,7 +133,7 @@ public class OnJoin implements Listener {
     public void onJoinGetSpawn (PlayerJoinEvent event){
         FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
         Player player = event.getPlayer();
-        if (plugin.getMainConfigManager().isSpawnByWorld()){
+        if (plugin.getMainSpawnConfigManager().isByWorld()){
             String world = plugin.getMainConfigManager().getTeleportOnJoinSpawn();
 
             double x = locations.getDouble("SpawnByWorld." + world + ".x");
@@ -237,7 +237,7 @@ public class OnJoin implements Listener {
     public void onFirstJoinGetSpawn (PlayerJoinEvent event) {
         FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
         Player player = event.getPlayer();
-        if (plugin.getMainConfigManager().isSpawnByWorld()) {
+        if (plugin.getMainSpawnConfigManager().isByWorld()) {
             String world = plugin.getMainConfigManager().getTeleportOnFirstJoinSpawn();
 
             double x = locations.getDouble("SpawnByWorld." + world + ".x");

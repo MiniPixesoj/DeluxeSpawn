@@ -1,6 +1,6 @@
 ##====================================##
 ## DeluxeSpawn plugin by Pixesoj.     ##
-## Version: 3.4.0                     ##
+## Version: 3.5.0                     ##
 ## Make sure to leave your            ##
 ## thoughts on a review.              ##
 ## www.spigotmc.org/resources/111403/ ##
@@ -107,4 +107,9 @@ LastLocation:
 # With this permission, players do not know if they have already used the command once
 LastLocationBypassCommand:
   Permission: deluxespawn.bypass.command.lastlocation
+  Default: false
+
+# This permission allows you to use the /deluxespawn update command to update the plugin to the latest version
+Update:
+  Permission: deluxespawn.command.update
   Default: false

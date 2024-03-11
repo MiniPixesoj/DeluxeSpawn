@@ -15,6 +15,6 @@ public class SpawnCooldownProvider implements CooldownTimeProvider {
 
     @Override
     public int getRemainingTime() {
-        return plugin.getMainConfigManager().getLobbyCooldownTime();
+        return plugin.getMainLobbyConfigManager().getCooldownTime();
     }
 }

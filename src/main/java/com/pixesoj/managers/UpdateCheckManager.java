@@ -28,7 +28,7 @@ public class UpdateCheckManager {
         }
     }
 
-    public String getLatestVersion() {
+    public  String getLatestVersion() {
         return this.latestVersion;
     }
 }

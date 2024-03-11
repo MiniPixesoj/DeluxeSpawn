@@ -1,6 +1,6 @@
 ##====================================##
 ## DeluxeSpawn plugin by Pixesoj.     ##
-## Version: 3.4.0                     ##
+## Version: 3.5.0                     ##
 ## Make sure to leave your            ##
 ## thoughts on a review.              ##
 ## www.spigotmc.org/resources/111403/ ##
@@ -15,7 +15,11 @@
 # If this option is set to true, players with permission deluxespawn.notify.update permission
 # will be notified (this option does not exclude console notifications)
 # I recommend leaving this option by default
-CheckUpdate: true
+check_update: true
+
+# If this option is true, every time a new version is available it will be
+# downloaded automatically when the server is turned on.
+auto_update: true
 
 # Select here the message file to be used
 # Available languages:
@@ -29,221 +33,12 @@ CheckUpdate: true
 # fr - French
 # de - German
 # ja - Japanese
-Lang: en
+lang: en
 
 # Here you can change/replace some messages
-ReplacedMessages:
+replaced_messages:
   # This is shown when the player is teleported from the console
-  Console: Console
-
-#================================================================================#
-#                                                                                #
-#                                  SPAWN OPTIONS                                 #
-#                                                                                #
-#================================================================================#
-
-# Add an alias to certain worlds to display in messages
-Aliases:
-  world: My world
-  other_world: AnotherWorld
-
-# Teleport delay options, if this option is not enabled, nothing in this section will be taken into account
-SpawnSettings:
-  # Choose whether /spawn should be handled per world
-  # true will handle one spawn for each world
-  # false will handle a single spawn for the entire server
-  SpawnByWorld: false
-
-  # Teleport delay settings
-  TeleportDelay:
-    # Enable teleport delay
-    Enabled: true
-    # How many seconds will there be a delay in the teleportation?
-    Seconds: 3
-    # Should teleport be canceled with movement?
-    CancelOnMove: true
-    # If Blindness effect was applied when teleporting
-    Blindness: false
-    # How many seconds will the effect last?
-    BlindnessTime: 3
-    # Select what type of message will be sent to the player at teleport time
-    # Available options: Chat (leave blank to disable)
-    MessageType: []
-
-  # Cooldown settings between each use of the /spawn command
-  # Restart the server if the counter reaches 0 and nothing happens from there
-  Cooldown:
-    # Will it be enabled?
-    Enabled: false
-    # Time in seconds between each use
-    Time: 30
-
-  # Sound settings
-  SoundSettings:
-    # Whether or not a sound would be sent when teleporting the player
-    Enabled: false
-    # Sound that will be sent to the player
-    # You can find a list of sounds at: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
-    Sound: ENTITY_ENDERMAN_TELEPORT
-    # Sound volume and tone
-    Volume: 1
-    Pitch: 1
-
-  # Here you can assign commands that are executed when teleporting the player
-  Commands:
-    # Enable or disable this option
-    Enabled: false
-    # Run commands from the player or from the console, you can use the %player% variable
-    # Run commands from the player
-    Player: []
-    # run commands from the console
-    Console:
-      - eco take %player% 500
-
-#================================================================================#
-#                                                                                #
-#                                  LOBBY OPTIONS                                 #
-#                                                                                #
-#================================================================================#
-
-# Lobby settings
-LobbySettings:
-  # Sets whether /lobby and /setlobby will be enabled
-  Enabled: false
-
-  # Settings for the player's last location
-  # Useful for when you want to simulate a network on a single server
-  # For this to work TeleportOnJoin must be enabled and DestinationPlace must be Lobby
-  LastLocation:
-
-    # Location saving settings
-    SaveSettings:
-      # Select whether the player's last location will be saved
-      # Basically activate/deactivate this function
-      Enabled: false
-      # When will the player's last location be saved?
-      # Available options
-      # OnPlayerQuit: This is when the player leaves the server on their own
-      # OnServerStop: this is when you turn off the server (from the console)
-      SaveType:
-        - OnServerStop
-        - OnPlayerQuit
-
-    # Enter this list the worlds where when the player disconnects then that location will not be saved
-    # Useful for when you have a Lobby world and a survival world and if the player previously disconnected
-    # in survival and then disconnected in the lobby then their location will still be saved in survival
-    IgnoredWorldsSave:
-      - Lobby
-      - OtherWorld
-
-    # Teleport settings
-    TeleportSettings:
-      # Will the player be teleported to the last saved location?
-      # Teleport: true
-      # When will the player teleport? Available options:
-      # OnChangeWorld: The player will be teleported when changing worlds, either any world or the specified worlds
-      # OnCommand: By selecting this option the player can teleport to his last location with...
-      # ...the command /deluxespawn lastlocation
-      TeleportMode:
-        - OnCommand
-
-      # Settings after choosing OnChangeWorld
-      ChangeWorld:
-        # Which worlds will be taken into account to teleport the player?
-        # Available options: AnyWorld, SpecifiedWorlds
-
-        # AnyWorld: Any world the player goes to will be teleported to their saved location.
-        # (I do not recommend this option, since when TeleportOnJoin is true and the player is in another world
-        # they will be teleported to their last location without going to the spawn/lobby)
-
-        # SpecifiedWorlds: Only when the player goes to a world specified in this list will they be teleported
-        Type: SpecifiedWorlds
-        SpecifiedWorlds:
-          - myworld
-          - otherworld
-        # Only teleport the player the first time they change worlds?
-        OneTime: true
-
-      # Settings if you added the OnCommand option
-      Command:
-        # Select if the command will only work once, if you select true and the player executes
-        # the command more than once it will no longer work until they log in again
-        OneTime: true
-        # Where the player will be sent if a location does not exist (usually if it is the first time entering)
-        # Available options:
-        # Spawn: Send the user to spawn
-        # SendMessage: Sends the user a message that a last location does not exist
-        # DoNothing: Do nothing
-        LocationNotExist: SendMessage
-        # If in LocationNotExist you selected Spawn and SpawnByWorld is true, which world should the player go to spawn?
-        Spawn: world
-
-      # Sound settings
-    SoundSettings:
-      # Whether or not a sound will be sent when teleporting the player to their last location
-      Enabled: false
-      # Sound that will be sent to the player
-      # You can find a list of sounds at: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
-      Sound: ENTITY_ENDERMAN_TELEPORT
-      # Sound volume and tone
-      Volume: 1
-      Pitch: 1
-
-    # Commands that will be executed when the player goes to their last location
-    Commands:
-      # Enable or disable this option
-      Enabled: false
-      # Run commands from the player or from the console, you can use the %player% variable
-      # Run commands from the player
-      Player: [ ]
-      # run commands from the console
-      Console: [ ]
-
-  # Teleport delay settings
-  TeleportDelay:
-    # Enable teleport delay
-    Enabled: true
-    # How many seconds will there be a delay in the teleportation?
-    Seconds: 3
-    # Should teleport be canceled with movement?
-    CancelOnMove: true
-    # If Blindness effect was applied when teleporting
-    Blindness: false
-    # How many seconds will the effect last?
-    BlindnessTime: 3
-    # Select what type of message will be sent to the player at teleport time
-    # Available options: Chat (leave blank to disable)
-    MessageType: []
-
-  # Cooldown settings between each use of the /lobby command
-  # Restart the server if the counter reaches 0 and nothing happens from there
-  Cooldown:
-    # Will it be enabled?
-    Enabled: false
-    # Time in seconds between each use
-    Time: 30
-
-  # Sound settings
-  SoundSettings:
-    # Whether or not a sound would be sent when teleporting the player
-    Enabled: true
-    # Sound that will be sent to the player
-    # You can find a list of sounds at: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
-    Sound: ENTITY_ENDERMAN_TELEPORT
-    # Sound volume and tone
-    Volume: 1
-    Pitch: 1
-
-  # Here you can assign commands that are executed when teleporting the player
-  Commands:
-    # Enable or disable this option
-    Enabled: false
-    # Run commands from the player or from the console, you can use the %player% variable
-    # Run commands from the player
-    Player: [ ]
-    # run commands from the console
-    Console:
-      - eco take %player% 500
+  console: Console
 
 #================================================================================#
 #                                                                                #
@@ -252,78 +47,78 @@ LobbySettings:
 #================================================================================#
 
 # Teleport settings when joining the server
-TeleportOnJoin:
+teleport_on_join:
   # Will teleportation be enabled when joining?
-  Enabled: false
+  enabled: false
 
   # Adjustments to where the player will be teleported to when joining
-  DestinationPlaceSettings:
+  destination_place_settings:
     # Where will the player be teleported to when joining?
     # Available options: Spawn, Lobby
-    DestinationPlace: Spawn
+    destination_place: Spawn
     # If DestinationPlace is Spawn and SpawnByWorld is true, what world will the player be transported to?
-    Spawn: world
+    spawn: world
     # If a message were sent when teleporting the player
-    SendMessageTeleport: false
+    send_message_teleport: false
 
   # Sound settings
-  SoundSettings:
+  sound_settings:
     # Whether or not a sound will be sent to the player when he enters the server
-    Enabled: false
+    enabled: false
     # Sound that will be sent to the player
     # You can find a list of sounds at: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
-    Sound: ENTITY_ENDERMAN_TELEPORT
+    sound: ENTITY_ENDERMAN_TELEPORT
     # Sound volume and tone
-    Volume: 1
-    Pitch: 1
+    volume: 1
+    pitch: 1
 
   # Command settings that are executed when the player enters
-  Commands:
+  commands:
     # Enable or disable this option
-    Enabled: false
+    enabled: false
     # Run commands from the player or from the console, you can use the %player% variable
     # Run commands from the player
-    Player: [ ]
+    player: [ ]
     # run commands from the console
-    Console: [ ]
+    console: [ ]
 
   # Teleport adjustments for players joining the server for the first time
-  OnlyFirstJoin:
+  only_first_join:
     # Whether the player is transported when they first join the server
-    Enabled: true
+    enabled: true
     # Destination settings where the player will be transported to for the first time
-    DestinationPlaceSettings:
+    destination_place_settings:
       # Destination where the player will be transported to for the first time
       # Available options: Spawn, Lobby
-      DestinationPlace: Lobby
+      destination_place: Lobby
       # If DestinationPlace is Spawn and SpawnByWorld is true, what world will the player be transported to?
-      Spawn: world
+      spawn: world
       # If a message were sent when teleporting the player
-      SendMessageTeleport: false
+      send_message_teleport: false
       # Will a welcome message be sent?
       # You can modify the message in your messages file in OnFirstJoinSendWelcomeMessage
-      WelcomeMessage: true
+      welcome_message: true
 
     # Sound settings
-    SoundSettings:
+    sound_settings:
       # Whether or not a sound will be sent to the player when he enters the server
-      Enabled: false
+      enabled: false
       # Sound that will be sent to the player
       # You can find a list of sounds at: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
-      Sound: ENTITY_ENDERMAN_TELEPORT
+      sound: ENTITY_ENDERMAN_TELEPORT
       # Sound volume and tone
-      Volume: 1
-      Pitch: 1
+      volume: 1
+      pitch: 1
 
     # Command settings that are executed when the player enters
-    Commands:
+    commands:
       # Enable or disable this option
-      Enabled: false
+      enabled: false
       # Run commands from the player or from the console, you can use the %player% variable
       # Run commands from the player
-      Player: [ ]
+      player: [ ]
       # run commands from the console
-      Console:
+      console:
         - give %player% diamond 1
 
 #================================================================================#
@@ -335,51 +130,51 @@ TeleportOnJoin:
 # Teleport adjustments when falling into the void
 # Unfortunately I couldn't solve the fact that the player receives fall damage
 # (if you know how to solve it, contact me)
-TeleportOnVoid:
+teleport_on_void:
   # If this feature is enabled?
-  Enabled: false
+  enabled: false
   # Worlds where this function will not be enabled
-  IgnoredWorlds:
+  ignored_worlds:
     - IgnoredWorld
   # If Blindness effect was granted when teleporting
-  Blindness: false
+  blindness: false
   # How many seconds will the effect last?
-  BlindnessTime: 3
+  blindness_time: 3
   # At what height will the player be transported?
   # Minimum recommended height for 1.8 onwards: -60
   # Minimum recommended height for 1.19 onwards: -100
-  TeleportHeight: -60
+  teleport_height: -60
 
   # Settings for where the player will be transported
-  DestinationPlaceSettings:
+  destination_place_settings:
     # Where will the player be teleported to?
     # Available options: Spawn, Lobby
-    DestinationPlace: Spawn
+    destination_place: Spawn
     # If DestinationPlace is Spawn and SpawnByWorld is true, what world will the player be transported to?
-    Spawn: world
+    spawn: world
     # If a message were sent when teleporting the player
-    SendMessageTeleport: false
+    send_message_teleport: false
 
   # Sound settings
-  SoundSettings:
+  sound_settings:
     # Whether or not a sound would be sent when teleporting the player
-    Enabled: false
+    enabled: false
     # Sound that will be sent to the player
     # You can find a list of sounds at: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
-    Sound: ENTITY_ENDERMAN_TELEPORT
+    sound: ENTITY_ENDERMAN_TELEPORT
     # Sound volume and tone
-    Volume: 1
-    Pitch: 1
+    volume: 1
+    pitch: 1
 
   # Here you can assign commands that are executed when teleporting the player
-  Commands:
+  commands:
     # Enable or disable this option
-    Enabled: false
+    enabled: false
     # Run commands from the player or from the console, you can use the %player% variable
     # Run commands from the player
-    Player: [ ]
+    player: [ ]
     # run commands from the console
-    Console:
+    console:
       - eco take %player% 500
 
 #================================================================================#
@@ -389,53 +184,47 @@ TeleportOnVoid:
 #================================================================================#
 
 # Teleport adjustments when respawning after dying
-TeleportOnRespawn:
+teleport_on_respawn:
   # If this feature will be enabled?
-  Enabled: true
+  enabled: true
   # Worlds where when the player dies this function does not take effect
-  IgnoredWorlds:
+  ignored_worlds:
     - IgnoredWorld
   # Whether or not to ignore whether the player has a bed (includes any type of respawn save)
   # # false means that the player will go to his own respawn
-  IgnoreBed: false
+  ignore_bed: false
   # If Blindness effect was granted when teleporting
-  Blindness: false
+  blindness: false
   # How many seconds will the effect last?
-  BlindnessTime: 3
+  blindness_time: 3
 
   # Adjustments to where the player will go when respawning
-  DestinationPlaceSettings:
+  destination_place_settings:
     # Where will the player be teleported to?
     # Available options: Spawn, Lobby
-    DestinationPlace: Spawn
+    destination_place: Spawn
     # If DestinationPlace is Spawn and SpawnByWorld is true, what world will the player be transported to?
-    Spawn: world
+    spawn: world
     # If a message were sent when teleporting the player
-    SendMessageTeleport: false
+    send_message_teleport: false
 
   # Sound settings
-  SoundSettings:
+  sound_settings:
     # Whether or not a sound would be sent when teleporting the player
-    Enabled: false
+    enabled: false
     # Sound that will be sent to the player
     # You can find a list of sounds at: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
-    Sound: ENTITY_ENDERMAN_TELEPORT
+    sound: ENTITY_ENDERMAN_TELEPORT
     # Sound volume and tone
-    Volume: 1
-    Pitch: 1
+    volume: 1
+    pitch: 1
 
   # Here you can assign commands that are executed when teleporting the player
-  Commands:
+  commands:
     # Enable or disable this option
-    Enabled: false
+    enabled: false
     # Run commands from the player or from the console, you can use the %player% variable
     # Run commands from the player
-    Player: [ ]
+    player: [ ]
     # run commands from the console
-<<<<<<< HEAD
-    Console: [ ]
-=======
-    Console:
-      - give %player% dirt 1
-      - eco take %player% 100
->>>>>>> 79d39cb862547375b8346a0db6bc8284515570fd
+    console: [ ]

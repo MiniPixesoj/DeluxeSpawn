@@ -31,7 +31,7 @@ public class DelayLobby {
 
     public void DelayLobby(){
         String prefix = plugin.getMainMessagesManager().getPrefix();
-        boolean cancelOnMove = plugin.getMainConfigManager().isLobbyTeleportDelayCancelOnMove();
+        boolean cancelOnMove = plugin.getMainLobbyConfigManager().isTeleportDelayCancelOnMove();
 
         BukkitScheduler sh = Bukkit.getServer().getScheduler();
         TaskID = sh.scheduleAsyncRepeatingTask(plugin, new Runnable() {
@@ -56,7 +56,7 @@ public class DelayLobby {
                         plugin.removePlayerTeleport(player);
                         return;
                     }
-                    if (Objects.equals(plugin.getMainConfigManager().getLobbyTeleportDelayMessageType(), "Chat")){
+                    if (Objects.equals(plugin.getMainLobbyConfigManager().getTeleportDelayMessageType(), "Chat")){
                         String message = plugin.getMainMessagesManager().getLobbyChatMessageInTeleport();
                         message = message.replace("%time%", String.valueOf(time));
                         player.sendMessage(MessagesUtils.getColoredMessage(message));
@@ -81,8 +81,8 @@ public class DelayLobby {
 
     public void BlindnessTeleport (CommandSender sender){
         Player player = (Player) sender;
-        int time = plugin.getMainConfigManager().getLobbyTeleportBlindnessTime();
-        if (plugin.getMainConfigManager().isLobbyTeleportBlindness()){
+        int time = plugin.getMainLobbyConfigManager().getTeleportDelayBlindnessTime();
+        if (plugin.getMainLobbyConfigManager().isTeleportDelayBlindness()){
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * time, 2));
             return;
         }
@@ -91,8 +91,8 @@ public class DelayLobby {
     public void lobbySound(CommandSender sender) {
         Player player = (Player) sender;
 
-        if (plugin.getMainConfigManager().isLobbyTeleportSoundEnabled()) {
-            String soundName = plugin.getMainConfigManager().getLobbyTeleportSound();
+        if (plugin.getMainLobbyConfigManager().isTeleportSoundEnabled()) {
+            String soundName = plugin.getMainLobbyConfigManager().getTeleportSound();
             String prefix = plugin.getMainMessagesManager().getPrefix();
             if (soundName == null){
                 String permission = plugin.getMainPermissionsManager().getNotify();
@@ -118,18 +118,18 @@ public class DelayLobby {
                 return;
             }
 
-            float volume = plugin.getMainConfigManager().getLobbyTeleportSoundVolume();
-            float pitch = plugin.getMainConfigManager().getLobbyTeleportSoundPitch();
+            float volume = plugin.getMainLobbyConfigManager().getTeleportSoundVolume();
+            float pitch = plugin.getMainLobbyConfigManager().getTeleportSoundPitch();
 
             player.playSound(player.getLocation(), sound, volume, pitch);
         }
     }
 
     public void lobbyExecuteCommands(CommandSender sender) {
-        if (plugin.getMainConfigManager().isLobbyCommandsEnabled()) {
+        if (plugin.getMainLobbyConfigManager().isCommandsEnabled()) {
 
-            List<String> playerCommands = plugin.getMainConfigManager().getLobbyPlayerCommands();
-            List<String> consoleCommands = plugin.getMainConfigManager().getLobbyConsoleCommands();
+            List<String> playerCommands = plugin.getMainLobbyConfigManager().getCommandsPlayer();
+            List<String> consoleCommands = plugin.getMainLobbyConfigManager().getCommandsConsole();
 
             Player player = (Player) sender;
             for (String command : playerCommands) {

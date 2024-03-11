@@ -2,7 +2,11 @@ package com.pixesoj.commands;
 
 import com.pixesoj.commands.tabcompleter.MainCommandTabCompleter;
 import com.pixesoj.deluxespawn.DeluxeSpawn;
+import com.pixesoj.subcommands.Reload;
+import com.pixesoj.subcommands.Update;
 import com.pixesoj.utils.MessagesUtils;
+import com.pixesoj.utils.common.SubCommand;
+import com.pixesoj.utils.common.Updater;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -12,47 +16,44 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-import java.util.UUID;
+import java.io.File;
+import java.util.*;
 
 public class MainCommand implements CommandExecutor {
 
-    private DeluxeSpawn plugin;
+    private final DeluxeSpawn plugin;
+    private final Map<String, SubCommand> subCommands;
 
     public MainCommand(DeluxeSpawn deluxeSpawn) {
         this.plugin = deluxeSpawn;
         plugin.getCommand("deluxespawn").setExecutor(this);
         plugin.getCommand("deluxespawn").setTabCompleter(new MainCommandTabCompleter(deluxeSpawn));
+
+        this.subCommands = new HashMap<>();
+        subCommands.put("update", new Update(deluxeSpawn));
+        subCommands.put("reload", new Reload(deluxeSpawn));
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-        if (!(sender instanceof Player)) {
-            if (args.length >= 1) {
-                if (args[0].equalsIgnoreCase("version")) {
-                    String latestVersion = this.plugin.getUpdateCheckerManager().getLatestVersion();
-                    String message = plugin.getMainMessagesManager().getCommandVersion().replace("%version%", plugin.getDescription().getVersion()).replace("%last_version%", latestVersion);
-                    sender.sendMessage(MessagesUtils.getColoredMessage(plugin.getMainMessagesManager().getPrefix() + message));
-                } else if (args[0].equalsIgnoreCase("help")) {
-                    help(sender);
-                } else if (args[0].equalsIgnoreCase("reload")) {
-                    reload(sender, args);
-
-                } else {
-                    sender.sendMessage(MessagesUtils.getColoredMessage("&eDeluxeSpawn &7by &fPixesoj"));
-                    sender.sendMessage(MessagesUtils.getColoredMessage(plugin.getMainMessagesManager().getCommandUsage()));
-                }
-            } else {
-                sender.sendMessage(MessagesUtils.getColoredMessage("&eDeluxeSpawn &7by &fPixesoj"));
-                sender.sendMessage(MessagesUtils.getColoredMessage(plugin.getMainMessagesManager().getCommandUsage()));
-
-            }
+        if (args.length == 0) {
+            sender.sendMessage(MessagesUtils.getColoredMessage("&eDeluxeSpawn &7by &fPixesoj"));
+            sender.sendMessage(MessagesUtils.getColoredMessage(plugin.getMainMessagesManager().getCommandUsage()));
             return true;
         }
 
-        Player player = (Player) sender;
+        String subCommandName = args[0].toLowerCase();
+        SubCommand subCommand = subCommands.get(subCommandName);
 
-        if (args.length >= 1) {
+        if (subCommand != null) {
+            return subCommand.execute(sender, Arrays.copyOfRange(args, 1, args.length));
+        } else {
+            sender.sendMessage(MessagesUtils.getColoredMessage("&eDeluxeSpawn &7by &fPixesoj"));
+            sender.sendMessage(MessagesUtils.getColoredMessage(plugin.getMainMessagesManager().getCommandUsage()));
+            return true;
+        }
+
+        /*if (args.length >= 1) {
             if (args[0].equalsIgnoreCase("version")) {
                 String permission = plugin.getMainPermissionsManager().getVersion();
                 if (plugin.getMainPermissionsManager().isVersionDefault()) {
@@ -89,6 +90,29 @@ public class MainCommand implements CommandExecutor {
                     noPermission(sender);
                     return true;
                 }
+            } else if (args[0].equalsIgnoreCase("update")) {
+                Updater updater = new Updater("3.3.0", "DeluxeSpawn", true, 111403, new File("plugins"), "/ds update");
+
+                if (updater == null) {
+                    sender.sendMessage("Updater not available. Check your configuration.");
+                    return true;
+                }
+
+                if (updater.isAlreadyDownloaded()) {
+                    sender.sendMessage(MessagesUtils.getColoredMessage("updater.already-downloaded"));
+                    return true;
+                }
+
+                if (!updater.isUpdateAvailable()) {
+                    sender.sendMessage(MessagesUtils.getColoredMessage("updater.no-update"));
+                    return true;
+                }
+
+                if (updater.downloadUpdate()) {
+                    sender.sendMessage(MessagesUtils.getColoredMessage("updater.success"));
+                } else {
+                    sender.sendMessage(MessagesUtils.getColoredMessage("updater.fail"));
+                }
             } else if (args[0].equalsIgnoreCase("lastlocation")) {
                 String permission = plugin.getMainPermissionsManager().getLastLocation();
                 boolean permissionDefault = plugin.getMainPermissionsManager().isLastLocationDefault();
@@ -107,40 +131,12 @@ public class MainCommand implements CommandExecutor {
 
         }
         return true;
-    }
+    }*/
 
-    public void help(CommandSender sender) {
+    /*public void help(CommandSender sender) {
         List<String> message = plugin.getMainMessagesManager().getCommandHelp();
         for (String m : message) {
             sender.sendMessage(MessagesUtils.getColoredMessage(m));
-        }
-    }
-
-    public void reload(CommandSender sender, String[] args) {
-        if (args.length == 1) {
-            sender.sendMessage(MessagesUtils.getColoredMessage(plugin.getMainMessagesManager().getPrefix() + plugin.getMainMessagesManager().getCommandInvalidArgument() + " &a/deluxespawn reload &8<&aconfig&8|&amessages&8|&apermissions&8|&aall&8>"));
-            return;
-        }
-        if (args[1].equalsIgnoreCase("config")) {
-            plugin.getMainConfigManager().reloadConfig();
-            sender.sendMessage(MessagesUtils.getColoredMessage(plugin.getMainMessagesManager().getPrefix() + plugin.getMainMessagesManager().getCommandReloadConfig()));
-        } else if (args[1].equalsIgnoreCase("messages")) {
-            plugin.getMainMessagesManager().reloadMessages();
-            sender.sendMessage(MessagesUtils.getColoredMessage(plugin.getMainMessagesManager().getPrefix() + plugin.getMainMessagesManager().getCommandReloadMessages()));
-
-        } else if (args[1].equalsIgnoreCase("permissions")) {
-            plugin.getMainPermissionsManager().reloadPermissions();
-            sender.sendMessage(MessagesUtils.getColoredMessage(plugin.getMainMessagesManager().getPrefix() + plugin.getMainMessagesManager().getCommandReloadMessages()));
-
-        } else if (args[1].equalsIgnoreCase("all")) {
-            plugin.getMainMessagesManager().reloadMessages();
-            plugin.getMainConfigManager().reloadConfig();
-            plugin.getMainPermissionsManager().reloadPermissions();
-            sender.sendMessage(MessagesUtils.getColoredMessage(plugin.getMainMessagesManager().getPrefix() + plugin.getMainMessagesManager().getCommandReloadAll().replace("%version%", plugin.getDescription().getVersion())));
-
-        } else {
-            sender.sendMessage(MessagesUtils.getColoredMessage(plugin.getMainMessagesManager().getPrefix() + plugin.getMainMessagesManager().getCommandInvalidArgument() + " &a/deluxespawn reload &8<&aconfig&8|&amessages&8|&apermissions&8|&aall&8>"));
-
         }
     }
 
@@ -165,7 +161,7 @@ public class MainCommand implements CommandExecutor {
 
     public void getLastLocation(UUID uuid, Player player, CommandSender sender) {
         FileConfiguration playerConfig = plugin.getPlayerDataManager().getPlayerConfig(uuid);
-        String notExistType = plugin.getMainConfigManager().getLobbyLastLocationCommandLocationNotExist();
+        String notExistType = plugin.getMainLobbyConfigManager().getLastLocationCommandLocationNotExist();
         if (playerConfig.contains("LastLocation.world")) {
             String worldName = playerConfig.getString("LastLocation.world");
             double x = playerConfig.getDouble("LastLocation.x");
@@ -189,7 +185,7 @@ public class MainCommand implements CommandExecutor {
         }
 
         else if (notExistType.equals("Spawn")) {
-            boolean spawnByWorld = plugin.getMainConfigManager().isSpawnByWorld();
+            boolean spawnByWorld = plugin.getMainSpawnConfigManager().isByWorld();
             FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
             if (!spawnByWorld){
                 double x = locations.getDouble("Spawn.x");
@@ -204,7 +200,7 @@ public class MainCommand implements CommandExecutor {
                 return;
             }
 
-            String world = plugin.getMainConfigManager().getLobbyLastLocationCommandSpawn();
+            String world = plugin.getMainLobbyConfigManager().getLastLocationCommandSpawn();
             String spawnKey = "Spawn." + world;
             double x = locations.getDouble(spawnKey + ".x");
             double y = locations.getDouble(spawnKey + ".y");
@@ -227,7 +223,7 @@ public class MainCommand implements CommandExecutor {
 
     public void getLastTeleportLocation(CommandSender sender, String[] args){
         Player player = (Player) sender;
-        boolean oneTime = plugin.getMainConfigManager().isLobbyLastLocationCommandOneTime();
+        boolean oneTime = plugin.getMainLobbyConfigManager().isLastLocationCommandOneTime();
         if (oneTime){
             boolean defaultPermission = plugin.getMainPermissionsManager().isLastLocationBypassCommandDefault();
             String permission = plugin.getMainPermissionsManager().getLastLocationBypassCommand();
@@ -248,13 +244,13 @@ public class MainCommand implements CommandExecutor {
     public void soundLastLocation(CommandSender sender) {
         Player player = (Player) sender;
         String prefix = plugin.getMainMessagesManager().getPrefix();
-        boolean enabled = plugin.getMainConfigManager().isLobbyLastLocationSoundEnabled();
+        boolean enabled = plugin.getMainLobbyConfigManager().isLastLocationSoundEnabled();
 
         if (!enabled) {
             return;
         }
 
-        String soundName = plugin.getMainConfigManager().getLobbyTeleportSound();
+        String soundName = plugin.getMainLobbyConfigManager().getLastLocationSound();
 
         if (soundName == null) {
             handleNullSound(sender, prefix);
@@ -263,8 +259,8 @@ public class MainCommand implements CommandExecutor {
 
         try {
             Sound sound = Sound.valueOf(soundName);
-            float volume = plugin.getMainConfigManager().getLobbyLastLocationSoundVolume();
-            float pitch = plugin.getMainConfigManager().getLobbyLastLocationSoundPitch();
+            float volume = plugin.getMainLobbyConfigManager().getLastLocationSoundVolume();
+            float pitch = plugin.getMainLobbyConfigManager().getLastLocationSoundPitch();
 
             player.playSound(player.getLocation(), sound, volume, pitch);
         } catch (IllegalArgumentException e) {
@@ -286,10 +282,10 @@ public class MainCommand implements CommandExecutor {
     }
 
     public void executeCommandsLastLocation(CommandSender sender) {
-        if (plugin.getMainConfigManager().isLobbyLastLocationCommandsEnabled()) {
+        if (plugin.getMainLobbyConfigManager().isLastLocationCommandsEnabled()) {
 
-            List<String> playerCommands = plugin.getMainConfigManager().getLobbyLastLocationCommandsPlayer();
-            List<String> consoleCommands = plugin.getMainConfigManager().getLobbyLastLocationCommandsConsole();
+            List<String> playerCommands = plugin.getMainLobbyConfigManager().getLastLocationCommandsPlayer();
+            List<String> consoleCommands = plugin.getMainLobbyConfigManager().getLastLocationCommandsConsole();
 
             for (String command : playerCommands) {
                 String replacedCommand = command.replace("%player%", sender.getName());
@@ -302,6 +298,7 @@ public class MainCommand implements CommandExecutor {
                 Bukkit.dispatchCommand(consoleSender, replacedCommand);
             }
         }
+    }*/
     }
 }
 

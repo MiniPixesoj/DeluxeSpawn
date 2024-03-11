@@ -97,6 +97,9 @@ LastLocationOneTime: "&cSolo puedes teletransportarte una vez."
 LastLocationNullSound: "&cEl sonido no puede estar vacío."
 LastLocationInvalidSound: "&6%sound% &cno es un sonido válido."
 
+ErrorGeneral: "&aOcurrió un error inesperado, revisa la consola"
+ErrorCommandReload: "Error durante la recarga. Consulta la consola para obtener más detalles"
+
 CommandHelp:
   - "&eDeluxeSpawn &8- &aAyuda"
   - ""

@@ -42,7 +42,7 @@ public class SetLobby implements CommandExecutor {
     }
 
     private boolean isLobbyEnabled(CommandSender sender) {
-        if (!plugin.getMainConfigManager().isLobbyEnabled()) {
+        if (!plugin.getMainLobbyConfigManager().isEnabled()) {
             String message = getPrefix() + plugin.getMainMessagesManager().getLobbyIsNotEnabled();
             sender.sendMessage(MessagesUtils.getColoredMessage(message));
             return false;

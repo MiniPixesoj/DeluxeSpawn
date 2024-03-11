@@ -84,6 +84,8 @@ public class MainMessagesManager {
     private String LobbyOtherConsolePlayerTeleport;
     private String LobbyOtherPlayerTeleport;
     private String LobbyOtherPlayerTeleported;
+    private String ErrorCommandReload;
+    private String ErrorGeneral;
 
     public void reloadMessages(){
         messageFile.reloadMessages();
@@ -186,6 +188,9 @@ public class MainMessagesManager {
         LobbyOtherConsolePlayerTeleport = messages.getString("LobbyOtherConsolePlayerTeleport");
         LobbyOtherPlayerTeleport = messages.getString("LobbyOtherPlayerTeleport");
         LobbyOtherPlayerTeleported = messages.getString("LobbyOtherPlayerTeleported");
+
+        ErrorCommandReload = messages.getString("ErrorCommandReload");
+        ErrorGeneral = messages.getString("ErrorGeneral");
     }
 
     public String getPrefix() {
@@ -478,5 +483,13 @@ public class MainMessagesManager {
 
     public String getLobbyOtherPlayerTeleported() {
         return LobbyOtherPlayerTeleported;
+    }
+
+    public String getErrorCommandReload() {
+        return ErrorCommandReload;
+    }
+
+    public String getErrorGeneral() {
+        return ErrorGeneral;
     }
 }

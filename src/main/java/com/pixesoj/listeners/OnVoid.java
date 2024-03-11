@@ -143,7 +143,7 @@ public class OnVoid implements Listener {
             return;
         }
         if (plugin.getMainConfigManager().getTeleportOnVoidDestinationPlace().equals("Spawn")){
-            if (plugin.getMainConfigManager().isSpawnByWorld()){
+            if (plugin.getMainSpawnConfigManager().isByWorld()){
                 String world = plugin.getMainConfigManager().getTeleportOnVoidDestinationSpawn();
                 if (locations.contains("SpawnByWorld." + world)){
                     double x = locations.getDouble("SpawnByWorld." + world + ".x");

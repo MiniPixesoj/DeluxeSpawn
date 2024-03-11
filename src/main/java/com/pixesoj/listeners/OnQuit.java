@@ -17,12 +17,12 @@ public class OnQuit implements Listener {
 
     @EventHandler
     public void saveLastLocation(PlayerQuitEvent event) {
-        boolean save = plugin.getMainConfigManager().isLastLocationSave();
+        boolean save = plugin.getMainLobbyConfigManager().isLastLocationSave();
         if (!save){
             return;
         }
 
-        List<String> saveType = plugin.getMainConfigManager().getLastLocationSaveType();
+        List<String> saveType = plugin.getMainLobbyConfigManager().getLastLocationSaveType();
         if (!saveType.contains("OnPlayerQuit")){
             return;
         }
@@ -33,7 +33,7 @@ public class OnQuit implements Listener {
         plugin.getPlayerDataManager().savePlayer(player);
         plugin.removeLastLocationOneTime(player);
 
-        List<String> ignoredWorlds = plugin.getMainConfigManager().getLobbyLastLocationIgnoredWorldsToSave();
+        List<String> ignoredWorlds = plugin.getMainLobbyConfigManager().getLastLocationSaveIgnoredWorlds();
         if (ignoredWorlds.contains(playerWorld)){
             return;
         }

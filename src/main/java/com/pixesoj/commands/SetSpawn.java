@@ -42,7 +42,7 @@ public class SetSpawn implements CommandExecutor {
         FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
         Location location = ((Player) sender).getLocation();
 
-        if (!plugin.getMainConfigManager().isSpawnByWorld()) {
+        if (!plugin.getMainSpawnConfigManager().isByWorld()) {
             setLocation(locations, "Spawn", location);
         } else {
             String worldName = location.getWorld().getName();

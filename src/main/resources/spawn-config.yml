@@ -1,0 +1,59 @@
+#================================================================================#
+#                                                                                #
+#                                  SPAWN OPTIONS                                 #
+#                                                                                #
+#================================================================================#
+
+# Add an alias to certain worlds to display in messages
+aliases:
+  world: My world
+  other_world: AnotherWorld
+
+# Spawn Settings
+by_world: false
+
+# Teleport Delay Options
+teleport_delay:
+  # Enable teleport delay
+  enabled: true
+  # How many seconds will there be a delay in the teleportation?
+  seconds: 3
+  # Should teleport be canceled with movement?
+  cancel_on_move: true
+  # If Blindness effect was applied when teleporting
+  blindness: false
+  # How many seconds will the effect last?
+  blindness_time: 3
+  # Select what type of message will be sent to the player at teleport time
+  # Available options: Chat (leave blank to disable)
+  message_type: []
+
+# Cooldown settings between each use of the /spawn command
+# Restart the server if the counter reaches 0 and nothing happens from there
+cooldown:
+  # Will it be enabled?
+  enabled: false
+  # Time in seconds between each use
+  time: 30
+
+# Sound settings
+sound_settings:
+  # Whether or not a sound would be sent when teleporting the player
+  enabled: false
+  # Sound that will be sent to the player
+  # You can find a list of sounds at: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
+  sound: ENTITY_ENDERMAN_TELEPORT
+  # Sound volume and tone
+  volume: 1
+  pitch: 1
+
+# Commands to be executed when teleporting the player
+commands:
+  # Enable or disable this option
+  enabled: false
+  # Run commands from the player or from the console, you can use the %player% variable
+  # Run commands from the player
+  player: []
+  # Run commands from the console
+  console:
+    - eco take %player% 500

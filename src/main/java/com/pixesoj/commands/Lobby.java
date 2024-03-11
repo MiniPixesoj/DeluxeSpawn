@@ -45,7 +45,7 @@ public class Lobby implements CommandExecutor {
         String prefix = plugin.getMainMessagesManager().getPrefix();
         String targetPlayerName = args[0];
         Player targetPlayer = Bukkit.getPlayer(targetPlayerName);
-        boolean enabled = plugin.getMainConfigManager().isLobbyEnabled();
+        boolean enabled = plugin.getMainLobbyConfigManager().isEnabled();
 
         if (!enabled) {
             sendMessage(sender, prefix, args, "LobbyNoEnabled");
@@ -104,7 +104,7 @@ public class Lobby implements CommandExecutor {
         String lobbyPermission = plugin.getMainPermissionsManager().getLobby();
         String bypassCooldownPermission = plugin.getMainPermissionsManager().getLobbyBypassCooldown();
         boolean bypassCooldownDefault = plugin.getMainPermissionsManager().isLobbyBypassCooldownDefault();
-        boolean cooldownEnabled = plugin.getMainConfigManager().isLobbyCooldownEnabled();
+        boolean cooldownEnabled = plugin.getMainLobbyConfigManager().isCooldownEnabled();
         boolean lobbyPermissionDefault = plugin.getMainPermissionsManager().isLobbyDefault();
         boolean playerInCooldown = plugin.playerLobbyInCooldown(player);
 
@@ -130,7 +130,7 @@ public class Lobby implements CommandExecutor {
         String targetPlayerName = args[0];
         Player targetPlayer = Bukkit.getPlayer(targetPlayerName);
 
-        if (!plugin.getMainConfigManager().isLobbyEnabled()) {
+        if (!plugin.getMainLobbyConfigManager().isEnabled()) {
             sendMessage(sender, prefix, args, "LobbyNoEnabled");
             return;
         }
@@ -176,7 +176,7 @@ public class Lobby implements CommandExecutor {
         FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
         String prefix = plugin.getMainMessagesManager().getPrefix();
 
-        if (!plugin.getMainConfigManager().isLobbyEnabled()) {
+        if (!plugin.getMainLobbyConfigManager().isEnabled()) {
             sendMessage(sender, prefix, args, "LobbyNoEnabled");
             return;
         }
@@ -198,13 +198,13 @@ public class Lobby implements CommandExecutor {
         }
 
         Location lobbyLocation = getLobbyLocation(locations);
-        int delay = plugin.getMainConfigManager().getLobbyTeleportDelay();
+        int delay = plugin.getMainLobbyConfigManager().getTeleportDelay();
         DelayLobby delayManager = new DelayLobby(plugin, delay, player, lobbyLocation);
 
         String delayBypassPermission = plugin.getMainPermissionsManager().getLobbyBypassDelay();
         boolean delayBypassDefault = plugin.getMainPermissionsManager().isLobbyBypassDelayDefault();
 
-        if (!plugin.getMainConfigManager().isLobbyTeleportDelayEnabled() || delayBypassDefault || player.hasPermission(delayBypassPermission)) {
+        if (!plugin.getMainLobbyConfigManager().isTeleportDelayEnabled() || delayBypassDefault || player.hasPermission(delayBypassPermission)) {
             teleportPlayer(player, lobbyLocation, prefix, sender, args);
             return;
         }
@@ -246,7 +246,7 @@ public class Lobby implements CommandExecutor {
         if (!plugin.playerInDelay(player)) {
             plugin.addPlayerTeleport(player);
             delayManager.DelayLobby();
-            if (!Objects.equals(plugin.getMainConfigManager().getLobbyTeleportDelayMessageType(), "Chat")) {
+            if (!Objects.equals(plugin.getMainLobbyConfigManager().getTeleportDelayMessageType(), "Chat")) {
                 sendMessage(player, prefix, args, "MessageDelay");
             }
         } else {
@@ -258,11 +258,11 @@ public class Lobby implements CommandExecutor {
         Player player = (Player) sender;
         String prefix = plugin.getMainMessagesManager().getPrefix();
 
-        if (!plugin.getMainConfigManager().isLobbyTeleportSoundEnabled()) {
+        if (!plugin.getMainLobbyConfigManager().isTeleportSoundEnabled()) {
             return;
         }
 
-        String soundName = plugin.getMainConfigManager().getLobbyTeleportSound();
+        String soundName = plugin.getMainLobbyConfigManager().getTeleportSound();
 
         if (soundName == null) {
             handleNullSound(sender, prefix, args);
@@ -271,8 +271,8 @@ public class Lobby implements CommandExecutor {
 
         try {
             Sound sound = Sound.valueOf(soundName);
-            float volume = plugin.getMainConfigManager().getLobbyTeleportSoundVolume();
-            float pitch = plugin.getMainConfigManager().getLobbyTeleportSoundPitch();
+            float volume = plugin.getMainLobbyConfigManager().getTeleportSoundVolume();
+            float pitch = plugin.getMainLobbyConfigManager().getTeleportSoundPitch();
 
             player.playSound(player.getLocation(), sound, volume, pitch);
         } catch (IllegalArgumentException e) {
@@ -292,10 +292,10 @@ public class Lobby implements CommandExecutor {
     }
 
     public void executeCommands(CommandSender sender) {
-        if (plugin.getMainConfigManager().isLobbyCommandsEnabled()) {
+        if (plugin.getMainLobbyConfigManager().isCommandsEnabled()) {
 
-            List<String> playerCommands = plugin.getMainConfigManager().getLobbyPlayerCommands();
-            List<String> consoleCommands = plugin.getMainConfigManager().getLobbyConsoleCommands();
+            List<String> playerCommands = plugin.getMainLobbyConfigManager().getCommandsPlayer();
+            List<String> consoleCommands = plugin.getMainLobbyConfigManager().getCommandsConsole();
 
             Player player = (Player) sender;
             for (String command : playerCommands) {
@@ -313,7 +313,7 @@ public class Lobby implements CommandExecutor {
 
     public void handleLobbyCooldown(Player player){
         CooldownTimeProvider timeProvider = new LobbyCooldownProvider(plugin, player);
-        int time = plugin.getMainConfigManager().getLobbyCooldownTime();
+        int time = plugin.getMainLobbyConfigManager().getCooldownTime();
         CooldownLobby c = new CooldownLobby(plugin, timeProvider, time, player);
         c.cooldownLobby();
     }
@@ -388,7 +388,7 @@ public class Lobby implements CommandExecutor {
                 break;
             }
             case "MessageDelay": {
-                int time = plugin.getMainConfigManager().getLobbyTeleportDelay();
+                int time = plugin.getMainLobbyConfigManager().getTeleportDelay();
                 String message = plugin.getMainMessagesManager().getLobbyMessageDelayTeleport();
                 message = prefix + message.replace("%time%", String.valueOf(time));
                 sender.sendMessage(MessagesUtils.getColoredMessage(message));
@@ -407,7 +407,7 @@ public class Lobby implements CommandExecutor {
                 break;
             }
             case "InvalidSound": {
-                String soundName = plugin.getMainConfigManager().getLobbyTeleportSound();
+                String soundName = plugin.getMainLobbyConfigManager().getTeleportSound();
                 String message = plugin.getMainMessagesManager().getLobbyInvalidSound();
                 message = prefix + message.replace("%sound%", soundName);
                 sender.sendMessage(MessagesUtils.getColoredMessage(message));

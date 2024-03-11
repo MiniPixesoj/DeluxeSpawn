@@ -20,7 +20,7 @@ public class SpawnTabCompleter implements TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        boolean spawnWorldEnabled = plugin.getMainConfigManager().isSpawnByWorld();
+        boolean spawnWorldEnabled = plugin.getMainSpawnConfigManager().isByWorld();
         if (command.getName().equalsIgnoreCase("spawn") && spawnWorldEnabled) {
             if (args.length == 1) {
                 List<String> worldNames = new ArrayList<>();

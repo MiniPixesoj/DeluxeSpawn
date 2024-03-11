@@ -30,7 +30,7 @@ public class DelaySpawn {
 
     public void DelaySpawnGlobal(){
         String prefix = plugin.getMainMessagesManager().getPrefix();
-        boolean cancelOnMove = plugin.getMainConfigManager().isSpawnTeleportDelayCancelOnMove();
+        boolean cancelOnMove = plugin.getMainSpawnConfigManager().isTeleportDelayCancelOnMove();
 
         BukkitScheduler sh = Bukkit.getServer().getScheduler();
         TaskID = sh.scheduleAsyncRepeatingTask(plugin, new Runnable() {
@@ -54,7 +54,7 @@ public class DelaySpawn {
                         plugin.removePlayerTeleport(player);
                         return;
                     }
-                    if (Objects.equals(plugin.getMainConfigManager().getSpawnTeleportDelayMessageType(), "Chat")){
+                    if (Objects.equals(plugin.getMainSpawnConfigManager().getTeleportDelayMessageType(), "Chat")){
                         String message = plugin.getMainMessagesManager().getSpawnChatMessageInTeleport();
                         message = message.replace("%time%", String.valueOf(time));
                         player.sendMessage(MessagesUtils.getColoredMessage(message));
@@ -79,8 +79,8 @@ public class DelaySpawn {
 
     public void BlindnessTeleport (CommandSender sender){
         Player player = (Player) sender;
-        int time = plugin.getMainConfigManager().getSpawnTeleportBlindnessTime();
-        if (plugin.getMainConfigManager().isSpawnTeleportBlindness()){
+        int time = plugin.getMainSpawnConfigManager().getTeleportBlindnessTime();
+        if (plugin.getMainSpawnConfigManager().isTeleportBlindness()){
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * time, 2));
         }
     }
@@ -88,8 +88,8 @@ public class DelaySpawn {
     public void spawnSound(CommandSender sender) {
         Player player = (Player) sender;
 
-        if (plugin.getMainConfigManager().isSpawnTeleportSoundEnabled()) {
-            String soundName = plugin.getMainConfigManager().getSpawnTeleportSound();
+        if (plugin.getMainSpawnConfigManager().isTeleportSoundEnabled()) {
+            String soundName = plugin.getMainSpawnConfigManager().getTeleportSound();
             String prefix = plugin.getMainMessagesManager().getPrefix();
             if (soundName == null){
                 String permission = plugin.getMainPermissionsManager().getNotify();
@@ -115,18 +115,18 @@ public class DelaySpawn {
                 return;
             }
 
-            float volume = plugin.getMainConfigManager().getSpawnTeleportSoundVolume();
-            float pitch = plugin.getMainConfigManager().getSpawnTeleportSoundPitch();
+            float volume = plugin.getMainSpawnConfigManager().getTeleportSoundVolume();
+            float pitch = plugin.getMainSpawnConfigManager().getTeleportSoundPitch();
 
             player.playSound(player.getLocation(), sound, volume, pitch);
         }
     }
 
     public void spawnExecuteCommands(CommandSender sender) {
-        if (plugin.getMainConfigManager().isSpawnCommandsEnabled()) {
+        if (plugin.getMainSpawnConfigManager().isCommandsEnabled()) {
 
-            List<String> playerCommands = plugin.getMainConfigManager().getSpawnPlayerCommands();
-            List<String> consoleCommands = plugin.getMainConfigManager().getSpawnConsoleCommands();
+            List<String> playerCommands = plugin.getMainSpawnConfigManager().getCommandsPlayer();
+            List<String> consoleCommands = plugin.getMainSpawnConfigManager().getCommandsConsole();
 
             Player player = (Player) sender;
             for (String command : playerCommands) {

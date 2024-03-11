@@ -21,6 +21,7 @@ public class MainCommandTabCompleter implements org.bukkit.command.TabCompleter 
             completions.add("version");
             completions.add("help");
             completions.add("lastlocation");
+            completions.add("update");
         } else if (args.length == 2 && args[0].equalsIgnoreCase("reload")) {
             completions.add("all");
             completions.add("config");

@@ -145,7 +145,7 @@ public class Updater {
             return false;
         }
         try {
-            URL url = new URL("https://github.com/MiniPixesoj/DeluxeSpawn/releases/download/3.4.0/DeluxeSpawn.jar");
+            URL url = new URL("https://github.com/MiniPixesoj/DeluxeSpawn/releases/download/" + this.latestVersion + "/DeluxeSpawn.jar");
             HttpURLConnection connection = (HttpURLConnection)url.openConnection();
             connection.addRequestProperty("User-Agent", this.jarName + "/" + this.currentVersion);
             connection.setInstanceFollowRedirects(true);
@@ -154,8 +154,7 @@ public class Updater {
                 throw new IllegalStateException("Response code was " + connection.getResponseCode());
             }
             ReadableByteChannel rbc = Channels.newChannel(connection.getInputStream());
-            String lastVersion = OtherUtils.getLastVersion();
-            File out = new File(this.pluginsFolder, this.jarName + "-" + lastVersion + ".jar");
+            File out = new File(this.pluginsFolder, this.jarName + "-" + this.latestVersion + ".jar");
             String message = "&aDownloading the latest update...";
             colored(sender, prefix, message);
             colored(sender, "", "&6" + (out.getAbsolutePath()));

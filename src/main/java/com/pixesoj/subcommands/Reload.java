@@ -17,11 +17,6 @@ public class Reload implements SubCommand {
         this.errorHandler = new ErrorHandler(plugin);
     }
 
-    public boolean execute(CommandSender sender, String[] args) {
-        reload(sender, args);
-        return true;
-    }
-
     public void colored(CommandSender sender, String prefix, String text){
         sender.sendMessage(MessagesUtils.getColoredMessage(prefix + text));
     }
@@ -30,10 +25,15 @@ public class Reload implements SubCommand {
         return plugin.getMainMessagesManager().getPrefix();
     }
 
+    public boolean execute(CommandSender sender, String[] args) {
+        reload(sender, args);
+        return true;
+    }
+
     public void reload(CommandSender sender, String[] args) {
         String p = plugin.getMainPermissionsManager().getReload();
         boolean d = plugin.getMainPermissionsManager().isReloadDefault();
-        if (!PlayerUtils.hasPermission(sender, p, d)){
+        if (!PlayerUtils.hasPermissionMessage(sender, p, d)){
             String m = plugin.getMainMessagesManager().getPermissionDenied();
             colored(sender, prefix(), m);
             return;

@@ -4,16 +4,13 @@ import com.pixesoj.deluxespawn.DeluxeSpawn;
 import com.pixesoj.utils.MessagesUtils;
 import com.pixesoj.utils.PlayerUtils;
 import com.pixesoj.utils.common.SubCommand;
-import com.pixesoj.utils.common.Updater;
 import org.bukkit.command.CommandSender;
 
-import java.io.File;
-
-public class Update implements SubCommand {
+public class Version implements SubCommand {
 
     private final DeluxeSpawn plugin;
 
-    public Update(DeluxeSpawn plugin) {
+    public Version (DeluxeSpawn plugin){
         this.plugin = plugin;
     }
 
@@ -27,24 +24,22 @@ public class Update implements SubCommand {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        String p = plugin.getMainPermissionsManager().getUpdate();
-        boolean d = plugin.getMainPermissionsManager().isUpdateDefault();
+        String p = plugin.getMainPermissionsManager().getVersion();
+        boolean d = plugin.getMainPermissionsManager().isVersionDefault();
         if (!PlayerUtils.hasPermissionMessage(sender, p, d)){
             String message = plugin.getMainMessagesManager().getPermissionDenied();
             colored(sender, prefix(), message);
             return true;
         }
 
-        String currentVersion = plugin.version;
-        String jarName = plugin.getName();
-        boolean enabled = true;
-        int resourceID = 111403;
-        File pathName = new File("plugins");
+        version(sender);
+        return false;
+    }
 
-        Updater updater = new Updater(currentVersion, jarName, enabled, resourceID, pathName, sender);
-        String message = "&bLooking for updates...";
+    public void version(CommandSender sender) {
+        String latestVersion = this.plugin.getUpdateCheckerManager().getLatestVersion();
+        String message = plugin.getMainMessagesManager().getCommandVersion();
+        message = message.replace("%version%", plugin.getDescription().getVersion()).replace("%last_version%", latestVersion);
         colored(sender, prefix(), message);
-
-        return true;
     }
 }

@@ -1,7 +1,8 @@
 package com.pixesoj.listeners;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
-import com.pixesoj.utils.MessagesUtils;
+import com.pixesoj.utils.spigot.CommandUtils;
+import com.pixesoj.utils.spigot.MessagesUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -77,7 +78,11 @@ public class LastLocation implements Listener {
             player.teleport(lastLocation);
             plugin.addLastLocationOneTime(player);
             soundLastLocation(player);
-            executeCommands(player);
+
+            List<String> cmdPlayer = plugin.getMainLobbyConfigManager().getLastLocationCommandsPlayer();
+            List<String> cmdConsole = plugin.getMainLobbyConfigManager().getLastLocationCommandsConsole();
+            boolean enabled = plugin.getMainLobbyConfigManager().isLastLocationCommandsEnabled();
+            CommandUtils.executeCommands(player, enabled, cmdPlayer, cmdConsole);
         }
     }
 
@@ -118,25 +123,6 @@ public class LastLocation implements Listener {
     private void handleInvalidSound(Player player, String prefix, String soundName) {
         String message = prefix + plugin.getMainMessagesManager().getLastLocationInvalidSound().replace("%sound%", soundName);
         player.sendMessage(message);
-    }
-
-    public void executeCommands(Player player) {
-        if (plugin.getMainLobbyConfigManager().isLastLocationCommandsEnabled()) {
-
-            List<String> playerCommands = plugin.getMainLobbyConfigManager().getLastLocationCommandsPlayer();
-            List<String> consoleCommands = plugin.getMainLobbyConfigManager().getLastLocationCommandsConsole();
-
-            for (String command : playerCommands) {
-                String replacedCommand = command.replace("%player%", player.getName());
-                Bukkit.dispatchCommand(player, replacedCommand);
-            }
-
-            CommandSender consoleSender = Bukkit.getConsoleSender();
-            for (String command : consoleCommands) {
-                String replacedCommand = command.replace("%player%", player.getName());
-                Bukkit.dispatchCommand(consoleSender, replacedCommand);
-            }
-        }
     }
 }
 

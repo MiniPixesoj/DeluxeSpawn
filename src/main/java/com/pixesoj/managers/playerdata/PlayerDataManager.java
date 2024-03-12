@@ -69,6 +69,10 @@ public class PlayerDataManager {
     public void savePlayerLocation(Player player, double x, double y, double z, float yaw, float pitch) {
         UUID uuid = player.getUniqueId();
         File playerFile = getPlayerFile(uuid);
+        String dataType = plugin.getMainConfigManager().getDataType();
+        if (!dataType.equals("localhost")){
+            return;
+        }
 
         if (!playerFile.exists()) {
             try {

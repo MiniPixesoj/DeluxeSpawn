@@ -1,21 +1,13 @@
 package com.pixesoj.commands;
 
-import com.pixesoj.commands.tabcompleter.MainCommandTabCompleter;
 import com.pixesoj.deluxespawn.DeluxeSpawn;
 import com.pixesoj.subcommands.*;
-import com.pixesoj.utils.MessagesUtils;
+import com.pixesoj.utils.spigot.MessagesUtils;
 import com.pixesoj.utils.common.SubCommand;
-import com.pixesoj.utils.common.Updater;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 
-import java.io.File;
 import java.util.*;
 
 public class MainCommand implements CommandExecutor {
@@ -26,7 +18,7 @@ public class MainCommand implements CommandExecutor {
     public MainCommand(DeluxeSpawn deluxeSpawn) {
         this.plugin = deluxeSpawn;
         plugin.getCommand("deluxespawn").setExecutor(this);
-        plugin.getCommand("deluxespawn").setTabCompleter(new MainCommandTabCompleter(deluxeSpawn));
+        plugin.getCommand("deluxespawn").setTabCompleter(new com.pixesoj.commands.tabcompleter.MainCommand(deluxeSpawn));
 
         this.subCommands = new HashMap<>();
         subCommands.put("help", new Help(deluxeSpawn));

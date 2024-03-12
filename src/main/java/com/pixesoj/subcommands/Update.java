@@ -1,10 +1,10 @@
 package com.pixesoj.subcommands;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
-import com.pixesoj.utils.MessagesUtils;
-import com.pixesoj.utils.PlayerUtils;
+import com.pixesoj.utils.spigot.MessagesUtils;
+import com.pixesoj.utils.spigot.PlayerUtils;
 import com.pixesoj.utils.common.SubCommand;
-import com.pixesoj.utils.common.Updater;
+import com.pixesoj.utils.common.UpdaterUtils;
 import org.bukkit.command.CommandSender;
 
 import java.io.File;
@@ -41,7 +41,7 @@ public class Update implements SubCommand {
         int resourceID = 111403;
         File pathName = new File("plugins");
 
-        Updater updater = new Updater(currentVersion, jarName, enabled, resourceID, pathName, sender);
+        UpdaterUtils updater = new UpdaterUtils(currentVersion, jarName, enabled, resourceID, pathName, sender);
         String message = "&bLooking for updates...";
         colored(sender, prefix(), message);
 

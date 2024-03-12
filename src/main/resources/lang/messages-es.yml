@@ -1,9 +1,9 @@
 #==============================================================================================#
 #                                                                                              #
-# Message file in Spanish, you can find the default of this file at:                           #
+# Archivo de mensajes en español, puedes encontrar el archivo predeterminado en:              #
 # https://github.com/MiniPixesoj/DeluxeSpawn/blob/main/src/main/resources/lang/messages-es.yml #
 #                                                                                              #
-# You can use Minecraft version 1.16 colors in all messages                                    #
+# Puedes utilizar los colores de la versión 1.16 de Minecraft en todos los mensajes            #
 #                                                                                              #
 #==============================================================================================#
 
@@ -98,16 +98,21 @@ LastLocationNullSound: "&cEl sonido no puede estar vacío."
 LastLocationInvalidSound: "&6%sound% &cno es un sonido válido."
 
 ErrorGeneral: "&aOcurrió un error inesperado, revisa la consola"
-ErrorCommandReload: "Error durante la recarga. Consulta la consola para obtener más detalles"
+ErrorCommandReload: "&cError durante la recarga. Consulta la consola para obtener más detalles"
+ErrorNullSound: "&cEl sonido no puede estar vacio &8(&7%description%&8)"
+ErrorInvalidSound: "&6%sound% &cno es un sonido válido &8(&7%description%&8)"
 
 CommandHelp:
   - "&eDeluxeSpawn &8- &aAyuda"
   - ""
   - "&a/ds version &8- &7Ver la versión del plugin."
-  - "&a/ds reload <config|messages|all> &8- &7Recargar las configuraciones."
+  - "&a/ds update &8- &7Actualizar el plugin a la última versión."
+  - "&a/ds reload &8- &7Recargar las configuraciones."
   - "&a/ds help &8- &7Mostrar este mensaje de ayuda."
   - "&a/ds lastlocation &8- &7Ir a la última ubicación guardada."
   - "&a/spawn <world> &8- &7Ir al punto de inicio del mundo actual o de otro mundo."
   - "&a/setspawn &8- &7Establecer un punto de inicio."
-  - "&a/lobby &8- &7Ir al lobby."
-  - "&a/setlobby &8- &7Establecer un lobby."
+  - "&a/delspawn <global|spawn> - &7Eliminar un punto de inicio."
+  - "&a/lobby <jugador> &8- &7Ir al lobby o enviar a un jugador."
+  - "&a/setlobby &8- &7Establecer el lobby."
+  - "&a/dellobby - &7Eliminar el lobby."

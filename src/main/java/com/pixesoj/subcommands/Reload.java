@@ -2,8 +2,8 @@ package com.pixesoj.subcommands;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
 import com.pixesoj.handlers.ErrorHandler;
-import com.pixesoj.utils.MessagesUtils;
-import com.pixesoj.utils.PlayerUtils;
+import com.pixesoj.utils.spigot.MessagesUtils;
+import com.pixesoj.utils.spigot.PlayerUtils;
 import com.pixesoj.utils.common.SubCommand;
 import org.bukkit.command.CommandSender;
 
@@ -71,6 +71,8 @@ public class Reload implements SubCommand {
 
     private void reloadConfig(CommandSender sender) {
         plugin.getMainConfigManager().reloadConfig();
+        plugin.getMainLobbyConfigManager().reloadConfig();
+        plugin.getMainSpawnConfigManager().reloadConfig();
         String m = plugin.getMainMessagesManager().getCommandReloadConfig();
         colored(sender, prefix(), m);
     }

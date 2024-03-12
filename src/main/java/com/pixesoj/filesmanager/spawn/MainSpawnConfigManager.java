@@ -31,7 +31,7 @@ public class MainSpawnConfigManager {
     }
 
     public MainSpawnConfigManager(DeluxeSpawn plugin) {
-        configFile = new CustomSpawnConfig("spawn-config.yml", null, plugin);
+        configFile = new CustomSpawnConfig("spawn.yml", null, plugin);
         configFile.registerSpawnConfig();
         loadSpawnConfig();
     }

@@ -1,6 +1,6 @@
-package com.pixesoj.utils;
+package com.pixesoj.utils.common;
 
-public enum ServerVersion {
+public enum SvVersionUtils {
     v1_8_R1,
     v1_8_R2,
     v1_8_R3,
@@ -27,7 +27,7 @@ public enum ServerVersion {
     v1_20_R3;
 
 
-    public boolean serverVersionGreaterEqualThan(ServerVersion version1, ServerVersion version2) {
+    public boolean serverVersionGreaterEqualThan(SvVersionUtils version1, SvVersionUtils version2) {
         return version1.ordinal() >= version2.ordinal();
     }
 }

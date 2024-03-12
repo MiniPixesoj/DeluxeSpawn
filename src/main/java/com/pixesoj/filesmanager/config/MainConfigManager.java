@@ -66,6 +66,14 @@ public class MainConfigManager {
     public List<String> TeleportOnJoinCommandsConsole;
     public String ReplacedMessagesConsole;
     public boolean Update;
+    public String DataType;
+    public String DataAddress;
+    public int DataPort;
+    public String Database;
+    public String DataUserName;
+    public String DataPassword;
+    public String DataTableName;
+
 
 
     public void reloadConfig(){
@@ -84,7 +92,7 @@ public class MainConfigManager {
         CheckUpdate = config.getBoolean("check_update");
         Update = config.getBoolean("auto_update");
         Lang = config.getString("lang");
-        ReplacedMessagesConsole = config.getString("replaced_messages_console");
+        ReplacedMessagesConsole = config.getString("replaced_messages.console");
 
         TeleportOnJoinEnabled = config.getBoolean("teleport_on_join.enabled");
         TeleportOnJoinDestinationPlace = config.getString("teleport_on_join.destination_place_settings.destination_place");
@@ -143,6 +151,14 @@ public class MainConfigManager {
         TeleportOnRespawnCommandsEnabled = config.getBoolean("teleport_on_respawn.commands.enabled");
         TeleportOnRespawnCommandsPlayer = config.getStringList("teleport_on_respawn.commands.player");
         TeleportOnRespawnCommandsConsole = config.getStringList("teleport_on_respawn.commands.console");
+
+        DataType = config.getString("database.type");
+        DataAddress = config.getString("database.address");
+        DataPort = config.getInt("database.port");
+        Database = config.getString("database.database");
+        DataUserName = config.getString("database.username");
+        DataPassword = config.getString("database.password");
+        DataTableName = config.getString("database.table_name");
     }
 
 
@@ -376,5 +392,33 @@ public class MainConfigManager {
 
     public boolean isUpdate() {
         return Update;
+    }
+
+    public String getDataType() {
+        return DataType;
+    }
+
+    public String getDataAddress() {
+        return DataAddress;
+    }
+
+    public int getDataPort() {
+        return DataPort;
+    }
+
+    public String getDatabase() {
+        return Database;
+    }
+
+    public String getDataUserName() {
+        return DataUserName;
+    }
+
+    public String getDataPassword() {
+        return DataPassword;
+    }
+
+    public String getDataTableName() {
+        return DataTableName;
     }
 }

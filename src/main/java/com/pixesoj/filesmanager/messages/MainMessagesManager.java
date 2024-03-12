@@ -86,6 +86,8 @@ public class MainMessagesManager {
     private String LobbyOtherPlayerTeleported;
     private String ErrorCommandReload;
     private String ErrorGeneral;
+    private String ErrorNullSound;
+    private String ErrorInvalidSound;
 
     public void reloadMessages(){
         messageFile.reloadMessages();
@@ -191,6 +193,8 @@ public class MainMessagesManager {
 
         ErrorCommandReload = messages.getString("ErrorCommandReload");
         ErrorGeneral = messages.getString("ErrorGeneral");
+        ErrorNullSound = messages.getString("ErrorNullSound");
+        ErrorInvalidSound = messages.getString("ErrorInvalidSound");
     }
 
     public String getPrefix() {
@@ -491,5 +495,13 @@ public class MainMessagesManager {
 
     public String getErrorGeneral() {
         return ErrorGeneral;
+    }
+
+    public String getErrorNullSound() {
+        return ErrorNullSound;
+    }
+
+    public String getErrorInvalidSound() {
+        return ErrorInvalidSound;
     }
 }

@@ -1,7 +1,6 @@
-package com.pixesoj.utils;
+package com.pixesoj.utils.common;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
-import com.pixesoj.model.internal.UpdateCheckResult;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -11,18 +10,18 @@ import java.net.URL;
 public class OtherUtils {
 
     public static boolean isNew() {
-        ServerVersion serverVersion = DeluxeSpawn.serverVersion;
-        return serverVersion.serverVersionGreaterEqualThan(serverVersion, ServerVersion.v1_16_R1);
+        SvVersionUtils serverVersion = DeluxeSpawn.serverVersion;
+        return serverVersion.serverVersionGreaterEqualThan(serverVersion, SvVersionUtils.v1_16_R1);
     }
 
     public static boolean isLegacy() {
-        ServerVersion serverVersion = DeluxeSpawn.serverVersion;
-        return !serverVersion.serverVersionGreaterEqualThan(serverVersion, ServerVersion.v1_13_R1);
+        SvVersionUtils serverVersion = DeluxeSpawn.serverVersion;
+        return !serverVersion.serverVersionGreaterEqualThan(serverVersion, SvVersionUtils.v1_13_R1);
     }
 
     public static boolean isTrimNew() {
-        ServerVersion serverVersion = DeluxeSpawn.serverVersion;
-        return serverVersion.serverVersionGreaterEqualThan(serverVersion, ServerVersion.v1_20_R1);
+        SvVersionUtils serverVersion = DeluxeSpawn.serverVersion;
+        return serverVersion.serverVersionGreaterEqualThan(serverVersion, SvVersionUtils.v1_20_R1);
     }
 
     public static String getLastVersion() {

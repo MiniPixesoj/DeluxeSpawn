@@ -51,7 +51,7 @@ public class MainLobbyConfigManager {
     }
 
     public MainLobbyConfigManager(DeluxeSpawn plugin) {
-        configFile = new CustomLobbyConfig("lobby-config.yml", null, plugin);
+        configFile = new CustomLobbyConfig("lobby.yml", null, plugin);
         configFile.registerLobbyConfig();
         loadLobbyConfig();
     }
@@ -73,9 +73,9 @@ public class MainLobbyConfigManager {
         TeleportSoundVolume = config.getInt("sound_settings.volume");
         TeleportSoundPitch = config.getInt("sound_settings.pitch");
 
-        CommandsEnabled = config.getBoolean("LobbySettings.Commands.Enabled");
-        CommandsPlayer = config.getStringList("LobbySettings.Commands.Player");
-        CommandsConsole = config.getStringList("LobbySettings.Commands.Console");
+        CommandsEnabled = config.getBoolean("commands.enabled");
+        CommandsPlayer = config.getStringList("commands.player");
+        CommandsConsole = config.getStringList("commands.console");
 
         CooldownEnabled = config.getBoolean("cooldown.enabled");
         CooldownTime = config.getInt("cooldown.time");

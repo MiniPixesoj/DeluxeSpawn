@@ -1,8 +1,8 @@
 package com.pixesoj.subcommands;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
-import com.pixesoj.utils.MessagesUtils;
-import com.pixesoj.utils.PlayerUtils;
+import com.pixesoj.utils.spigot.MessagesUtils;
+import com.pixesoj.utils.spigot.PlayerUtils;
 import com.pixesoj.utils.common.SubCommand;
 import org.bukkit.command.CommandSender;
 

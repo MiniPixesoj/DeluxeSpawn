@@ -1,8 +1,8 @@
 package com.pixesoj.commands;
 
-import com.pixesoj.commands.tabcompleter.SpawnTabCompleter;
+import com.pixesoj.commands.tabcompleter.Spawn;
 import com.pixesoj.deluxespawn.DeluxeSpawn;
-import com.pixesoj.utils.MessagesUtils;
+import com.pixesoj.utils.spigot.MessagesUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,7 +15,7 @@ public class DelSpawn implements CommandExecutor {
     public DelSpawn(DeluxeSpawn deluxeSpawn) {
         this.plugin = deluxeSpawn;
         plugin.getCommand("delspawn").setExecutor(this);
-        plugin.getCommand("delspawn").setTabCompleter(new SpawnTabCompleter(deluxeSpawn));
+        plugin.getCommand("delspawn").setTabCompleter(new Spawn(deluxeSpawn));
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

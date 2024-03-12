@@ -1,7 +1,8 @@
 package com.pixesoj.managers.delays;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
-import com.pixesoj.utils.MessagesUtils;
+import com.pixesoj.utils.spigot.CommandUtils;
+import com.pixesoj.utils.spigot.MessagesUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -72,11 +73,15 @@ public class DelayLobby {
         player.teleport(l);
         plugin.addLobbyCooldown(player);
         lobbySound(player);
-        lobbyExecuteCommands(player);
         plugin.removePlayerTeleport(player);
         player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getLobbyTeleported()));
         BlindnessTeleport(player);
         playerLobbyMovedDuringDelay = false;
+
+        List<String> cmdPlayer = plugin.getMainLobbyConfigManager().getCommandsPlayer();
+        List<String> cmdConsole = plugin.getMainLobbyConfigManager().getCommandsConsole();
+        boolean enabled = plugin.getMainLobbyConfigManager().isCommandsEnabled();
+        CommandUtils.executeCommands(player, enabled, cmdPlayer, cmdConsole);
     }
 
     public void BlindnessTeleport (CommandSender sender){
@@ -122,26 +127,6 @@ public class DelayLobby {
             float pitch = plugin.getMainLobbyConfigManager().getTeleportSoundPitch();
 
             player.playSound(player.getLocation(), sound, volume, pitch);
-        }
-    }
-
-    public void lobbyExecuteCommands(CommandSender sender) {
-        if (plugin.getMainLobbyConfigManager().isCommandsEnabled()) {
-
-            List<String> playerCommands = plugin.getMainLobbyConfigManager().getCommandsPlayer();
-            List<String> consoleCommands = plugin.getMainLobbyConfigManager().getCommandsConsole();
-
-            Player player = (Player) sender;
-            for (String command : playerCommands) {
-                String replacedCommand = command.replace("%player%", player.getName());
-                Bukkit.dispatchCommand(sender, replacedCommand);
-            }
-
-            CommandSender consoleSender = Bukkit.getConsoleSender();
-            for (String command : consoleCommands) {
-                String replacedCommand = command.replace("%player%", sender.getName());
-                Bukkit.dispatchCommand(consoleSender, replacedCommand);
-            }
         }
     }
 }

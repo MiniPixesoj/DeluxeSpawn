@@ -1,6 +1,10 @@
 package com.pixesoj.listeners;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
+import com.pixesoj.managers.MySQL;
+import com.pixesoj.utils.spigot.MessagesUtils;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,7 +34,6 @@ public class OnQuit implements Listener {
         Player player = event.getPlayer();
         String playerWorld = player.getWorld().getName();
 
-        plugin.getPlayerDataManager().savePlayer(player);
         plugin.removeLastLocationOneTime(player);
 
         List<String> ignoredWorlds = plugin.getMainLobbyConfigManager().getLastLocationSaveIgnoredWorlds();
@@ -38,12 +41,25 @@ public class OnQuit implements Listener {
             return;
         }
 
-        double x = player.getLocation().getX();
-        double y = player.getLocation().getY();
-        double z = player.getLocation().getZ();
-        float yaw = player.getLocation().getYaw();
-        float pitch = player.getLocation().getPitch();
+        String dataType = plugin.getMainConfigManager().getDataType();
+        if (dataType.equals("MySQL")){
+            MySQL.playerCreate(plugin.getMySQL(), player.getUniqueId(), player, plugin);
+            return;
+        }
 
-        plugin.getPlayerDataManager().savePlayerLocation(player, x, y, z, yaw, pitch);
+        if (dataType.equals("localhost")) {
+            double x = player.getLocation().getX();
+            double y = player.getLocation().getY();
+            double z = player.getLocation().getZ();
+            float yaw = player.getLocation().getYaw();
+            float pitch = player.getLocation().getPitch();
+
+            plugin.getPlayerDataManager().savePlayerLocation(player, x, y, z, yaw, pitch);
+            plugin.getPlayerDataManager().savePlayer(player);
+        }
+
+        else {
+            Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage("&cEl tipo de data no es valido, usa &aMySQL &co &alocalhost"));
+        }
     }
 }

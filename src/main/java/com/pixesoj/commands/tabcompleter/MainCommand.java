@@ -1,7 +1,7 @@
 package com.pixesoj.commands.tabcompleter;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
-import com.pixesoj.utils.PlayerUtils;
+import com.pixesoj.utils.spigot.PlayerUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
@@ -9,9 +9,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainCommandTabCompleter implements org.bukkit.command.TabCompleter {
+public class MainCommand implements org.bukkit.command.TabCompleter {
     private final DeluxeSpawn plugin;
-    public MainCommandTabCompleter(DeluxeSpawn deluxeSpawn) {
+    public MainCommand(DeluxeSpawn deluxeSpawn) {
         this.plugin = deluxeSpawn;
     }
     @Override

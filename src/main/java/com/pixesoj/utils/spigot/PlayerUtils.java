@@ -1,7 +1,11 @@
-package com.pixesoj.utils;
+package com.pixesoj.utils.spigot;
 
+import com.pixesoj.deluxespawn.DeluxeSpawn;
+import com.pixesoj.managers.MySQL;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.List;
 
 public class PlayerUtils {
 

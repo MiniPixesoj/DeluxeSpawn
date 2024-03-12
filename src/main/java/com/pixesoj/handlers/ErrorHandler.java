@@ -1,7 +1,7 @@
 package com.pixesoj.handlers;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
-import com.pixesoj.utils.MessagesUtils;
+import com.pixesoj.utils.spigot.MessagesUtils;
 import org.bukkit.command.CommandSender;
 
 import java.util.HashMap;
@@ -21,6 +21,7 @@ public class ErrorHandler {
 
         errorMessages.put("general", plugin.getMainMessagesManager().getErrorGeneral());
         errorMessages.put("reload", plugin.getMainMessagesManager().getErrorCommandReload());
+        errorMessages.put("nullsound", plugin.getMainMessagesManager().getErrorNullSound());
     }
 
     public void handleException(CommandSender sender, Exception exception) {

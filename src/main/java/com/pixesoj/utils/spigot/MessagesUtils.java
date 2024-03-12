@@ -1,4 +1,4 @@
-package com.pixesoj.utils;
+package com.pixesoj.utils.spigot;
 
 import org.bukkit.Bukkit;
 

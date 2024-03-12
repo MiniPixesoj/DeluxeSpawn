@@ -5,7 +5,10 @@ import com.pixesoj.managers.cooldown.CooldownLobby;
 import com.pixesoj.managers.cooldown.LobbyCooldownProvider;
 import com.pixesoj.managers.delays.DelayLobby;
 import com.pixesoj.model.internal.CooldownTimeProvider;
-import com.pixesoj.utils.MessagesUtils;
+import com.pixesoj.utils.spigot.CommandUtils;
+import com.pixesoj.utils.spigot.LocationUtils;
+import com.pixesoj.utils.spigot.MessagesUtils;
+import com.pixesoj.utils.spigot.SoundUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -77,7 +80,7 @@ public class Lobby implements CommandExecutor {
     public void getLobbyConsole(CommandSender sender, Player player, String[] args) {
         FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
         String prefix = plugin.getMainMessagesManager().getPrefix();
-        Location location = getLobbyLocation(locations);
+        Location location = LocationUtils.getLobby(locations);
 
         String targetPlayerName = args[0];
         Player targetPlayer = Bukkit.getPlayer(targetPlayerName);
@@ -151,7 +154,7 @@ public class Lobby implements CommandExecutor {
     public void getLobbyOtherPlayer(CommandSender sender, Player player, String[] args) {
         FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
         String prefix = plugin.getMainMessagesManager().getPrefix();
-        Location location = getLobbyLocation(locations);
+        Location location = LocationUtils.getLobby(locations);
 
         String targetPlayerName = args[0];
         Player targetPlayer = Bukkit.getPlayer(targetPlayerName);
@@ -197,7 +200,7 @@ public class Lobby implements CommandExecutor {
             return;
         }
 
-        Location lobbyLocation = getLobbyLocation(locations);
+        Location lobbyLocation = LocationUtils.getLobby(locations);
         int delay = plugin.getMainLobbyConfigManager().getTeleportDelay();
         DelayLobby delayManager = new DelayLobby(plugin, delay, player, lobbyLocation);
 
@@ -223,23 +226,21 @@ public class Lobby implements CommandExecutor {
         return true;
     }
 
-    private Location getLobbyLocation(FileConfiguration locations) {
-        String world = locations.getString("Lobby.world");
-        double x = locations.getDouble("Lobby.x");
-        double y = locations.getDouble("Lobby.y");
-        double z = locations.getDouble("Lobby.z");
-        float yaw = (float) locations.getDouble("Lobby.yaw");
-        float pitch = (float) locations.getDouble("Lobby.pitch");
-        assert world != null;
-        return new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
-    }
-
     private void teleportPlayer(Player player, Location location, String prefix, CommandSender sender, String[] args) {
-        sound(sender, args);
-        executeCommands(sender);
+        boolean enabledSound = plugin.getMainLobbyConfigManager().isTeleportSoundEnabled();
+        String soundName = plugin.getMainLobbyConfigManager().getTeleportSound();
+        int volume = plugin.getMainLobbyConfigManager().getTeleportSoundVolume();
+        int pitch = plugin.getMainLobbyConfigManager().getTeleportSoundPitch();
+        SoundUtils.getSound(plugin, sender, enabledSound, soundName, volume, pitch, "On the teleport to the lobby");
+
         player.teleport(location);
         sendMessage(sender, prefix, args, "Teleported");
         plugin.addLobbyCooldown(player);
+
+        List<String> cmdPlayer = plugin.getMainLobbyConfigManager().getCommandsPlayer();
+        List<String> cmdConsole = plugin.getMainLobbyConfigManager().getCommandsConsole();
+        boolean enabled = plugin.getMainLobbyConfigManager().isCommandsEnabled();
+        CommandUtils.executeCommands(player, enabled, cmdPlayer, cmdConsole);
     }
 
     private void handleLobbyTeleportDelay(Player player, DelayLobby delayManager, String prefix, String[] args) {
@@ -251,63 +252,6 @@ public class Lobby implements CommandExecutor {
             }
         } else {
             sendMessage(player, prefix, args, "InTeleport");
-        }
-    }
-
-    public void sound(CommandSender sender, String[] args) {
-        Player player = (Player) sender;
-        String prefix = plugin.getMainMessagesManager().getPrefix();
-
-        if (!plugin.getMainLobbyConfigManager().isTeleportSoundEnabled()) {
-            return;
-        }
-
-        String soundName = plugin.getMainLobbyConfigManager().getTeleportSound();
-
-        if (soundName == null) {
-            handleNullSound(sender, prefix, args);
-            return;
-        }
-
-        try {
-            Sound sound = Sound.valueOf(soundName);
-            float volume = plugin.getMainLobbyConfigManager().getTeleportSoundVolume();
-            float pitch = plugin.getMainLobbyConfigManager().getTeleportSoundPitch();
-
-            player.playSound(player.getLocation(), sound, volume, pitch);
-        } catch (IllegalArgumentException e) {
-            handleInvalidSound(player, prefix, args);
-        }
-    }
-
-    private void handleNullSound(CommandSender sender, String prefix, String[] args) {
-        String permission = plugin.getMainPermissionsManager().getNotify();
-        if (plugin.getMainPermissionsManager().isNotifyDefault() || sender.hasPermission(permission)) {
-            sendMessage(sender, prefix, args, "NullSound");
-        }
-    }
-
-    private void handleInvalidSound(Player player, String prefix, String[] args) {
-        sendMessage(player, prefix, args, "InvalidSound");
-    }
-
-    public void executeCommands(CommandSender sender) {
-        if (plugin.getMainLobbyConfigManager().isCommandsEnabled()) {
-
-            List<String> playerCommands = plugin.getMainLobbyConfigManager().getCommandsPlayer();
-            List<String> consoleCommands = plugin.getMainLobbyConfigManager().getCommandsConsole();
-
-            Player player = (Player) sender;
-            for (String command : playerCommands) {
-                String replacedCommand = command.replace("%player%", player.getName());
-                Bukkit.dispatchCommand(sender, replacedCommand);
-            }
-
-            CommandSender consoleSender = Bukkit.getConsoleSender();
-            for (String command : consoleCommands) {
-                String replacedCommand = command.replace("%player%", sender.getName());
-                Bukkit.dispatchCommand(consoleSender, replacedCommand);
-            }
         }
     }
 

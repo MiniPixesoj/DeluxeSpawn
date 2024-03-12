@@ -1,8 +1,10 @@
 package com.pixesoj.subcommands;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
-import com.pixesoj.utils.MessagesUtils;
-import com.pixesoj.utils.PlayerUtils;
+import com.pixesoj.managers.MySQL;
+import com.pixesoj.utils.common.MySQLUtils;
+import com.pixesoj.utils.spigot.MessagesUtils;
+import com.pixesoj.utils.spigot.PlayerUtils;
 import com.pixesoj.utils.common.SubCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -11,15 +13,18 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import java.sql.Connection;
 import java.util.List;
 import java.util.UUID;
 
 public class Lastlocation implements SubCommand {
 
     private final DeluxeSpawn plugin;
+    Connection connection;
 
     public Lastlocation (DeluxeSpawn plugin){
         this.plugin = plugin;
+        this.connection = new MySQLUtils(plugin).getConnection();
     }
 
     public void colored(CommandSender sender, String prefix, String text){
@@ -80,29 +85,41 @@ public class Lastlocation implements SubCommand {
     public void getLastLocation(UUID uuid, Player player, CommandSender sender) {
         FileConfiguration playerConfig = plugin.getPlayerDataManager().getPlayerConfig(uuid);
         String notExistType = plugin.getMainLobbyConfigManager().getLastLocationCommandLocationNotExist();
-        if (playerConfig.contains("LastLocation.world")) {
-            String worldName = playerConfig.getString("LastLocation.world");
-            double x = playerConfig.getDouble("LastLocation.x");
-            double y = playerConfig.getDouble("LastLocation.y");
-            double z = playerConfig.getDouble("LastLocation.z");
-            float yaw = (float) playerConfig.getDouble("LastLocation.yaw");
-            float pitch = (float) playerConfig.getDouble("LastLocation.pitch");
 
-            Location lastLocation = new Location(Bukkit.getWorld(worldName), x, y, z, yaw, pitch);
+        String dataType = plugin.getMainConfigManager().getDataType();
+        if (dataType.equalsIgnoreCase("MySQL")){
+            MySQL.getLastLocation(connection, uuid, player, plugin);
+        } else if (dataType.equalsIgnoreCase("localhost")) {
+            if (playerConfig.contains("LastLocation.world")) {
+                String worldName = playerConfig.getString("LastLocation.world");
+                double x = playerConfig.getDouble("LastLocation.x");
+                double y = playerConfig.getDouble("LastLocation.y");
+                double z = playerConfig.getDouble("LastLocation.z");
+                float yaw = (float) playerConfig.getDouble("LastLocation.yaw");
+                float pitch = (float) playerConfig.getDouble("LastLocation.pitch");
 
-            player.teleport(lastLocation);
-            soundLastLocation(sender);
-            executeCommandsLastLocation(sender);
-            sendMessage(sender);
+                Location lastLocation = new Location(Bukkit.getWorld(worldName), x, y, z, yaw, pitch);
+
+                player.teleport(lastLocation);
+                soundLastLocation(sender);
+                executeCommandsLastLocation(sender);
+                sendMessage(sender);
+
+            } else {
+                handleNotExistType(notExistType, player, sender);
+            }
+        } else {
+            Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage("&cEl tipo de data no es valido, usa &aMySQL &co &alocalhost"));
         }
+    }
 
-        else if (notExistType.equals("SendMessage")) {
-            String prefix = plugin.getMainMessagesManager().getPrefix();
+    private void handleNotExistType(String notExistType, Player player, CommandSender sender) {
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+
+        if (notExistType.equals("SendMessage")) {
             String message = prefix + plugin.getMainMessagesManager().getLastLocationNotFound();
             sender.sendMessage(MessagesUtils.getColoredMessage(message));
-        }
-
-        else if (notExistType.equals("Spawn")) {
+        } else if (notExistType.equals("Spawn")) {
             boolean spawnByWorld = plugin.getMainSpawnConfigManager().isByWorld();
             FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
             if (!spawnByWorld){
@@ -128,8 +145,11 @@ public class Lastlocation implements SubCommand {
             Location spawnLocation = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
 
             player.teleport(spawnLocation);
+
         } else if (notExistType.equals("DoNothing")) {
-            return;
+
+        } else {
+            Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage("&cTipo de 'notExistType' no válido"));
         }
     }
 

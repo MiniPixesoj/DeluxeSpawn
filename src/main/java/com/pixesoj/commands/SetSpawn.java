@@ -1,7 +1,7 @@
 package com.pixesoj.commands;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
-import com.pixesoj.utils.MessagesUtils;
+import com.pixesoj.utils.spigot.MessagesUtils;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

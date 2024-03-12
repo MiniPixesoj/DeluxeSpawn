@@ -11,10 +11,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class SpawnTabCompleter implements TabCompleter {
+public class Spawn implements TabCompleter {
     private DeluxeSpawn plugin;
 
-    public SpawnTabCompleter(DeluxeSpawn deluxeSpawn) {
+    public Spawn(DeluxeSpawn deluxeSpawn) {
         this.plugin = deluxeSpawn;
     }
 

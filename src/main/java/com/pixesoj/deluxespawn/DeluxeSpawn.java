@@ -8,20 +8,22 @@ import com.pixesoj.filesmanager.messages.MainMessagesManager;
 import com.pixesoj.filesmanager.permissions.MainPermissionsManager;
 import com.pixesoj.filesmanager.spawn.MainSpawnConfigManager;
 import com.pixesoj.listeners.*;
+import com.pixesoj.managers.MySQL;
 import com.pixesoj.managers.playerdata.PlayerDataManager;
 import com.pixesoj.managers.UpdateCheckManager;
 import com.pixesoj.model.internal.UpdateCheckResult;
-import com.pixesoj.utils.MessagesUtils;
+import com.pixesoj.utils.common.MySQLUtils;
+import com.pixesoj.utils.spigot.MessagesUtils;
 import com.pixesoj.managers.dependencies.Metrics;
-import com.pixesoj.utils.ServerVersion;
-import com.pixesoj.utils.common.Updater;
+import com.pixesoj.utils.common.SvVersionUtils;
+import com.pixesoj.utils.common.UpdaterUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.checkerframework.checker.units.qual.Prefix;
 
 import java.io.File;
+import java.sql.Connection;
 import java.util.ArrayList;
 
 public class DeluxeSpawn extends JavaPlugin {
@@ -36,8 +38,9 @@ public class DeluxeSpawn extends JavaPlugin {
     private LocationsManager locationsManager;
     private MainPermissionsManager mainPermissionsManager;
     private PlayerDataManager playerDataManager;
-    public static ServerVersion serverVersion;
-    private Updater updater;
+    public static SvVersionUtils serverVersion;
+    private UpdaterUtils updater;
+    private MySQLUtils mySQLUtils;
 
     public static void colored(String message) {
         Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage(message));
@@ -54,12 +57,11 @@ public class DeluxeSpawn extends JavaPlugin {
         mainPermissionsManager = new MainPermissionsManager(this);
         playerDataManager = new PlayerDataManager(this);
         locationsManager = new LocationsManager(this);
+        locationsManager.loadLocationsFile();
 
         registerCommands();
         registerEvents();
         registerMessages();
-
-        locationsManager.loadLocationsFile();
 
         this.updateCheckerManager = new UpdateCheckManager(this.version);
         if (this.getMainConfigManager().isCheckUpdate()) {
@@ -71,10 +73,13 @@ public class DeluxeSpawn extends JavaPlugin {
         cooldownSpawnPlayers = new ArrayList<>();
         lastLocationOneTime = new ArrayList<>();
 
+        mySQLUtils = new MySQLUtils(this);
+
         int pluginId = 21247;
         Metrics metrics = new Metrics(this, pluginId);
 
         getServer().getScheduler().runTaskLater(this, this::update, 20L);
+        setVersion();
 
         colored("&6 ____   ___");
         colored("&6(  _ \\ / __)  " + "&8By &bPixesoj &av" + this.version);
@@ -137,8 +142,12 @@ public class DeluxeSpawn extends JavaPlugin {
         return mainPermissionsManager;
     }
 
-    public Updater getUpdater() {
+    public UpdaterUtils getUpdater() {
         return updater;
+    }
+
+    public Connection getMySQL() {
+        return mySQLUtils.getConnection();
     }
 
     public void updateMessage(UpdateCheckResult result) {
@@ -168,7 +177,7 @@ public class DeluxeSpawn extends JavaPlugin {
         File pathName = new File("plugins");
         String message = "&eDeluxeSpawn &8»  &bLooking for updates...";
         colored(message);
-        updater = new Updater(currentVersion, jarName, true, resourceID, pathName, getServer().getConsoleSender());
+        updater = new UpdaterUtils(currentVersion, jarName, true, resourceID, pathName, getServer().getConsoleSender());
     }
 
     public void registerMessages(){
@@ -225,7 +234,7 @@ public class DeluxeSpawn extends JavaPlugin {
 
     public void setVersion() {
         String packageName = Bukkit.getServer().getClass().getPackage().getName();
-        serverVersion = ServerVersion.valueOf(packageName.replace("org.bukkit.craftbukkit.", ""));
+        serverVersion = SvVersionUtils.valueOf(packageName.replace("org.bukkit.craftbukkit.", ""));
     }
 
     private ArrayList<String> delayPlayers;

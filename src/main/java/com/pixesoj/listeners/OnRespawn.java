@@ -1,7 +1,8 @@
 package com.pixesoj.listeners;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
-import com.pixesoj.utils.MessagesUtils;
+import com.pixesoj.utils.spigot.CommandUtils;
+import com.pixesoj.utils.spigot.MessagesUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -33,11 +34,16 @@ public class OnRespawn implements Listener {
     }
 
     public void respawn(PlayerRespawnEvent event) {
+        Player player = event.getPlayer();
         getTeleportIgnoreBed(event);
         sendTeleportMessage(event);
         blindnessTeleport(event);
         sound(event);
-        executeCommands(event);
+
+        List<String> cmdPlayer = plugin.getMainConfigManager().getTeleportOnRespawnCommandsPlayer();
+        List<String> cmdConsole = plugin.getMainConfigManager().getTeleportOnRespawnCommandsConsole();
+        boolean enabled = plugin.getMainConfigManager().isTeleportOnRespawnCommandsEnabled();
+        CommandUtils.executeCommands(player, enabled, cmdPlayer, cmdConsole);
     }
 
     public void getTeleportIgnoreBed (PlayerRespawnEvent event) {
@@ -232,26 +238,6 @@ public class OnRespawn implements Listener {
             if (player.hasPermission(permission)) {
                 String m = prefix + plugin.getMainMessagesManager().getOnRespawnNullSound();
                 player.sendMessage(MessagesUtils.getColoredMessage(m));
-            }
-        }
-    }
-
-    public void executeCommands(PlayerRespawnEvent event) {
-        Player player = event.getPlayer();
-        if (plugin.getMainConfigManager().isTeleportOnRespawnCommandsEnabled()) {
-
-            List<String> playerCommands = plugin.getMainConfigManager().getTeleportOnRespawnCommandsPlayer();
-            List<String> consoleCommands = plugin.getMainConfigManager().getTeleportOnRespawnCommandsConsole();
-
-            for (String command : playerCommands) {
-                String replacedCommand = command.replace("%player%", player.getName());
-                Bukkit.dispatchCommand(player, replacedCommand);
-            }
-
-            CommandSender consoleSender = Bukkit.getConsoleSender();
-            for (String command : consoleCommands) {
-                String replacedCommand = command.replace("%player%", player.getName());
-                Bukkit.dispatchCommand(consoleSender, replacedCommand);
             }
         }
     }

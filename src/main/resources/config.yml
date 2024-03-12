@@ -40,6 +40,27 @@ replaced_messages:
   # This is shown when the player is teleported from the console
   console: Console
 
+# Player data storage settings (disconnect locations)
+database:
+  # Storage type, available options
+  #
+  # localhost: storage in plugin files (playerdata file)
+  # MySQL: storage in a MySQL database
+  # WARNING: Restart your server when changing this from localhost to MyS
+  type: localhost
+
+  # MySQL database data
+  address: 00.00.000
+  port: 3306
+  database: DeluxeSpawn
+  username: user
+  password: 'password'
+
+  # MySQL table name
+  # WARNING: do not leave this blank or with the name of an already existing table
+  # Don't change it if you don't know what it is
+  table_name: DeluxeSpawn
+
 #================================================================================#
 #                                                                                #
 #                                 ON JOIN OPTIONS                                #

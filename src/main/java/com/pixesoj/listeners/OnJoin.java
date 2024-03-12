@@ -1,7 +1,8 @@
 package com.pixesoj.listeners;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
-import com.pixesoj.utils.MessagesUtils;
+import com.pixesoj.utils.spigot.CommandUtils;
+import com.pixesoj.utils.spigot.MessagesUtils;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -47,18 +48,29 @@ public class OnJoin implements Listener {
     }
 
     public void teleportOnJoin (PlayerJoinEvent event){
+        Player player = event.getPlayer();
         playerTeleportOnJoin(event);
         onJoinSendMessage(event);
         onJoinSound(event);
-        onJoinExecuteCommands(event);
+
+        List<String> cmdPlayer = plugin.getMainConfigManager().getTeleportOnJoinCommandsPlayer();
+        List<String> cmdConsole = plugin.getMainConfigManager().getTeleportOnJoinCommandsConsole();
+        boolean enabled = plugin.getMainConfigManager().isTeleportOnJoinCommandsEnabled();
+        CommandUtils.executeCommands(player, enabled, cmdPlayer, cmdConsole);
     }
 
     public void teleportOnFirstJoin (PlayerJoinEvent event){
+        Player player = event.getPlayer();
         if (!event.getPlayer().hasPlayedBefore()) {
             playerTeleportOnFirstJoin(event);
             onFirstJoinSendMessage(event);
             onFirstJoinSound(event);
-            onFirstJoinExecuteCommands(event);
+
+
+            List<String> cmdPlayer = plugin.getMainConfigManager().getTeleportOnFirstJoinCommandsPlayer();
+            List<String> cmdConsole = plugin.getMainConfigManager().getTeleportOnFirstJoinCommandsConsole();
+            boolean enabled = plugin.getMainConfigManager().isTeleportOnFirstJoinCommandsEnabled();
+            CommandUtils.executeCommands(player, enabled, cmdPlayer, cmdConsole);
         }
     }
 
@@ -362,43 +374,4 @@ public class OnJoin implements Listener {
         }
     }
 
-    public void onJoinExecuteCommands (PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        if (plugin.getMainConfigManager().isTeleportOnJoinCommandsEnabled()) {
-
-            List<String> playerCommands = plugin.getMainConfigManager().getTeleportOnJoinCommandsPlayer();
-            List<String> consoleCommands = plugin.getMainConfigManager().getTeleportOnJoinCommandsConsole();
-
-            for (String command : playerCommands) {
-                String replacedCommand = command.replace("%player%", player.getName());
-                Bukkit.dispatchCommand(player, replacedCommand);
-            }
-
-            CommandSender consoleSender = Bukkit.getConsoleSender();
-            for (String command : consoleCommands) {
-                String replacedCommand = command.replace("%player%", player.getName());
-                Bukkit.dispatchCommand(consoleSender, replacedCommand);
-            }
-        }
-    }
-
-    public void onFirstJoinExecuteCommands (PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        if (plugin.getMainConfigManager().isTeleportOnFirstJoinCommandsEnabled()) {
-
-            List<String> playerCommands = plugin.getMainConfigManager().getTeleportOnFirstJoinCommandsPlayer();
-            List<String> consoleCommands = plugin.getMainConfigManager().getTeleportOnFirstJoinCommandsConsole();
-
-            for (String command : playerCommands) {
-                String replacedCommand = command.replace("%player%", player.getName());
-                Bukkit.dispatchCommand(player, replacedCommand);
-            }
-
-            CommandSender consoleSender = Bukkit.getConsoleSender();
-            for (String command : consoleCommands) {
-                String replacedCommand = command.replace("%player%", player.getName());
-                Bukkit.dispatchCommand(consoleSender, replacedCommand);
-            }
-        }
-    }
 }

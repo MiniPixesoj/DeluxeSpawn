@@ -3,10 +3,7 @@ package com.pixesoj.utils.common;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.pixesoj.deluxespawn.DeluxeSpawn;
-import com.pixesoj.managers.UpdateCheckManager;
-import com.pixesoj.model.internal.UpdateCheckResult;
-import com.pixesoj.utils.MessagesUtils;
-import com.pixesoj.utils.OtherUtils;
+import com.pixesoj.utils.spigot.MessagesUtils;
 import org.bukkit.command.CommandSender;
 
 import java.io.File;
@@ -26,7 +23,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class Updater {
+public class UpdaterUtils {
     private final ScheduledExecutorService updateExecutor = Executors.newScheduledThreadPool(1);
     private final String currentVersion;
     private final String jarName;
@@ -43,7 +40,7 @@ public class Updater {
         sender.sendMessage(MessagesUtils.getColoredMessage(prefix + text));
     }
 
-    public Updater(String currentVersion, String jarName, boolean enabled, int resourceId, File pluginsFolder, CommandSender sender) {
+    public UpdaterUtils(String currentVersion, String jarName, boolean enabled, int resourceId, File pluginsFolder, CommandSender sender) {
         String prefix = "&eDeluxeSpawn &8» ";
         this.jarName = jarName;
         this.enabled = enabled;

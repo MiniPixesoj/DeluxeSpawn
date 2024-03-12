@@ -1,15 +1,14 @@
 package com.pixesoj.commands;
 
-import com.pixesoj.commands.tabcompleter.SpawnTabCompleter;
 import com.pixesoj.deluxespawn.DeluxeSpawn;
-import com.pixesoj.managers.cooldown.CooldownLobby;
 import com.pixesoj.managers.cooldown.CooldownSpawn;
-import com.pixesoj.managers.cooldown.LobbyCooldownProvider;
 import com.pixesoj.managers.cooldown.SpawnCooldownProvider;
 import com.pixesoj.managers.delays.DelaySpawn;
 import com.pixesoj.managers.delays.DelaySpawnWorld;
 import com.pixesoj.model.internal.CooldownTimeProvider;
-import com.pixesoj.utils.MessagesUtils;
+import com.pixesoj.utils.spigot.CommandUtils;
+import com.pixesoj.utils.spigot.LocationUtils;
+import com.pixesoj.utils.spigot.MessagesUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -29,7 +28,7 @@ public class Spawn implements CommandExecutor {
     public Spawn(DeluxeSpawn deluxeSpawn) {
         this.plugin = deluxeSpawn;
         plugin.getCommand("spawn").setExecutor(this);
-        plugin.getCommand("spawn").setTabCompleter(new SpawnTabCompleter(deluxeSpawn));
+        plugin.getCommand("spawn").setTabCompleter(new com.pixesoj.commands.tabcompleter.Spawn(deluxeSpawn));
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -149,33 +148,30 @@ public class Spawn implements CommandExecutor {
             return;
         }
 
-        String worldKey = "Spawn.world";
-        if (!locations.contains(worldKey)) {
-            player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getSpawnDoesNotExist()));
+        boolean byWorld = plugin.getMainSpawnConfigManager().isByWorld();
+        Location spawnLocation = LocationUtils.getSpawn(locations, byWorld, player.getWorld());
+        if (spawnLocation == null) {
+            String m = plugin.getMainMessagesManager().getSpawnDoesNotExist();
+            sender.sendMessage(MessagesUtils.getColoredMessage(prefix + m));
             return;
         }
 
-        String worldName = locations.getString(worldKey);
-
-        double x = locations.getDouble("Spawn.x");
-        double y = locations.getDouble("Spawn.y");
-        double z = locations.getDouble("Spawn.z");
-        float yaw = (float) locations.getDouble("Spawn.yaw");
-        float pitch = (float) locations.getDouble("Spawn.pitch");
-
-        Location spawnLocation = new Location(Bukkit.getWorld(worldName), x, y, z, yaw, pitch);
         int delay = plugin.getMainSpawnConfigManager().getTeleportDelay();
         DelaySpawn d = new DelaySpawn(plugin, delay, player, spawnLocation);
 
         String delayBypassPermission = plugin.getMainPermissionsManager().getSpawnBypassDelay();
         boolean delayBypassDefault = plugin.getMainPermissionsManager().isSpawnBypassDelayDefault();
 
-        if (!plugin.getMainSpawnConfigManager().isTeleportDelayEnabled()  || delayBypassDefault || player.hasPermission(delayBypassPermission)) {
+        if (!plugin.getMainSpawnConfigManager().isTeleportDelayEnabled() || delayBypassDefault || player.hasPermission(delayBypassPermission)) {
             player.teleport(spawnLocation);
             plugin.addSpawnCooldown(player);
             sound(sender);
-            executeCommands(sender);
             player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getSpawnTeleported()));
+
+            List<String> cmdPlayer = plugin.getMainSpawnConfigManager().getCommandsPlayer();
+            List<String> cmdConsole = plugin.getMainSpawnConfigManager().getCommandsConsole();
+            boolean enabled = plugin.getMainSpawnConfigManager().isCommandsEnabled();
+            CommandUtils.executeCommands(sender, enabled, cmdPlayer, cmdConsole);
             return;
         }
 
@@ -201,21 +197,14 @@ public class Spawn implements CommandExecutor {
             return;
         }
 
-        String worldPlayer = player.getWorld().getName();
-
-        String spawnKey = "SpawnByWorld." + worldPlayer;
-        if (!locations.contains(spawnKey)) {
-            player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getSpawnByWorldDoesNotExist()));
+        boolean byWorld = plugin.getMainSpawnConfigManager().isByWorld();
+        Location spawnLocation = LocationUtils.getSpawn(locations, byWorld, player.getWorld());
+        if (spawnLocation == null) {
+            String m = plugin.getMainMessagesManager().getSpawnDoesNotExist();
+            sender.sendMessage(MessagesUtils.getColoredMessage(prefix + m));
             return;
         }
 
-        double x = locations.getDouble(spawnKey + ".x");
-        double y = locations.getDouble(spawnKey + ".y");
-        double z = locations.getDouble(spawnKey + ".z");
-        float yaw = (float) locations.getDouble(spawnKey + ".yaw");
-        float pitch = (float) locations.getDouble(spawnKey + ".pitch");
-
-        Location spawnLocation = new Location(player.getWorld(), x, y, z, yaw, pitch);
         int delay = plugin.getMainSpawnConfigManager().getTeleportDelay();
         DelaySpawn d = new DelaySpawn(plugin, delay, player, spawnLocation);
 
@@ -226,8 +215,12 @@ public class Spawn implements CommandExecutor {
             player.teleport(spawnLocation);
             plugin.addSpawnCooldown(player);
             sound(sender);
-            executeCommands(sender);
             player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getSpawnTeleported()));
+
+            List<String> cmdPlayer = plugin.getMainSpawnConfigManager().getCommandsPlayer();
+            List<String> cmdConsole = plugin.getMainSpawnConfigManager().getCommandsConsole();
+            boolean enabled = plugin.getMainSpawnConfigManager().isCommandsEnabled();
+            CommandUtils.executeCommands(sender, enabled, cmdPlayer, cmdConsole);
             return;
         }
 
@@ -255,14 +248,14 @@ public class Spawn implements CommandExecutor {
             return;
         }
 
-        String spawnKey = "SpawnByWorld." + realName;
-        double x = locations.getDouble(spawnKey + ".x");
-        double y = locations.getDouble(spawnKey + ".y");
-        double z = locations.getDouble(spawnKey + ".z");
-        float yaw = (float) locations.getDouble(spawnKey + ".yaw");
-        float pitch = (float) locations.getDouble(spawnKey + ".pitch");
+        boolean byWorld = plugin.getMainSpawnConfigManager().isByWorld();
+        Location spawnLocation = LocationUtils.getSpawn(locations, byWorld, player.getWorld());
+        if (spawnLocation == null) {
+            String m = plugin.getMainMessagesManager().getSpawnDoesNotExist();
+            sender.sendMessage(MessagesUtils.getColoredMessage(prefix + m));
+            return;
+        }
 
-        Location spawnLocation = new Location(targetWorld, x, y, z, yaw, pitch);
         int delay = plugin.getMainSpawnConfigManager().getTeleportDelay();
         DelaySpawnWorld d = new DelaySpawnWorld(plugin, delay, player, spawnLocation);
 
@@ -273,9 +266,13 @@ public class Spawn implements CommandExecutor {
             player.teleport(spawnLocation);
             plugin.addSpawnCooldown(player);
             sound(sender);
-            executeCommands(sender);
             String teleportMessage = prefix + plugin.getMainMessagesManager().getSpawnOtherTeleported().replace("%world%", aliasName);
             player.sendMessage(MessagesUtils.getColoredMessage(teleportMessage));
+
+            List<String> cmdPlayer = plugin.getMainSpawnConfigManager().getCommandsPlayer();
+            List<String> cmdConsole = plugin.getMainSpawnConfigManager().getCommandsConsole();
+            boolean enabled = plugin.getMainSpawnConfigManager().isCommandsEnabled();
+            CommandUtils.executeCommands(sender, enabled, cmdPlayer, cmdConsole);
             return;
         }
 
@@ -330,26 +327,6 @@ public class Spawn implements CommandExecutor {
     private void handleInvalidSound(Player player, String prefix, String soundName) {
         String message = prefix + plugin.getMainMessagesManager().getSpawnInvalidSound().replace("%sound%", soundName);
         player.sendMessage(message);
-    }
-
-    public void executeCommands(CommandSender sender) {
-        if (plugin.getMainSpawnConfigManager().isCommandsEnabled()) {
-
-            List<String> playerCommands = plugin.getMainSpawnConfigManager().getCommandsPlayer();
-            List<String> consoleCommands = plugin.getMainSpawnConfigManager().getCommandsConsole();
-
-            Player player = (Player) sender;
-            for (String command : playerCommands) {
-                String replacedCommand = command.replace("%player%", player.getName());
-                Bukkit.dispatchCommand(sender, replacedCommand);
-            }
-
-            CommandSender consoleSender = Bukkit.getConsoleSender();
-            for (String command : consoleCommands) {
-                String replacedCommand = command.replace("%player%", sender.getName());
-                Bukkit.dispatchCommand(consoleSender, replacedCommand);
-            }
-        }
     }
 
     public void sendMessage (CommandSender sender){

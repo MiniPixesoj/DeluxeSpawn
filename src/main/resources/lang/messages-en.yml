@@ -1,7 +1,7 @@
 #==============================================================================================#
 #                                                                                              #
-# Message file in English, you can find the default of this file at:                           #
-# https://github.com/MiniPixesoj/DeluxeSpawn/blob/main/src/main/resources/lang/messages-en.yml #
+# Message file in Spanish, you can find the default of this file at:                           #
+# https://github.com/MiniPixesoj/DeluxeSpawn/blob/main/src/main/resources/lang/messages-es.yml #
 #                                                                                              #
 # You can use Minecraft version 1.16 colors in all messages                                    #
 #                                                                                              #
@@ -10,23 +10,23 @@
 Prefix: "&eDeluxeSpawn &8» "
 
 GlobalInCooldown: "&cWait &b%time% &cseconds before teleporting again"
-PermissionDenied: "&cYou don't have permission."
+PermissionDenied: "&cYou do not have permission."
 
 CommandReloadConfig: "&aConfiguration reloaded successfully!"
 CommandReloadMessages: "&aMessage file reloaded successfully!"
 CommandReloadAll: "&aAll configuration files reloaded in version &aV%version%"
-CommandInvalidArgument: "&cInvalid argument/s. Use:"
+CommandInvalidArgument: "&cInvalid argument(s). Use:"
 CommandVersion: "&fDeluxeSpawn version is &aV%version% &8(&7Latest version is &a%last_version%&8)"
 CommandUsage: "&7Use &a/ds help &7for assistance."
 CommandDeniedConsole: "&cThis command can only be used by a player."
-CommandSetSpawnSuccessfully: "&aSpawn point set successfully in the world &b%world%."
-CommandSetLobbySuccessfully: "&aLobby set successfully in the world &b%world%."
+CommandSetSpawnSuccessfully: "&aSpawn point successfully set in world &b%world%."
+CommandSetLobbySuccessfully: "&aLobby successfully set in world &b%world%."
 
 SpawnDoesNotExist: "&cSpawn point has not been set yet."
 SpawnByWorldDoesNotExist: "&cNo spawn point exists for this world."
 SpawnByWorldSpecifyDoesNotExist: "&cNo spawn point exists for the specified world."
 SpawnTeleported: "&aTeleporting..."
-SpawnOtherTeleported: "&aTeleporting to the spawn point in the world &b%world%."
+SpawnOtherTeleported: "&aTeleporting to spawn point in world &b%world%."
 SpawnInTeleport: "&cYou are already being teleported."
 SpawnMovementCanceledTeleport: "&cTeleportation canceled due to movement."
 SpawnChatMessageInTeleport: "&aTeleporting in &e%time% &aseconds"
@@ -36,16 +36,16 @@ SpawnInvalidSound: "&6%sound% &cis not a valid sound."
 SpawnInCooldown: "&cWait &b%time% &cseconds before teleporting again."
 
 DelSpawnNotExist: "&6Nothing happened, there is no spawn point."
-DelSpawnNotExistWorld: "&6No spawn point exists in the world &b%world%."
-DelSpawnSuccessfullyRemoved: "&aGlobal spawn point removed successfully."
-DelSpawnSuccessfullyRemovedWorld: "&eWorld spawn point in &b%world% &eremoved successfully."
+DelSpawnNotExistWorld: "&6No spawn point exists in world &b%world%."
+DelSpawnSuccessfullyRemoved: "&aGlobal spawn point successfully removed."
+DelSpawnSuccessfullyRemovedWorld: "&eWorld spawn point in &b%world% &esuccessfully removed."
 DelSpawnNotSpecified: "&cSpecify a spawn point, use &a/delspawn &8<&aglobal&8|&aworld&8>"
 
 LobbyIsNotEnabled: "&cThe lobby is not enabled."
 LobbyDoesNotExist: "&cLobby has not been set yet."
 LobbyTeleported: "&aTeleporting to the lobby..."
 LobbyMessageDelayTeleport: "&aTeleporting to the lobby in &e%time% &aseconds"
-LobbyMovementCanceledTeleport: "&cLobby teleportation canceled due to movement."
+LobbyMovementCanceledTeleport: "&cTeleportation to the lobby canceled due to movement."
 LobbyChatMessageInTeleport: "&aTeleporting to the lobby in &e%time% &aseconds"
 LobbyInTeleport: "&cYou are already being teleported to the lobby."
 LobbyNullSound: "&cSound cannot be empty."
@@ -59,35 +59,35 @@ LobbyOtherPlayerTeleport: "&eYou have been teleported to the lobby by &b%player%
 LobbyOtherPlayerTeleported: "&aTeleported &b%player% &ato the lobby."
 
 DelLobbyNotExist: "&6Nothing happened, there is no lobby."
-DelLobbySuccessfullyRemoved: "&aLobby removed successfully."
+DelLobbySuccessfullyRemoved: "&aLobby successfully removed."
 
 OnJoinSendMessage: "&aTeleported to &b%destination%."
-OnJoinDoesNotExist: "&cDestination point &b%destination% &8(&7Use &a/set%destination%&8) does not exist."
-OnJoinDestinationInvalid: "&cDestination point &b%destination% &cis not valid."
+OnJoinDoesNotExist: "&cThe destination &b%destination% &8(use &a/set%destination%&8) does not exist."
+OnJoinDestinationInvalid: "&cThe destination &b%destination% &cis not valid."
 OnJoinInvalidSound: "&6%sound% &cis not a valid sound."
 OnJoinNullSound: "&cSound cannot be empty."
 
-OnFirstJoinDoesNotExist: "&cDestination point &b%destination% &8(&7Use &a/set%destination%&8) does not exist."
-OnFirstJoinDestinationInvalid: "&cDestination point &b%destination% &cis not valid."
+OnFirstJoinDoesNotExist: "&cThe destination &b%destination% &8(use &a/set%destination%&8) does not exist."
+OnFirstJoinDestinationInvalid: "&cThe destination &b%destination% &cis not valid."
 OnFirstJoinSendMessage: "&aTeleported to &b%destination% &ain the world &b%world%."
 OnFirstJoinInvalidSound: "&6%sound% &cis not a valid sound."
 OnFirstJoinNullSound: "&cSound cannot be empty."
 # This message has PlaceHolderAPI support
 OnFirstJoinSendWelcomeMessage:
-  - "&fWelcome to the server &a%player%."
+  - "&fWelcome to the server, &a%player%."
   - ""
   - "&fVisit our social media at:"
   - "&bDiscord: &7www.mydiscord.com"
   - "&3Twitter: &7www.mytwitter.com"
 
-OnVoidDestinationInvalid: "&cDestination point &b%destination% &cis not valid."
+OnVoidDestinationInvalid: "&cThe destination &b%destination% &cis not valid."
 OnVoidTeleportMessage: "&eTeleported to %destination%."
 OnVoidInvalidSound: "&6%sound% &cis not a valid sound."
 
-OnRespawnDestinationInvalid: "&cDestination point &b%destination% &cis not valid."
+OnRespawnDestinationInvalid: "&cThe destination &b%destination% &cis not valid."
 OnRespawnSendMessage: "&eTeleported to %destination%."
-OnRespawnDoesNotExist: "&cDestination point &b%destination% &8(&7Use &a/set%destination%&8) does not exist."
-OnRespawnDoesNotExistByWorld: "&cDestination point in the world %world% &b%destination% &8(&7Use &a/set%destination%&8) does not exist."
+OnRespawnDoesNotExist: "&cThe destination &b%destination% &8(use &a/set%destination%&8) does not exist."
+OnRespawnDoesNotExistByWorld: "&cThe destination in world %world% &b%destination% &8(use &a/set%destination%&8) does not exist."
 OnRespawnNullSound: "&cSound cannot be empty."
 OnRespawnInvalidSound: "&6%sound% &cis not a valid sound."
 
@@ -97,14 +97,22 @@ LastLocationOneTime: "&cYou can only teleport once."
 LastLocationNullSound: "&cSound cannot be empty."
 LastLocationInvalidSound: "&6%sound% &cis not a valid sound."
 
+ErrorGeneral: "&aAn unexpected error occurred, check the console."
+ErrorCommandReload: "&cError during reload. Check the console for details."
+ErrorNullSound: "&cSound cannot be empty &8(&7%description%&8)."
+ErrorInvalidSound: "&6%sound% &cis not a valid sound &8(&7%description%&8)."
+
 CommandHelp:
   - "&eDeluxeSpawn &8- &aHelp"
   - ""
   - "&a/ds version &8- &7View the plugin version."
-  - "&a/ds reload <config|messages|all> &8- &7Reload configurations."
+  - "&a/ds update &8- &7Update the plugin to the latest version."
+  - "&a/ds reload &8- &7Reload configurations."
   - "&a/ds help &8- &7Show this help message."
   - "&a/ds lastlocation &8- &7Go to the last saved location."
-  - "&a/spawn <world> &8- &7Go to the spawn point of the current world or another world."
+  - "&a/spawn <world> &8- &7Go to the spawn point of the current or another world."
   - "&a/setspawn &8- &7Set a spawn point."
-  - "&a/lobby &8- &7Go to the lobby."
-  - "&a/setlobby &8- &7Set a lobby."
+  - "&a/delspawn <global|spawn> - &7Delete a spawn point."
+  - "&a/lobby <player> &8- &7Go to the lobby or send a player to the lobby."
+  - "&a/setlobby &8- &7Set the lobby."
+  - "&a/dellobby - &7Delete the lobby."

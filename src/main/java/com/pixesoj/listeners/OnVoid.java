@@ -1,7 +1,8 @@
 package com.pixesoj.listeners;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
-import com.pixesoj.utils.MessagesUtils;
+import com.pixesoj.utils.spigot.CommandUtils;
+import com.pixesoj.utils.spigot.MessagesUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -46,27 +47,11 @@ public class OnVoid implements Listener {
             BlindnessTeleport(event);
             SendMessage(event);
             TeleportSound(event);
-            ExecuteCommands(event);
-        }
-    }
 
-    public void ExecuteCommands(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-        if (plugin.getMainConfigManager().isTeleportOnVoidCommandsEnabled()) {
-
-            List<String> playerCommands = plugin.getMainConfigManager().getTeleportOnVoidCommandsPlayer();
-            List<String> consoleCommands = plugin.getMainConfigManager().getTeleportOnVoidCommandsConsole();
-
-            for (String command : playerCommands) {
-                String replacedCommand = command.replace("%player%", player.getName());
-                Bukkit.dispatchCommand(player, replacedCommand);
-            }
-
-            CommandSender consoleSender = Bukkit.getConsoleSender();
-            for (String command : consoleCommands) {
-                String replacedCommand = command.replace("%player%", player.getName());
-                Bukkit.dispatchCommand(consoleSender, replacedCommand);
-            }
+            List<String> cmdPlayer = plugin.getMainConfigManager().getTeleportOnVoidCommandsPlayer();
+            List<String> cmdConsole = plugin.getMainConfigManager().getTeleportOnVoidCommandsConsole();
+            boolean enabled = plugin.getMainConfigManager().isTeleportOnVoidCommandsEnabled();
+            CommandUtils.executeCommands(player, enabled, cmdPlayer, cmdConsole);
         }
     }
 

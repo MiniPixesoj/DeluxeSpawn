@@ -1,14 +1,13 @@
 main: com.pixesoj.deluxespawn.DeluxeSpawn
-version: 3.5.0
+version: 3.5.1
 name: DeluxeSpawn
-description: |
-  Create world spawns and teleport to them with various configurable options.
-  Customize your spawn and lobby experience with this versatile plugin!
-
 author: Pixesoj
 api-version: 1.13
 prefix: DeluxeSpawn
 softdepend: [PlaceholderAPI]
+description: |
+  Create world spawns and teleport to them with various configurable options.
+  Customize your spawn and lobby experience with this versatile plugin!
 
 commands:
   deluxespawn:

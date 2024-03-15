@@ -1,6 +1,6 @@
 ##====================================##
 ## DeluxeSpawn plugin by Pixesoj.     ##
-## Version: 3.5.0                     ##
+## Version: 3.6.0                     ##
 ## Make sure to leave your            ##
 ## thoughts on a review.              ##
 ## www.spigotmc.org/resources/111403/ ##
@@ -11,6 +11,7 @@
 #                             GLOBAL PLUGIN OPTIONS                              #
 #                                                                                #
 #================================================================================#
+config_version: 3.5
 
 # If this option is set to true, players with permission deluxespawn.notify.update permission
 # will be notified (this option does not exclude console notifications)

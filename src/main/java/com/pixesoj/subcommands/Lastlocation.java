@@ -45,7 +45,7 @@ public class Lastlocation implements SubCommand {
 
         String p = plugin.getMainPermissionsManager().getLastLocation();
         boolean d = plugin.getMainPermissionsManager().isLastLocationDefault();
-        if (!PlayerUtils.hasPermissionMessage(sender, p, d)){
+        if (!PlayerUtils.hasPermissionMessage(plugin, sender, p, d)){
             String m = plugin.getMainMessagesManager().getPermissionDenied();
             colored(sender, prefix(), m);
             return true;

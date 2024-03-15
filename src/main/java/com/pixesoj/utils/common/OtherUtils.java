@@ -10,18 +10,18 @@ import java.net.URL;
 public class OtherUtils {
 
     public static boolean isNew() {
-        SvVersionUtils serverVersion = DeluxeSpawn.serverVersion;
-        return serverVersion.serverVersionGreaterEqualThan(serverVersion, SvVersionUtils.v1_16_R1);
+        ServerVersion serverVersion = DeluxeSpawn.serverVersion;
+        return serverVersion.serverVersionGreaterEqualThan(serverVersion, ServerVersion.v1_16_R1);
     }
 
     public static boolean isLegacy() {
-        SvVersionUtils serverVersion = DeluxeSpawn.serverVersion;
-        return !serverVersion.serverVersionGreaterEqualThan(serverVersion, SvVersionUtils.v1_13_R1);
+        ServerVersion serverVersion = DeluxeSpawn.serverVersion;
+        return !serverVersion.serverVersionGreaterEqualThan(serverVersion, ServerVersion.v1_13_R1);
     }
 
     public static boolean isTrimNew() {
-        SvVersionUtils serverVersion = DeluxeSpawn.serverVersion;
-        return serverVersion.serverVersionGreaterEqualThan(serverVersion, SvVersionUtils.v1_20_R1);
+        ServerVersion serverVersion = DeluxeSpawn.serverVersion;
+        return serverVersion.serverVersionGreaterEqualThan(serverVersion, ServerVersion.v1_20_R1);
     }
 
     public static String getLastVersion() {

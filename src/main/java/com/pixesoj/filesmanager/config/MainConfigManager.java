@@ -80,6 +80,12 @@ public class MainConfigManager {
         configFile.reloadConfig();
         loadConfig();
     }
+
+    public void saveConfig(){
+        configFile.saveConfig();
+        loadConfig();
+    }
+
     public MainConfigManager(DeluxeSpawn plugin){
         configFile = new CustomConfig("config.yml", null, plugin);
         configFile.registerConfig();

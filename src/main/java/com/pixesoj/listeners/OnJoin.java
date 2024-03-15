@@ -205,6 +205,7 @@ public class OnJoin implements Listener {
         float pitch = (float) locations.getDouble("Lobby.pitch");
         String world = locations.getString("Lobby.world");
         assert world != null;
+
         Location lobbyLocation = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
 
         if(!locations.contains("Lobby.x")){

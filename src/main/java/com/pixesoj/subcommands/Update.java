@@ -29,7 +29,7 @@ public class Update implements SubCommand {
     public boolean execute(CommandSender sender, String[] args) {
         String p = plugin.getMainPermissionsManager().getUpdate();
         boolean d = plugin.getMainPermissionsManager().isUpdateDefault();
-        if (!PlayerUtils.hasPermissionMessage(sender, p, d)){
+        if (!PlayerUtils.hasPermissionMessage(plugin, sender, p, d)){
             String message = plugin.getMainMessagesManager().getPermissionDenied();
             colored(sender, prefix(), message);
             return true;

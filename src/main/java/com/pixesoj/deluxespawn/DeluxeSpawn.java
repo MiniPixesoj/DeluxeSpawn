@@ -2,20 +2,20 @@ package com.pixesoj.deluxespawn;
 
 import com.pixesoj.commands.*;
 import com.pixesoj.filesmanager.LocationsManager;
+import com.pixesoj.filesmanager.config.CustomConfig;
 import com.pixesoj.filesmanager.config.MainConfigManager;
 import com.pixesoj.filesmanager.lobby.MainLobbyConfigManager;
 import com.pixesoj.filesmanager.messages.MainMessagesManager;
 import com.pixesoj.filesmanager.permissions.MainPermissionsManager;
 import com.pixesoj.filesmanager.spawn.MainSpawnConfigManager;
 import com.pixesoj.listeners.*;
-import com.pixesoj.managers.MySQL;
 import com.pixesoj.managers.playerdata.PlayerDataManager;
 import com.pixesoj.managers.UpdateCheckManager;
 import com.pixesoj.model.internal.UpdateCheckResult;
 import com.pixesoj.utils.common.MySQLUtils;
+import com.pixesoj.utils.common.ServerVersion;
 import com.pixesoj.utils.spigot.MessagesUtils;
 import com.pixesoj.managers.dependencies.Metrics;
-import com.pixesoj.utils.common.SvVersionUtils;
 import com.pixesoj.utils.common.UpdaterUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -31,6 +31,7 @@ public class DeluxeSpawn extends JavaPlugin {
     public String version;
     public static String prefix;
     private MainConfigManager mainConfigManager;
+    private CustomConfig customConfig;
     private MainLobbyConfigManager mainLobbyConfigManager;
     private MainSpawnConfigManager mainSpawnConfigManager;
     private MainMessagesManager mainMessagesManager;
@@ -38,7 +39,7 @@ public class DeluxeSpawn extends JavaPlugin {
     private LocationsManager locationsManager;
     private MainPermissionsManager mainPermissionsManager;
     private PlayerDataManager playerDataManager;
-    public static SvVersionUtils serverVersion;
+    public static ServerVersion serverVersion;
     private UpdaterUtils updater;
     private MySQLUtils mySQLUtils;
 
@@ -116,10 +117,15 @@ public class DeluxeSpawn extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new OnQuit(this), this);
         getServer().getPluginManager().registerEvents(new LastLocation(this), this);
         getServer().getPluginManager().registerEvents(new OnShutdown(this), this);
+        getServer().getPluginManager().registerEvents(new ClickPanel(this), this);
     }
 
     public MainConfigManager getMainConfigManager() {
         return mainConfigManager;
+    }
+
+    public CustomConfig getCustomConfig() {
+        return customConfig;
     }
 
     public MainLobbyConfigManager getMainLobbyConfigManager() {
@@ -234,7 +240,7 @@ public class DeluxeSpawn extends JavaPlugin {
 
     public void setVersion() {
         String packageName = Bukkit.getServer().getClass().getPackage().getName();
-        serverVersion = SvVersionUtils.valueOf(packageName.replace("org.bukkit.craftbukkit.", ""));
+        serverVersion = ServerVersion.valueOf(packageName.replace("org.bukkit.craftbukkit.", ""));
     }
 
     private ArrayList<String> delayPlayers;
@@ -251,11 +257,7 @@ public class DeluxeSpawn extends JavaPlugin {
     }
 
     public boolean playerInDelay(Player player){
-        if (delayPlayers.contains(player.getName())){
-            return true;
-        } else {
-            return false;
-        }
+        return delayPlayers.contains(player.getName());
     }
 
     public void addLobbyCooldown (Player player){
@@ -267,11 +269,7 @@ public class DeluxeSpawn extends JavaPlugin {
     }
 
     public boolean playerLobbyInCooldown(Player player){
-        if (cooldownLobbyPlayers.contains(player.getName())){
-            return true;
-        } else {
-            return false;
-        }
+        return cooldownLobbyPlayers.contains(player.getName());
     }
 
     public void addSpawnCooldown (Player player){
@@ -283,11 +281,7 @@ public class DeluxeSpawn extends JavaPlugin {
     }
 
     public boolean playerSpawnInCooldown(Player player){
-        if (cooldownSpawnPlayers.contains(player.getName())){
-            return true;
-        } else {
-            return false;
-        }
+        return cooldownSpawnPlayers.contains(player.getName());
     }
 
     public void addLastLocationOneTime (Player player){
@@ -299,16 +293,10 @@ public class DeluxeSpawn extends JavaPlugin {
     }
 
     public boolean playerLastLocationOneTime(Player player){
-        if (lastLocationOneTime.contains(player.getName())){
-            return true;
-        } else {
-            return false;
-        }
+        return lastLocationOneTime.contains(player.getName());
     }
 
     public PlayerDataManager getPlayerDataManager() {
         return playerDataManager;
     }
 }
-
-

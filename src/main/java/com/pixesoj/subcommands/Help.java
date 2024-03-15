@@ -28,7 +28,7 @@ public class Help implements SubCommand {
     public boolean execute(CommandSender sender, String[] args) {
         String p = plugin.getMainPermissionsManager().getHelp();
         boolean d = plugin.getMainPermissionsManager().isHelpDefault();
-        if (!PlayerUtils.hasPermissionMessage(sender, p, d)){
+        if (!PlayerUtils.hasPermissionMessage(plugin, sender, p, d)){
             String m = plugin.getMainMessagesManager().getPermissionDenied();
             colored(sender, prefix(), m);
             return true;

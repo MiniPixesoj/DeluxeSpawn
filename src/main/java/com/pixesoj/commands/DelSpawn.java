@@ -8,17 +8,20 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public class DelSpawn implements CommandExecutor {
-    private DeluxeSpawn plugin;
+    private final DeluxeSpawn plugin;
 
     public DelSpawn(DeluxeSpawn deluxeSpawn) {
         this.plugin = deluxeSpawn;
-        plugin.getCommand("delspawn").setExecutor(this);
-        plugin.getCommand("delspawn").setTabCompleter(new Spawn(deluxeSpawn));
+        Objects.requireNonNull(plugin.getCommand("delspawn")).setExecutor(this);
+        Objects.requireNonNull(plugin.getCommand("delspawn")).setTabCompleter(new Spawn(deluxeSpawn));
     }
 
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         removeSpawn(sender, args);
         return true;
     }

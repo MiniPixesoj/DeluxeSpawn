@@ -1,115 +1,116 @@
-##====================================##
-## DeluxeSpawn plugin by Pixesoj.     ##
-## Version: 3.5.0                     ##
-## Make sure to leave your            ##
-## thoughts on a review.              ##
-## www.spigotmc.org/resources/111403/ ##
-##====================================##
-
-# In this place you can see/change all the permissions available in DeluxeSpawn
-# How to use this file
+# This file contains all the permissions available in DeluxeSpawn.
+# How to use this file:
 # DeluxeSpawn:
-#   Permission: This is where the permission that you can give to your players goes, you can change this value
-#   Default: Here you choose whether this permission will be by default for everyone
-#     true: will be available to all players
-#     false: will only be available to OP players or those who have the permission above with some permissions plugin like LuckPerms
+#   permission: This is where the permission that you can give to your players goes, you can change this value.
+#   default: Here you choose whether this permission will be by default for everyone.
+#     true: It will be available to all players.
+#     false: Only available to OP players or those who have the permission above with some permissions plugin like LuckPerms.
 
-# Use /lobby command to go to lobby
-Lobby:
-  Permission: deluxespawn.command.lobby
-  Default: true
+# Use the /lobby command to go to lobby
+lobby:
+  permission: deluxespawn.command.lobby
+  default: true
 
 # Use the /lobby <player> command to send another player to the lobby
-LobbyOther:
-  Permission: deluxespawn.command.lobby.other
-  Default: false
+lobby_other:
+  permission: deluxespawn.command.lobby.other
+  default: false
 
 # Use /setlobby command to set a lobby
-SetLobby:
-  Permission: deluxespawn.command.setlobby
-  Default: false
+setlobby:
+  permission: deluxespawn.command.setlobby
+  default: false
 
 # Permission required to use the /lobby command (delete lobby)
-DelLobby:
-  Permission: deluxespawn.command.dellobby
-  Default: false
+dellobby:
+  permission: deluxespawn.command.dellobby
+  default: false
 
 # Allows the player to ignore the lobby teleport delay
-LobbyBypassDelay:
-  Permission: deluxespawn.bypass.delay.lobby
-  Default: false
+lobby_bypass_delay:
+  permission: deluxespawn.bypass.delay.lobby
+  default: false
 
 # With this permission you can ignore the cooldown between /lobby commands
-LobbyBypassCooldown:
-  Permission: deluxespawn.bypass.cooldown.lobby
-  Default: false
+lobby_bypass_cooldown:
+  permission: deluxespawn.bypass.cooldown.lobby
+  default: false
 
 # Use /spawn command to go to spawn
-Spawn:
-  Permission: deluxespawn.command.spawn
-  Default: true
+spawn:
+  permission: deluxespawn.command.spawn
+  default: true
+
+# Use the /spawn <player> command to send another player to the spawn
+spawn_other:
+  permission: deluxespawn.command.spawn.other
+  default: false
 
 # Use /setspawn command to set a spawn
-SetSpawn:
-  Permission: deluxespawn.command.setspawn
-  Default: false
+setspawn:
+  permission: deluxespawn.command.setspawn
+  default: false
 
 # Permission required to use the /delspawn command (delete the specified spawn)
-DelSpawn:
-  Permission: deluxespawn.command.delspawn
-  Default: false
+delspawn:
+  permission: deluxespawn.command.delspawn
+  default: false
 
 # Allows the player to ignore the spawn teleport delay
-SpawnBypassDelay:
-  Permission: deluxespawn.bypass.delay.spawn
-  Default: false
-
-# With this permission you can ignore the cooldown between /spawn commands
-SpawnBypassCooldown:
-  Permission: deluxespawn.bypass.cooldown.spawn
-  Default: false
-
-# Use /spawn <world> command to go to the spawn of the specified world
-SpawnWorld:
-  Permission: deluxespawn.command.spawn.world
-  Default: true
-
-# Use the /deluxespawn reload command
-Reload:
-  Permission: deluxespawn.command.reload
-  Default: false
-
-# Use the /deluxespawn version command
-Version:
-  Permission: deluxespawn.command.version
-  Default: false
-
-# Use the /deluxespawn help command
-Help:
-  Permission: deluxespawn.command.help
-  Default: true
-
-# Notify players of errors
-Notify:
-  Permission: deluxespawn.notify
-  Default: false
-
-# Notify players of new updates available
-NotifyUpdate:
-  Permission: deluxespawn.notify.update
-  Default: false
-
-# This is the permission to use the /deluxespawn lastlocation command
-LastLocation:
-  Permission: deluxespawn.command.lastlocation
-  Default: true
+spawn_bypass_delay:
+  permission: deluxespawn.bypass.delay.spawn
+  default: false
 
 # With this permission, players do not know if they have already used the command once
-LastLocationBypassCommand:
-  Permission: deluxespawn.bypass.command.lastlocation
-  Default: false
+spawn_bypass_cooldown:
+  permission: deluxespawn.bypass.cooldown.spawn
+  default: false
+
+# Use /spawn <world> command to go to the spawn of the specified world
+spawn_world:
+  permission: deluxespawn.command.spawn.world
+  default: true
+
+# Use the /deluxespawn reload command
+reload:
+  permission: deluxespawn.command.reload
+  default: false
+
+# Use the /deluxespawn version command
+version:
+  permission: deluxespawn.command.version
+  default: false
+
+# Use the /deluxespawn help command
+help:
+  permission: deluxespawn.command.help
+  default: true
+
+# Notify players of errors
+notify:
+  permission: deluxespawn.notify
+  default: false
+
+# Notify players of new updates available
+notify_update:
+  permission: deluxespawn.notify.update
+  default: false
+
+# This is the permission to use the /deluxespawn lastlocation command
+lastlocation:
+  permission: deluxespawn.command.lastlocation
+  default: true
+
+# With this permission, players do not know if they have already used the command once
+lastlocation_bypass_command:
+  permission: deluxespawn.bypass.command.lastlocation
+  default: false
 
 # This permission allows you to use the /deluxespawn update command to update the plugin to the latest version
-Update:
-  Permission: deluxespawn.command.update
-  Default: false
+update:
+  permission: deluxespawn.command.update
+  default: false
+
+admin_panel:
+  permission: deluxespawn.panel.admin
+  default: false

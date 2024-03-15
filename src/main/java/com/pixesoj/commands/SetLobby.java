@@ -8,15 +8,18 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public class SetLobby implements CommandExecutor {
-    private DeluxeSpawn plugin;
+    private final DeluxeSpawn plugin;
 
     public SetLobby(DeluxeSpawn deluxeSpawn) {
         this.plugin = deluxeSpawn;
     }
 
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage(MessagesUtils.getColoredMessage(getConsoleDeniedMessage()));
             return true;
@@ -58,7 +61,7 @@ public class SetLobby implements CommandExecutor {
         String prefix = plugin.getMainMessagesManager().getPrefix();
         FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
         Location l = ((Player) sender).getLocation();
-        locations.set("Lobby.world", l.getWorld().getName());
+        locations.set("Lobby.world", Objects.requireNonNull(l.getWorld()).getName());
         locations.set("Lobby.x", l.getX());
         locations.set("Lobby.y", l.getY());
         locations.set("Lobby.z", l.getZ());

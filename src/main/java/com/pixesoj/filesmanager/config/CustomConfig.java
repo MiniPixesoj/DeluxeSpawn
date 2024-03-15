@@ -51,10 +51,12 @@ public class CustomConfig {
         }
     }
     public void saveConfig() {
-        try {
-            fileConfiguration.save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (fileConfiguration != null && file != null) {
+            try {
+                fileConfiguration.save(file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -11,24 +11,24 @@ import com.pixesoj.utils.spigot.MessagesUtils;
 import com.pixesoj.utils.spigot.SoundUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
 
 public class Lobby implements CommandExecutor {
-    private DeluxeSpawn plugin;
+    private final DeluxeSpawn plugin;
 
     public Lobby(DeluxeSpawn deluxeSpawn) {
         this.plugin = deluxeSpawn;
     }
 
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         String prefix = plugin.getMainMessagesManager().getPrefix();
         if (!(sender instanceof Player)) {
             if (args.length > 0) {

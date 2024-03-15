@@ -9,6 +9,7 @@ import com.pixesoj.model.internal.CooldownTimeProvider;
 import com.pixesoj.utils.spigot.CommandUtils;
 import com.pixesoj.utils.spigot.LocationUtils;
 import com.pixesoj.utils.spigot.MessagesUtils;
+import com.pixesoj.utils.spigot.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -18,82 +19,241 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
 
 public class Spawn implements CommandExecutor {
-    private DeluxeSpawn plugin;
+    private final DeluxeSpawn plugin;
 
     public Spawn(DeluxeSpawn deluxeSpawn) {
         this.plugin = deluxeSpawn;
-        plugin.getCommand("spawn").setExecutor(this);
-        plugin.getCommand("spawn").setTabCompleter(new com.pixesoj.commands.tabcompleter.Spawn(deluxeSpawn));
+        Objects.requireNonNull(plugin.getCommand("spawn")).setExecutor(this);
+        Objects.requireNonNull(plugin.getCommand("spawn")).setTabCompleter(new com.pixesoj.commands.tabcompleter.Spawn(deluxeSpawn));
     }
 
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         String prefix = plugin.getMainMessagesManager().getPrefix();
 
         if (!(sender instanceof Player)) {
-            sendConsoleCommandDeniedMessage(sender, prefix);
-            return true;
-        }
-
-        Player player = (Player) sender;
-        String spawnPermission = plugin.getMainPermissionsManager().getSpawn();
-        boolean spawnPermissionDefault = plugin.getMainPermissionsManager().isSpawnDefault();
-        boolean playerInCooldown = plugin.playerSpawnInCooldown(player);
-        String bypassCooldownPermission = plugin.getMainPermissionsManager().getSpawnBypassCooldown();
-        boolean bypassCooldownDefault = plugin.getMainPermissionsManager().isSpawnBypassCooldownDefault();
-        boolean cooldownEnabled = plugin.getMainSpawnConfigManager().isCooldownEnabled();
-
-        if (!permission(player, spawnPermission, spawnPermissionDefault)){
-            sendMessage(player, prefix, "NoPermission");
-            return true;
-        }
-        if (cooldownEnabled){
-            if (cooldown(player, playerInCooldown, bypassCooldownPermission, bypassCooldownDefault)) {
-                teleportPlayer(player, args);
-                handleSpawnCooldown(player);
+            if (args.length > 0) {
+                commandConsole(sender, args);
                 return true;
             }
-            sendMessage(player, prefix, "InCooldown");
+            boolean byWorld = plugin.getMainSpawnConfigManager().isByWorld();
+            if (byWorld){
+                sendMessage(sender, prefix, args, "ConsoleUsageBySpawn");
+            } else {
+                sendMessage(sender, prefix, args, "ConsoleUsage");
+            }
             return true;
-        } else {
-            teleportPlayer(player, args);
         }
+
+        commandPlayer(sender, args);
         return true;
     }
 
-    public void teleportPlayer (CommandSender sender, String[] args){
-        getTeleport(sender, args);
-    }
+    public void commandConsole(CommandSender sender, String[] args) {
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+        String targetPlayerName = args[0];
+        Player targetPlayer = Bukkit.getPlayer(targetPlayerName);
 
-    private void sendConsoleCommandDeniedMessage(CommandSender sender, String prefix) {
-        String message = prefix + plugin.getMainMessagesManager().getCommandDeniedConsole();
-        sender.sendMessage(MessagesUtils.getColoredMessage(message));
-    }
-
-    private boolean cooldown(Player player, boolean playerInCooldown, String bypassCooldownPermission, boolean bypassCooldownDefault) {
-        return ((!playerInCooldown || bypassCooldownDefault || player.hasPermission(bypassCooldownPermission)));
-    }
-
-    private boolean permission(Player player, String spawnPermission, boolean spawnPermissionDefault){
-        return (spawnPermissionDefault || player.hasPermission(spawnPermission));
-    }
-
-    private void sendMessage(Player player, String prefix, String reason) {
-        String message;
-        if (reason.equals("NoPermission")) {
-            message = prefix + plugin.getMainMessagesManager().getPermissionDenied();
-        } else if (reason.equals("InCooldown")) {
-            int remainingTime = CooldownSpawn.getRemainingTime(player);
-            message = prefix + plugin.getMainMessagesManager().getSpawnInCooldown();
-            message = message.replace("%time%", String.valueOf(remainingTime));
-        } else {
+        if (targetPlayer == null || !targetPlayer.isOnline()) {
+            sendMessage(sender, prefix, args, "PlayerOffline");
             return;
         }
-        player.sendMessage(MessagesUtils.getColoredMessage(message));
+
+        getTeleportConsole(sender, targetPlayer, args);
+    }
+
+    public void getTeleportConsole(CommandSender sender, Player player, String[] args) {
+        FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+        boolean byWorld = plugin.getMainSpawnConfigManager().isByWorld();
+
+        if (byWorld) {
+            if (args.length < 2 || args[1].isEmpty()) {
+                sendMessage(sender, prefix, args, "ConsoleUsageBySpawn");
+                return;
+            }
+
+            String worldName = args[1];
+            if (!locations.contains("SpawnByWorld." + worldName)) {
+                sendMessage(sender, prefix, args, "NotExistConsole");
+                return;
+            }
+
+            getSpawnConsole(sender, player, worldName, args);
+        } else {
+            if (args.length < 1) {
+                sendMessage(sender, prefix, args, "ConsoleUsage");
+            }
+            if (!locations.contains("Spawn.world")) {
+                sendMessage(sender, prefix, args, "NotExistConsoleG");
+                return;
+            }
+            getSpawnConsole(sender, player, null, args);
+        }
+    }
+
+    public void getSpawnConsole(CommandSender sender, Player targetPlayer, String worldName, String[] args) {
+        boolean byWorld = plugin.getMainSpawnConfigManager().isByWorld();
+        FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+
+        if (!byWorld) {
+            Location spawnLocation = LocationUtils.getSpawn(locations, false, null);
+            assert spawnLocation != null;
+            assert args[1] == null;
+
+            sendMessage(sender, prefix, args, "ConsolePlayerTeleported");
+            sendMessage(targetPlayer, prefix, args, "ConsolePlayerTeleport");
+            targetPlayer.teleport(spawnLocation);
+        } else {
+            World worldN = Bukkit.getWorld(worldName);
+
+            if (worldN == null) {
+                sendMessage(sender, prefix, args, "ConsoleInvalidWorld");
+                return;
+            }
+
+            Location spawnLocation = LocationUtils.getSpawn(locations, true, worldN);
+            assert spawnLocation != null;
+
+            sendMessage(sender, prefix, args, "ConsolePlayerTeleported");
+            sendMessage(targetPlayer, prefix, args, "ConsolePlayerTeleport");
+            targetPlayer.teleport(spawnLocation);
+        }
+    }
+
+    public void commandPlayer(CommandSender sender, String[] args){
+        if (args.length > 0) {
+            getTeleportOtherPlayer(sender, args);
+            return;
+        }
+
+        getTeleportPlayer(sender, args);
+    }
+
+    public void getTeleportOtherPlayer(CommandSender sender, String[] args) {
+        FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+        boolean byWorld = plugin.getMainSpawnConfigManager().isByWorld();
+        String p = plugin.getMainPermissionsManager().getSpawnOther();
+        boolean d = plugin.getMainPermissionsManager().isSpawnOtherDefault();
+        if (args.length > 0) {
+            if (byWorld) {
+                if (args.length > 1) {
+                    if (PlayerUtils.hasPermission(sender, p, d)) {
+                        String spawnName = args[0];
+                        String targetPlayerName = args[1];
+                        Player targetPlayer = Bukkit.getPlayer(targetPlayerName);
+                        if (targetPlayer == null || !targetPlayer.isOnline()) {
+                            sendMessage(sender, prefix, args, "PlayerOffline");
+                            return;
+                        }
+
+                        if (!locations.contains("SpawnByWorld." + spawnName)) {
+                            sendMessage(sender, prefix, args, "NotExist");
+                            return;
+                        }
+
+                        getSpawnOtherPlayer(sender, targetPlayer, args);
+                        return;
+                    }
+                }
+                getTeleportPlayer(sender, args);
+                return;
+            }
+
+            if (PlayerUtils.hasPermission(sender, p, d)) {
+                String targetPlayerName = args[0];
+                Player targetPlayer = Bukkit.getPlayer(targetPlayerName);
+                if (targetPlayer == null || !targetPlayer.isOnline()) {
+                    sendMessage(sender, prefix, args, "PlayerOffline");
+                    return;
+                }
+
+                if (!locations.contains("Spawn.world")) {
+                    sendMessage(sender, prefix, args, "NotExist");
+                    return;
+                }
+                getSpawnOtherPlayer(sender, targetPlayer, args);
+                return;
+            }
+            getTeleportPlayer(sender, args);
+        } else {
+            getTeleportPlayer(sender, args);
+        }
+    }
+
+    public void getSpawnOtherPlayer(CommandSender sender, Player player, String[] args) {
+        FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+        boolean byWorld = plugin.getMainSpawnConfigManager().isByWorld();
+
+        if (byWorld){
+            String spawnName = args[0];
+            String targetPlayerName = args[1];
+            World spawnN = Bukkit.getWorld(spawnName);
+            Location location = LocationUtils.getSpawn(locations, true, spawnN);
+
+            Player targetPlayer = Bukkit.getPlayer(targetPlayerName);
+            assert targetPlayer != null;
+
+            sendMessage(player, prefix, args, "PlayerTeleportByWorld");
+
+            sendMessage(sender, prefix, args, "PlayerTeleportedByWorld");
+
+            assert location != null;
+            targetPlayer.teleport(location);
+            return;
+        }
+
+        String targetPlayerName = args[0];
+        Location location = LocationUtils.getSpawn(locations, false, null);
+
+        Player targetPlayer = Bukkit.getPlayer(targetPlayerName);
+        assert targetPlayer != null;
+
+        sendMessage(player, prefix, args, "PlayerTeleport");
+
+        sendMessage(sender, prefix, args, "PlayerTeleported");
+
+        assert location != null;
+        targetPlayer.teleport(location);
+    }
+
+    public void getTeleportPlayer (CommandSender sender, String[] args){
+        Player player = (Player) sender;
+        String prefix = plugin.getMainMessagesManager().getPrefix();
+        String spawnP = plugin.getMainPermissionsManager().getSpawn();
+        String cooldownP = plugin.getMainPermissionsManager().getSpawnBypassCooldown();
+        boolean cooldownD = plugin.getMainPermissionsManager().isSpawnBypassCooldownDefault();
+        boolean cooldownE = plugin.getMainSpawnConfigManager().isCooldownEnabled();
+        boolean spawnD = plugin.getMainPermissionsManager().isSpawnDefault();
+        boolean inCooldown = plugin.playerSpawnInCooldown(player);
+
+        if (!PlayerUtils.hasPermissionMessage(plugin, player, spawnP, spawnD)){
+            return;
+        }
+
+        if (cooldownE){
+            if (inCooldown) {
+                if (PlayerUtils.hasPermission(sender, cooldownP, cooldownD)){
+                    getTeleport(player, args);
+                    handleSpawnCooldown(player);
+                    return;
+                }
+                sendMessage(player, prefix, args, "InCooldown");
+                return;
+            }
+            getTeleport(player, args);
+            handleSpawnCooldown(player);
+        } else {
+            getTeleport(player, args);
+        }
     }
 
     public void getTeleport(CommandSender sender, String[] args) {
@@ -104,16 +264,16 @@ public class Spawn implements CommandExecutor {
 
         if (!plugin.getMainSpawnConfigManager().isByWorld()) {
             if (!locations.contains("Spawn.world")) {
-                player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getSpawnDoesNotExist()));
+                sendMessage(sender, prefix, args, "NotExistG");
                 return;
             }
 
-            getSpawnGlobal(player);
+            getSpawnGlobal(player, args);
             return;
         }
 
         if (!locations.contains("SpawnByWorld." + worldPlayer)) {
-            player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getSpawnByWorldDoesNotExist()));
+            sendMessage(sender, prefix, args, "NotExist");
             return;
         }
 
@@ -121,52 +281,51 @@ public class Spawn implements CommandExecutor {
             String world = args[0];
 
             if (!locations.contains("SpawnByWorld." + world)) {
-                player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getSpawnByWorldSpecifyDoesNotExist()));
+                sendMessage(sender, prefix, args, "NotExist");
                 return;
             }
 
-            String permission = plugin.getMainPermissionsManager().getSpawnWorld();
-            if (!plugin.getMainPermissionsManager().isSpawnWorldDefault() && !player.hasPermission(permission)) {
-                noPermission(sender);
+            String spawnP = plugin.getMainPermissionsManager().getSpawnWorld();
+            boolean spawnD = plugin.getMainPermissionsManager().isSpawnWorldDefault();
+            if (!PlayerUtils.hasPermissionMessage(plugin, sender, spawnP, spawnD)) {
                 return;
             }
 
             getSpawnWorld(sender, args);
         } else {
-            getSpawn(sender);
+            getSpawn(sender, args);
         }
     }
 
-    public void getSpawnGlobal(CommandSender sender) {
+    public void getSpawnGlobal(CommandSender sender, String[] args) {
         FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
         Player player = (Player) sender;
         String prefix = plugin.getMainMessagesManager().getPrefix();
 
-        String permission = plugin.getMainPermissionsManager().getSpawn();
-        if (!plugin.getMainPermissionsManager().isSpawnDefault() && !player.hasPermission(permission)) {
-            noPermission(sender);
+        String spawnP = plugin.getMainPermissionsManager().getSpawn();
+        boolean spawnD = plugin.getMainPermissionsManager().isSpawnDefault();
+        if (!PlayerUtils.hasPermission(sender, spawnP, spawnD)) {
             return;
         }
 
         boolean byWorld = plugin.getMainSpawnConfigManager().isByWorld();
         Location spawnLocation = LocationUtils.getSpawn(locations, byWorld, player.getWorld());
         if (spawnLocation == null) {
-            String m = plugin.getMainMessagesManager().getSpawnDoesNotExist();
-            sender.sendMessage(MessagesUtils.getColoredMessage(prefix + m));
+            sendMessage(sender, prefix, args, "NotExist");
             return;
         }
 
         int delay = plugin.getMainSpawnConfigManager().getTeleportDelay();
         DelaySpawn d = new DelaySpawn(plugin, delay, player, spawnLocation);
 
-        String delayBypassPermission = plugin.getMainPermissionsManager().getSpawnBypassDelay();
-        boolean delayBypassDefault = plugin.getMainPermissionsManager().isSpawnBypassDelayDefault();
+        String delayP = plugin.getMainPermissionsManager().getSpawnBypassDelay();
+        boolean delayD = plugin.getMainPermissionsManager().isSpawnBypassDelayDefault();
 
-        if (!plugin.getMainSpawnConfigManager().isTeleportDelayEnabled() || delayBypassDefault || player.hasPermission(delayBypassPermission)) {
+        if (!plugin.getMainSpawnConfigManager().isTeleportDelayEnabled() || PlayerUtils.hasPermission(sender, delayP, delayD)) {
             player.teleport(spawnLocation);
             plugin.addSpawnCooldown(player);
-            sound(sender);
-            player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getSpawnTeleported()));
+            sound(sender, args);
+            sendMessage(sender, prefix, args, "Teleported");
 
             List<String> cmdPlayer = plugin.getMainSpawnConfigManager().getCommandsPlayer();
             List<String> cmdConsole = plugin.getMainSpawnConfigManager().getCommandsConsole();
@@ -182,40 +341,39 @@ public class Spawn implements CommandExecutor {
             return;
         }
 
-        sender.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getSpawnInTeleport()));
+        sendMessage(sender, prefix, args, "InTeleport");
     }
 
 
-    public void getSpawn(CommandSender sender) {
+    public void getSpawn(CommandSender sender, String[] args) {
         FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
         Player player = (Player) sender;
         String prefix = plugin.getMainMessagesManager().getPrefix();
 
-        String permission = plugin.getMainPermissionsManager().getSpawn();
-        if (!plugin.getMainPermissionsManager().isSpawnDefault() && !player.hasPermission(permission)) {
-            noPermission(sender);
+        String spawnP = plugin.getMainPermissionsManager().getSpawn();
+        boolean spawnD = plugin.getMainPermissionsManager().isSpawnDefault();
+        if (!PlayerUtils.hasPermission(sender, spawnP, spawnD)) {
             return;
         }
 
         boolean byWorld = plugin.getMainSpawnConfigManager().isByWorld();
         Location spawnLocation = LocationUtils.getSpawn(locations, byWorld, player.getWorld());
         if (spawnLocation == null) {
-            String m = plugin.getMainMessagesManager().getSpawnDoesNotExist();
-            sender.sendMessage(MessagesUtils.getColoredMessage(prefix + m));
+            sendMessage(sender, prefix, args, "NotExist");
             return;
         }
 
         int delay = plugin.getMainSpawnConfigManager().getTeleportDelay();
         DelaySpawn d = new DelaySpawn(plugin, delay, player, spawnLocation);
 
-        String delayBypassPermission = plugin.getMainPermissionsManager().getSpawnBypassDelay();
-        boolean delayBypassDefault = plugin.getMainPermissionsManager().isSpawnBypassDelayDefault();
+        String delayP = plugin.getMainPermissionsManager().getSpawnBypassDelay();
+        boolean delayD = plugin.getMainPermissionsManager().isSpawnBypassDelayDefault();
 
-        if (!plugin.getMainSpawnConfigManager().isTeleportDelayEnabled()  || delayBypassDefault || player.hasPermission(delayBypassPermission)) {
+        if (!plugin.getMainSpawnConfigManager().isTeleportDelayEnabled()  || PlayerUtils.hasPermission(sender, delayP, delayD)) {
             player.teleport(spawnLocation);
             plugin.addSpawnCooldown(player);
-            sound(sender);
-            player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getSpawnTeleported()));
+            sound(sender, args);
+            sendMessage(sender, prefix, args, "Teleported");
 
             List<String> cmdPlayer = plugin.getMainSpawnConfigManager().getCommandsPlayer();
             List<String> cmdConsole = plugin.getMainSpawnConfigManager().getCommandsConsole();
@@ -231,7 +389,7 @@ public class Spawn implements CommandExecutor {
             return;
         }
 
-        sender.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getSpawnInTeleport()));
+        sendMessage(sender, prefix, args, "InTeleport");
     }
 
     public void getSpawnWorld(CommandSender sender, String[] args) {
@@ -244,28 +402,27 @@ public class Spawn implements CommandExecutor {
 
         World targetWorld = Bukkit.getWorld(realName);
         if (targetWorld == null) {
-            player.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getSpawnByWorldSpecifyDoesNotExist()));
+            sendMessage(sender, prefix, args, "NotExist");
             return;
         }
 
         boolean byWorld = plugin.getMainSpawnConfigManager().isByWorld();
         Location spawnLocation = LocationUtils.getSpawn(locations, byWorld, player.getWorld());
         if (spawnLocation == null) {
-            String m = plugin.getMainMessagesManager().getSpawnDoesNotExist();
-            sender.sendMessage(MessagesUtils.getColoredMessage(prefix + m));
+            sendMessage(sender, prefix, args, "NotExist");
             return;
         }
 
         int delay = plugin.getMainSpawnConfigManager().getTeleportDelay();
         DelaySpawnWorld d = new DelaySpawnWorld(plugin, delay, player, spawnLocation);
 
-        String delayBypassPermission = plugin.getMainPermissionsManager().getSpawnBypassDelay();
-        boolean delayBypassDefault = plugin.getMainPermissionsManager().isSpawnBypassDelayDefault();
+        String delayP = plugin.getMainPermissionsManager().getSpawnBypassDelay();
+        boolean delayD = plugin.getMainPermissionsManager().isSpawnBypassDelayDefault();
 
-        if (!plugin.getMainSpawnConfigManager().isTeleportDelayEnabled()  || delayBypassDefault || player.hasPermission(delayBypassPermission)) {
+        if (!plugin.getMainSpawnConfigManager().isTeleportDelayEnabled()  || PlayerUtils.hasPermission(sender, delayP, delayD)) {
             player.teleport(spawnLocation);
             plugin.addSpawnCooldown(player);
-            sound(sender);
+            sound(sender, args);
             String teleportMessage = prefix + plugin.getMainMessagesManager().getSpawnOtherTeleported().replace("%world%", aliasName);
             player.sendMessage(MessagesUtils.getColoredMessage(teleportMessage));
 
@@ -282,10 +439,10 @@ public class Spawn implements CommandExecutor {
             sendMessage(sender);
             return;
         }
-        sender.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getSpawnInTeleport()));
+        sendMessage(sender, prefix, args, "InTeleport");
     }
 
-    public void sound(CommandSender sender) {
+    public void sound(CommandSender sender, String[] args) {
         Player player = (Player) sender;
 
         if (!plugin.getMainSpawnConfigManager().isTeleportSoundEnabled()) {
@@ -296,7 +453,7 @@ public class Spawn implements CommandExecutor {
         String prefix = plugin.getMainMessagesManager().getPrefix();
 
         if (soundName == null) {
-            handleNullSound(sender, prefix);
+            handleNullSound(sender, prefix, args);
             return;
         }
 
@@ -314,19 +471,21 @@ public class Spawn implements CommandExecutor {
         player.playSound(player.getLocation(), sound, volume, pitch);
     }
 
-    private void handleNullSound(CommandSender sender, String prefix) {
-        String permission = plugin.getMainPermissionsManager().getNotify();
-        if (plugin.getMainPermissionsManager().isNotifyDefault() || sender.hasPermission(permission)) {
-            String message = prefix + plugin.getMainMessagesManager().getSpawnNullSound();
-            sender.sendMessage(MessagesUtils.getColoredMessage(message));
-        } else {
-            noPermission(sender);
+    private void handleNullSound(CommandSender sender, String prefix, String[] args) {
+        String notifyP = plugin.getMainPermissionsManager().getNotify();
+        boolean notifyD = plugin.getMainPermissionsManager().isNotifyDefault();
+        if (PlayerUtils.hasPermission(sender, notifyP, notifyD)) {
+            sendMessage(sender, prefix, args, "NullSound");
         }
     }
 
     private void handleInvalidSound(Player player, String prefix, String soundName) {
-        String message = prefix + plugin.getMainMessagesManager().getSpawnInvalidSound().replace("%sound%", soundName);
-        player.sendMessage(message);
+        String notifyP = plugin.getMainPermissionsManager().getNotify();
+        boolean notifyD = plugin.getMainPermissionsManager().isNotifyDefault();
+        if (PlayerUtils.hasPermission(player, notifyP, notifyD)) {
+            String message = prefix + plugin.getMainMessagesManager().getSpawnInvalidSound().replace("%sound%", soundName);
+            player.sendMessage(message);
+        }
     }
 
     public void sendMessage (CommandSender sender){
@@ -341,16 +500,168 @@ public class Spawn implements CommandExecutor {
         }
     }
 
-    public void noPermission (CommandSender sender){
-        String prefix = plugin.getMainMessagesManager().getPrefix();
-        sender.sendMessage(MessagesUtils.getColoredMessage(prefix + plugin.getMainMessagesManager().getPermissionDenied()));
-    }
-
     public void handleSpawnCooldown(Player player){
         CooldownTimeProvider timeProvider = new SpawnCooldownProvider(plugin, player);
         int time = plugin.getMainSpawnConfigManager().getCooldownTime();
         CooldownSpawn c = new CooldownSpawn(plugin, timeProvider, time, player);
         c.cooldownSpawn();
+    }
+
+    public void sendMessage (CommandSender sender, String prefix, String[] args, String reason){
+        switch (reason) {
+            case "NoPermission": {
+                String message = plugin.getMainMessagesManager().getPermissionDenied();
+                message = prefix + message;
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "InvalidArguments": {
+                String message = plugin.getMainMessagesManager().getInvalidArguments();
+                message = prefix + message;
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "ConsoleUsage": {
+                String message = plugin.getMainMessagesManager().getSpawnOtherConsoleUsage();
+                message = prefix + message;
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "ConsoleUsageBySpawn": {
+                String message = "&cDebes usar &aspawn <jugador> <spawn>";
+                message = prefix + message;
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "ConsoleInvalidSpawn": {
+                String message = "&cNo existe un spawn en ese mundo";
+                message = prefix + message;
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "PlayerOffline": {
+                String message = plugin.getMainMessagesManager().getSpawnOtherPlayerOffline();
+                message = prefix + message;
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "ConsolePlayerTeleport": {
+                String replaced = plugin.getMainConfigManager().getReplacedMessagesConsole();
+                String message = plugin.getMainMessagesManager().getSpawnOtherConsolePlayerTeleport();
+                message = prefix + message.replace("%sender%", replaced);
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "NotExist": {
+                String message = plugin.getMainMessagesManager().getSpawnDoesNotExist();
+                message = prefix + message;
+                sender.sendMessage(MessagesUtils.getColoredMessage(message).replace("%world%", args[0]));
+                break;
+            }
+            case "NotExistG": {
+                String message = plugin.getMainMessagesManager().getSpawnDoesNotExistG();
+                message = prefix + message;
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "NotExistConsole": {
+                String message = plugin.getMainMessagesManager().getSpawnDoesNotExistConsole();
+                message = prefix + message.replace("%world%", args[1]);
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "NotExistConsoleG": {
+                String message = plugin.getMainMessagesManager().getSpawnDoesNotExistConsoleGlobal();
+                message = prefix + message;
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "PlayerTeleported": {
+                String targetPlayerName = args[0];
+                Player targetPlayer = Bukkit.getPlayer(targetPlayerName);
+                assert targetPlayer != null;
+
+                String message = plugin.getMainMessagesManager().getSpawnOtherPlayerTeleported();
+                message = prefix + message.replace("%player%", targetPlayer.getName());
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "PlayerTeleport": {
+                String message = plugin.getMainMessagesManager().getSpawnOtherPlayerTeleport();
+                message = prefix + message.replace("%player%", sender.getName());
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "PlayerTeleportedByWorld": {
+                String targetPlayerName = args[1];
+                Player targetPlayer = Bukkit.getPlayer(targetPlayerName);
+                assert targetPlayer != null;
+                String spawnWorld = args[0];
+                World spawnW = Bukkit.getWorld(spawnWorld);
+                assert spawnW != null;
+
+                String message = plugin.getMainMessagesManager().getSpawnOtherPlayerTeleportedByWorld().replace("%spawn%", spawnW.getName());
+                message = prefix + message.replace("%player%", targetPlayer.getName());
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "PlayerTeleportByWorld": {
+                String message = plugin.getMainMessagesManager().getSpawnOtherPlayerTeleportByWorld();
+                message = prefix + message.replace("%player%", sender.getName());
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "InCooldown": {
+                Player player = (Player) sender;
+                String message = plugin.getMainMessagesManager().getSpawnInCooldown();
+                int remainingTime = CooldownSpawn.getRemainingTime(player);
+                message = prefix + message.replace("%time%", String.valueOf(remainingTime));
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "Teleported": {
+                String message = plugin.getMainMessagesManager().getSpawnTeleported();
+                message = prefix + message;
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "MessageDelay": {
+                int time = plugin.getMainSpawnConfigManager().getTeleportDelay();
+                String message = plugin.getMainMessagesManager().getSpawnMessageDelayTeleport();
+                message = prefix + message.replace("%time%", String.valueOf(time));
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "InTeleport": {
+                String message = plugin.getMainMessagesManager().getSpawnInTeleport();
+                message = prefix + message;
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "NullSound": {
+                String message = plugin.getMainMessagesManager().getSpawnNullSound();
+                message = prefix + message;
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "InvalidSound": {
+                String soundName = plugin.getMainSpawnConfigManager().getTeleportSound();
+                String message = plugin.getMainMessagesManager().getSpawnInvalidSound();
+                message = prefix + message.replace("%sound%", soundName);
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+            case "ConsolePlayerTeleported": {
+                String targetPlayerName = args[0];
+                Player targetPlayer = Bukkit.getPlayer(targetPlayerName);
+                assert targetPlayer != null;
+
+                String message = plugin.getMainMessagesManager().getSpawnOtherConsoleTeleported();
+                message = prefix + message.replace("%player%", targetPlayer.getName());
+                sender.sendMessage(MessagesUtils.getColoredMessage(message));
+                break;
+            }
+        }
     }
 }
 

@@ -88,6 +88,18 @@ public class MainMessagesManager {
     private String ErrorGeneral;
     private String ErrorNullSound;
     private String ErrorInvalidSound;
+    private String SpawnOtherConsoleUsage;
+    private String SpawnOtherPlayerOffline;
+    private String SpawnOtherConsoleTeleported;
+    private String SpawnOtherConsolePlayerTeleport;
+    private String SpawnOtherPlayerTeleport;
+    private String SpawnOtherPlayerTeleported;
+    private String SpawnDoesNotExistConsole;
+    private String SpawnOtherPlayerTeleportByWorld;
+    private String SpawnOtherPlayerTeleportedByWorld;
+    private String InvalidArguments;
+    private String SpawnDoesNotExistConsoleGlobal;
+    private String SpawnDoesNotExistG;
 
     public void reloadMessages(){
         messageFile.reloadMessages();
@@ -104,7 +116,7 @@ public class MainMessagesManager {
 
     public void loadMessages() {
         FileConfiguration config = plugin.getConfig();
-        String lang = config.getString("Lang", "en");
+        String lang = config.getString("lang", "en");
 
         messageFile = new CustomMessages("messages-" + lang + ".yml", "lang", plugin);
         messageFile.registerMessages();
@@ -190,6 +202,18 @@ public class MainMessagesManager {
         LobbyOtherConsolePlayerTeleport = messages.getString("LobbyOtherConsolePlayerTeleport");
         LobbyOtherPlayerTeleport = messages.getString("LobbyOtherPlayerTeleport");
         LobbyOtherPlayerTeleported = messages.getString("LobbyOtherPlayerTeleported");
+        SpawnOtherConsoleUsage = messages.getString("SpawnOtherConsoleUsage");
+        SpawnOtherPlayerOffline = messages.getString("SpawnOtherPlayerOffline");
+        SpawnOtherConsoleTeleported = messages.getString("SpawnOtherConsoleTeleported");
+        SpawnOtherConsolePlayerTeleport = messages.getString("SpawnOtherConsolePlayerTeleport");
+        SpawnOtherPlayerTeleport = messages.getString("SpawnOtherPlayerTeleport");
+        SpawnOtherPlayerTeleported = messages.getString("SpawnOtherPlayerTeleported");
+        SpawnDoesNotExistConsole = messages.getString("SpawnDoesNotExistConsole");
+        SpawnOtherPlayerTeleportByWorld = messages.getString("SpawnOtherPlayerTeleportByWorld");
+        SpawnOtherPlayerTeleportedByWorld = messages.getString("SpawnOtherPlayerTeleportedByWorld");
+        InvalidArguments = messages.getString("InvalidArguments");
+        SpawnDoesNotExistConsoleGlobal = messages.getString("SpawnDoesNotExistConsoleGlobal");
+        SpawnDoesNotExistG = messages.getString("SpawnDoesNotExistG");
 
         ErrorCommandReload = messages.getString("ErrorCommandReload");
         ErrorGeneral = messages.getString("ErrorGeneral");
@@ -503,5 +527,53 @@ public class MainMessagesManager {
 
     public String getErrorInvalidSound() {
         return ErrorInvalidSound;
+    }
+
+    public String getSpawnOtherConsoleUsage() {
+        return SpawnOtherConsoleUsage;
+    }
+
+    public String getSpawnOtherPlayerOffline() {
+        return SpawnOtherPlayerOffline;
+    }
+
+    public String getSpawnOtherConsoleTeleported() {
+        return SpawnOtherConsoleTeleported;
+    }
+
+    public String getSpawnOtherConsolePlayerTeleport() {
+        return SpawnOtherConsolePlayerTeleport;
+    }
+
+    public String getSpawnOtherPlayerTeleport() {
+        return SpawnOtherPlayerTeleport;
+    }
+
+    public String getSpawnOtherPlayerTeleported() {
+        return SpawnOtherPlayerTeleported;
+    }
+
+    public String getSpawnDoesNotExistConsole() {
+        return SpawnDoesNotExistConsole;
+    }
+
+    public String getSpawnOtherPlayerTeleportByWorld() {
+        return SpawnOtherPlayerTeleportByWorld;
+    }
+
+    public String getSpawnOtherPlayerTeleportedByWorld() {
+        return SpawnOtherPlayerTeleportedByWorld;
+    }
+
+    public String getInvalidArguments() {
+        return InvalidArguments;
+    }
+
+    public String getSpawnDoesNotExistConsoleGlobal() {
+        return SpawnDoesNotExistConsoleGlobal;
+    }
+
+    public String getSpawnDoesNotExistG() {
+        return SpawnDoesNotExistG;
     }
 }

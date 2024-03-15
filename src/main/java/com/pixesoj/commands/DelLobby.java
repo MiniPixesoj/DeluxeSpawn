@@ -7,69 +7,72 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class DelLobby implements CommandExecutor {
-    private DeluxeSpawn plugin;
+    private final DeluxeSpawn plugin;
+
+    private static final String MSG_LOBBY_NOT_EXIST = "LobbyNotExist";
+    private static final String MSG_SUCCESSFULLY_REMOVED = "SuccessfullyRemoved";
+    private static final String MSG_NOT_PERMISSION = "NotPermission";
 
     public DelLobby(DeluxeSpawn deluxeSpawn) {
         this.plugin = deluxeSpawn;
     }
 
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    @Override
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         String permission = plugin.getMainPermissionsManager().getDelLobby();
         boolean permissionDefault = plugin.getMainPermissionsManager().isDelLobbyDefault();
 
-        if (sender instanceof Player){
+        if (sender instanceof Player) {
             Player player = (Player) sender;
-            if (player.hasPermission(permission) || permissionDefault){
+            if (player.hasPermission(permission) || permissionDefault) {
                 getLobby(sender);
-                return true;
+            } else {
+                senMessage(sender, MSG_NOT_PERMISSION);
             }
-            else {
-            senMessage(sender, "NotPermission");
-            }
-            return true;
+        } else {
+            getLobby(sender);
         }
 
-        getLobby(sender);
         return true;
     }
 
-    public void getLobby (CommandSender sender){
+    public void getLobby(CommandSender sender) {
         FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
         boolean exist = locations.contains("Lobby");
 
-        if (!exist){
-            senMessage(sender, "LobbyNotExist");
+        if (!exist) {
+            senMessage(sender, MSG_LOBBY_NOT_EXIST);
             return;
         }
 
         locations.set("Lobby", null);
         plugin.getLocationsManager().saveLocationsFile();
 
-        senMessage(sender, "SuccessfullyRemoved");
+        senMessage(sender, MSG_SUCCESSFULLY_REMOVED);
     }
 
-    public void senMessage(CommandSender sender, String reason){
+    public void senMessage(CommandSender sender, String reason) {
         String prefix = plugin.getMainMessagesManager().getPrefix();
+        String message;
 
-        if (reason.equals("LobbyNotExist")){
-            String message = plugin.getMainMessagesManager().getDelLobbyNotExist();
-            message = prefix + message;
-            sender.sendMessage(MessagesUtils.getColoredMessage(message));
+        switch (reason) {
+            case MSG_LOBBY_NOT_EXIST:
+                message = plugin.getMainMessagesManager().getDelLobbyNotExist();
+                break;
+            case MSG_SUCCESSFULLY_REMOVED:
+                message = plugin.getMainMessagesManager().getDelLobbySuccessfullyRemoved();
+                break;
+            case MSG_NOT_PERMISSION:
+                message = plugin.getMainMessagesManager().getPermissionDenied();
+                break;
+            default:
+                return;
         }
 
-        else if (reason.equals("SuccessfullyRemoved")) {
-            String message = plugin.getMainMessagesManager().getDelLobbySuccessfullyRemoved();
-            message = prefix + message;
-            sender.sendMessage(MessagesUtils.getColoredMessage(message));
-        }
-
-        else if (reason.equals("NotPermission")) {
-            String message = plugin.getMainMessagesManager().getPermissionDenied();
-            message = prefix +  message;
-            sender.sendMessage(MessagesUtils.getColoredMessage(message));
-        }
+        message = prefix + message;
+        sender.sendMessage(MessagesUtils.getColoredMessage(message));
     }
 }
-

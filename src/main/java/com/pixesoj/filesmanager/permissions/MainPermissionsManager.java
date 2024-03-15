@@ -47,6 +47,10 @@ public class MainPermissionsManager {
     public boolean LobbyOtherDefault;
     public String Update;
     public boolean UpdateDefault;
+    public String SpawnOther;
+    public boolean SpawnOtherDefault;
+    public String AdminPanel;
+    public boolean AdminPanelDefault;
 
 
     public void reloadPermissions() {
@@ -62,46 +66,50 @@ public class MainPermissionsManager {
 
     public void loadPermissions() {
         FileConfiguration permissions = permissionsFile.getPermissions();
-        Lobby = permissions.getString("Lobby.Permission");
-        LobbyDefault = permissions.getBoolean("Lobby.Default");
-        SetLobby = permissions.getString("SetLobby.Permission");
-        SetLobbyDefault = permissions.getBoolean("SetLobby.Default");
-        Spawn = permissions.getString("Spawn.Permission");
-        SpawnDefault = permissions.getBoolean("Spawn.Default");
-        SpawnWorld = permissions.getString("SpawnWorld.Permission");
-        SpawnWorldDefault = permissions.getBoolean("SpawnWorld.Default");
-        SetSpawn = permissions.getString("SetSpawn.Permission");
-        SetSpawnDefault = permissions.getBoolean("SetSpawn.Default");
-        Reload = permissions.getString("Reload.Permission");
-        ReloadDefault = permissions.getBoolean("Reload.Default");
-        Version = permissions.getString("Version.Permission");
-        VersionDefault = permissions.getBoolean("Version.Default");
-        Help = permissions.getString("Help.Permission");
-        HelpDefault = permissions.getBoolean("Help.Default");
-        Notify = permissions.getString("Notify.Permission");
-        NotifyDefault = permissions.getBoolean("Notify.Default");
-        NotifyUpdate = permissions.getString("NotifyUpdate.Permission");
-        NotifyUpdateDefault = permissions.getBoolean("NotifyUpdate.Default");
-        LobbyBypassDelay = permissions.getString("LobbyBypassDelay.Permission");
-        LobbyBypassDelayDefault = permissions.getBoolean("LobbyBypassDelay.Default");
-        SpawnBypassDelay = permissions.getString("SpawnBypassDelay.Permission");
-        SpawnBypassDelayDefault = permissions.getBoolean("SpawnBypassDelay.Default");
-        LastLocationBypassCommand = permissions.getString("LastLocationBypassCommand.Permission");
-        LastLocationBypassCommandDefault = permissions.getBoolean("LastLocationBypassCommand.Default");
-        LastLocation = permissions.getString("LastLocation.Permission");
-        LastLocationDefault = permissions.getBoolean("LastLocation.Default");
-        LobbyBypassCooldown = permissions.getString("LobbyBypassCooldown.Permission");
-        LobbyBypassCooldownDefault = permissions.getBoolean("LobbyBypassCooldown.Default");
-        SpawnBypassCooldown = permissions.getString("SpawnBypassCooldown.Permission");
-        SpawnBypassCooldownDefault = permissions.getBoolean("SpawnBypassCooldown.Default");
-        DelSpawn = permissions.getString("DelSpawn.Permission");
-        DelSpawnDefault = permissions.getBoolean("DelSpawn.Default");
-        DelLobby = permissions.getString("DelLobby.Permission");
-        DelLobbyDefault = permissions.getBoolean("DelLobby.Default");
-        LobbyOther = permissions.getString("LobbyOther.Permission");
-        LobbyOtherDefault = permissions.getBoolean("LobbyOther.Default");
-        Update = permissions.getString("Update.Permission");
-        UpdateDefault = permissions.getBoolean("Update.Default");
+        Lobby = permissions.getString("lobby.permission");
+        LobbyDefault = permissions.getBoolean("lobby.default");
+        SetLobby = permissions.getString("setlobby.permission");
+        SetLobbyDefault = permissions.getBoolean("setlobby.default");
+        Spawn = permissions.getString("spawn.permission");
+        SpawnDefault = permissions.getBoolean("spawn.default");
+        SpawnWorld = permissions.getString("spawn_world.permission");
+        SpawnWorldDefault = permissions.getBoolean("spawn_world.default");
+        SetSpawn = permissions.getString("setspawn.permission");
+        SetSpawnDefault = permissions.getBoolean("setspawn.default");
+        Reload = permissions.getString("reload.permission");
+        ReloadDefault = permissions.getBoolean("reload.default");
+        Version = permissions.getString("version.permission");
+        VersionDefault = permissions.getBoolean("version.default");
+        Help = permissions.getString("help.permission");
+        HelpDefault = permissions.getBoolean("help.default");
+        Notify = permissions.getString("notify.permission");
+        NotifyDefault = permissions.getBoolean("notify.default");
+        NotifyUpdate = permissions.getString("notify_update.permission");
+        NotifyUpdateDefault = permissions.getBoolean("notify_update.default");
+        LobbyBypassDelay = permissions.getString("lobby_bypass_delay.permission");
+        LobbyBypassDelayDefault = permissions.getBoolean("lobby_bypass_delay.default");
+        SpawnBypassDelay = permissions.getString("spawn_bypass_delay.permission");
+        SpawnBypassDelayDefault = permissions.getBoolean("spawn_bypass_delay.default");
+        LastLocationBypassCommand = permissions.getString("lastlocation_bypass_command.permission");
+        LastLocationBypassCommandDefault = permissions.getBoolean("lastlocation_bypass_command.default");
+        LastLocation = permissions.getString("lastlocation.permission");
+        LastLocationDefault = permissions.getBoolean("lastlocation.default");
+        LobbyBypassCooldown = permissions.getString("lobby_bypass_cooldown.permission");
+        LobbyBypassCooldownDefault = permissions.getBoolean("lobby_bypass_cooldown.default");
+        SpawnBypassCooldown = permissions.getString("spawn_bypass_cooldown.permission");
+        SpawnBypassCooldownDefault = permissions.getBoolean("spawn_bypass_cooldown.default");
+        DelSpawn = permissions.getString("delspawn.permission");
+        DelSpawnDefault = permissions.getBoolean("delspawn.default");
+        DelLobby = permissions.getString("dellobby.permission");
+        DelLobbyDefault = permissions.getBoolean("dellobby.default");
+        LobbyOther = permissions.getString("lobby_other.permission");
+        LobbyOtherDefault = permissions.getBoolean("lobby_other.default");
+        Update = permissions.getString("update.permission");
+        UpdateDefault = permissions.getBoolean("update.default");
+        SpawnOther = permissions.getString("spawn_other.permission");
+        SpawnOtherDefault = permissions.getBoolean("spawn_other.default");
+        AdminPanel = permissions.getString("admin_panel.permission");
+        AdminPanelDefault = permissions.getBoolean("admin_panel.default");
     }
 
     public String getLobby() {
@@ -262,5 +270,21 @@ public class MainPermissionsManager {
 
     public boolean isUpdateDefault() {
         return UpdateDefault;
+    }
+
+    public String getSpawnOther() {
+        return SpawnOther;
+    }
+
+    public boolean isSpawnOtherDefault() {
+        return SpawnOtherDefault;
+    }
+
+    public String getAdminPanel() {
+        return AdminPanel;
+    }
+
+    public boolean isAdminPanelDefault() {
+        return AdminPanelDefault;
     }
 }

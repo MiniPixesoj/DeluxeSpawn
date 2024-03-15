@@ -48,6 +48,12 @@ public class MainCommand implements org.bukkit.command.TabCompleter {
             if (PlayerUtils.hasPermission(sender, pu, du)){
                 completions.add("update");
             }
+
+            String pa = plugin.getMainPermissionsManager().getAdminPanel();
+            boolean da = plugin.getMainPermissionsManager().isAdminPanelDefault();
+            if (PlayerUtils.hasPermission(sender, pu, du)){
+                completions.add("admin");
+            }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("reload")) {
             completions.add("all");
             completions.add("config");

@@ -8,15 +8,18 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public class SetSpawn implements CommandExecutor {
-    private DeluxeSpawn plugin;
+    private final DeluxeSpawn plugin;
 
     public SetSpawn(DeluxeSpawn deluxeSpawn) {
         this.plugin = deluxeSpawn;
     }
 
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage(MessagesUtils.getColoredMessage(getConsoleDeniedMessage()));
             return true;
@@ -45,18 +48,18 @@ public class SetSpawn implements CommandExecutor {
         if (!plugin.getMainSpawnConfigManager().isByWorld()) {
             setLocation(locations, "Spawn", location);
         } else {
-            String worldName = location.getWorld().getName();
+            String worldName = Objects.requireNonNull(location.getWorld()).getName();
             setLocation(locations, "SpawnByWorld." + worldName, location);
         }
 
         plugin.getLocationsManager().saveLocationsFile();
-        String world = location.getWorld().getName();
+        String world = Objects.requireNonNull(location.getWorld()).getName();
         String message = plugin.getMainMessagesManager().getPrefix() + plugin.getMainMessagesManager().getCommandSetSpawnSuccessfully().replace("%world%", world);
         sender.sendMessage(MessagesUtils.getColoredMessage(message));
     }
 
     private void setLocation(FileConfiguration locations, String path, Location location) {
-        locations.set(path + ".world", location.getWorld().getName());
+        locations.set(path + ".world", Objects.requireNonNull(location.getWorld()).getName());
         locations.set(path + ".x", location.getX());
         locations.set(path + ".y", location.getY());
         locations.set(path + ".z", location.getZ());

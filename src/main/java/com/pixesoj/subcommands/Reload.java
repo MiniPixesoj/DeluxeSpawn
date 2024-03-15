@@ -33,7 +33,7 @@ public class Reload implements SubCommand {
     public void reload(CommandSender sender, String[] args) {
         String p = plugin.getMainPermissionsManager().getReload();
         boolean d = plugin.getMainPermissionsManager().isReloadDefault();
-        if (!PlayerUtils.hasPermissionMessage(sender, p, d)){
+        if (!PlayerUtils.hasPermissionMessage(plugin, sender, p, d)){
             String m = plugin.getMainMessagesManager().getPermissionDenied();
             colored(sender, prefix(), m);
             return;

@@ -84,7 +84,7 @@ public class DeluxeSpawn extends JavaPlugin {
 
         colored("&6 ____   ___");
         colored("&6(  _ \\ / __)  " + "&8By &bPixesoj &av" + this.version);
-        colored("&6 )(_) )\\__ \\  " + "&8Running on Bukkit - Paper");
+        colored("&6 )(_) )\\__ \\  " + "&8Running on " + getServerSoftwareName());
         colored("&6(____/ (___/");
         colored(" ");
         colored(prefix + "&aLoading configuration...");
@@ -92,6 +92,29 @@ public class DeluxeSpawn extends JavaPlugin {
         colored(prefix + "&aLoading permissions...");
         colored(prefix + "&aLoading locations...");
         colored(prefix + "&aLoading messages...");
+    }
+
+    private String getServerSoftwareName() {
+        String serverName = Bukkit.getName();
+        if (serverName.equalsIgnoreCase("CraftBukkit")) {
+            return ChatColor.GREEN + "CraftBukkit";
+        } else if (serverName.equalsIgnoreCase("Spigot")) {
+            return ChatColor.AQUA + "Spigot";
+        } else if (serverName.equalsIgnoreCase("Paper")) {
+            return ChatColor.YELLOW + "Paper";
+        } else if (serverName.equalsIgnoreCase("Purpur")) {
+            return ChatColor.LIGHT_PURPLE + "Purpur";
+        } else if (serverName.equalsIgnoreCase("Tuinity")) {
+            return ChatColor.GOLD + "Tuinity";
+        } else if (serverName.equalsIgnoreCase("Mohist")) {
+            return ChatColor.DARK_RED + "Mohist";
+        } else if (serverName.equalsIgnoreCase("Yatopia")) {
+            return ChatColor.BLUE + "Yatopia";
+        } else if (serverName.equalsIgnoreCase("CatServer")) {
+            return ChatColor.DARK_GREEN + "CatServer";
+        } else {
+            return ChatColor.RED + "Unknown Server Software";
+        }
     }
 
 

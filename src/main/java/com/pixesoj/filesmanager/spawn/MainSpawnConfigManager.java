@@ -1,6 +1,7 @@
 package com.pixesoj.filesmanager.spawn;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class MainSpawnConfigManager {
     public List<String> CommandsConsole;
     public boolean CooldownEnabled;
     public int CooldownTime;
+    public ConfigurationSection AliasSection;
 
     public void reloadConfig() {
         configFile.reloadSpawnConfig();
@@ -40,6 +42,7 @@ public class MainSpawnConfigManager {
         FileConfiguration config = configFile.getConfig();
 
         ByWorld = config.getBoolean("by_world");
+        AliasSection = config.getConfigurationSection("aliases");
 
         TeleportDelayEnabled = config.getBoolean("teleport_delay.enabled");
         TeleportDelay = config.getInt("teleport_delay.seconds");
@@ -125,5 +128,9 @@ public class MainSpawnConfigManager {
 
     public int getCooldownTime() {
         return CooldownTime;
+    }
+
+    public ConfigurationSection getAliasSection() {
+        return AliasSection;
     }
 }

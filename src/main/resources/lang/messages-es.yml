@@ -112,7 +112,7 @@ LastLocationInvalidSound: "&6%sound% &cno es un sonido válido."
 
 ErrorGeneral: "&aOcurrió un error inesperado, revisa la consola"
 ErrorCommandReload: "&cError durante la recarga. Consulta la consola para obtener más detalles"
-ErrorNullSound: "&cEl sonido no puede estar vacio &8(&7%description%&8)"
+ErrorNullSound: "&cEl sonido no puede estar vacío &8(&7%description%&8)"
 ErrorInvalidSound: "&6%sound% &cno es un sonido válido &8(&7%description%&8)"
 
 CommandHelp:

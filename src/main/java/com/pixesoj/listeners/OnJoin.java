@@ -2,6 +2,7 @@ package com.pixesoj.listeners;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
 import com.pixesoj.utils.spigot.CommandUtils;
+import com.pixesoj.utils.spigot.LocationUtils;
 import com.pixesoj.utils.spigot.MessagesUtils;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
@@ -198,19 +199,12 @@ public class OnJoin implements Listener {
     public  void onFirstJoinGetLobby (PlayerJoinEvent event){
         FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
         Player player = event.getPlayer();
-        double x = locations.getDouble("Lobby.x");
-        double y = locations.getDouble("Lobby.y");
-        double z = locations.getDouble("Lobby.z");
-        float yaw = (float) locations.getDouble("Lobby.yaw");
-        float pitch = (float) locations.getDouble("Lobby.pitch");
-        String world = locations.getString("Lobby.world");
-        assert world != null;
-
-        Location lobbyLocation = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
+        Location lobbyLocation = LocationUtils.getLobby(locations);
 
         if(!locations.contains("Lobby.x")){
             onFirstJoinDoesNotExist(event);
         } else {
+            assert lobbyLocation != null;
             player.teleport(lobbyLocation);
         }
     }

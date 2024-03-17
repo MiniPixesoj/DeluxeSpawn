@@ -17,6 +17,7 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -392,13 +393,15 @@ public class Spawn implements CommandExecutor {
         sendMessage(sender, prefix, args, "InTeleport");
     }
 
+
     public void getSpawnWorld(CommandSender sender, String[] args) {
         FileConfiguration locations = plugin.getLocationsManager().getLocationsFile();
         Player player = (Player) sender;
         String prefix = plugin.getMainMessagesManager().getPrefix();
 
+        ConfigurationSection aliasSection = plugin.getMainSpawnConfigManager().getAliasSection();
         String realName = args.length > 0 ? args[0] : player.getWorld().getName();
-        String aliasName = plugin.getConfig().getString("Aliases." + realName, realName);
+        String aliasName = aliasSection.getString(realName, realName);
 
         World targetWorld = Bukkit.getWorld(realName);
         if (targetWorld == null) {
@@ -407,7 +410,7 @@ public class Spawn implements CommandExecutor {
         }
 
         boolean byWorld = plugin.getMainSpawnConfigManager().isByWorld();
-        Location spawnLocation = LocationUtils.getSpawn(locations, byWorld, player.getWorld());
+        Location spawnLocation = LocationUtils.getSpawn(locations, byWorld, targetWorld);
         if (spawnLocation == null) {
             sendMessage(sender, prefix, args, "NotExist");
             return;

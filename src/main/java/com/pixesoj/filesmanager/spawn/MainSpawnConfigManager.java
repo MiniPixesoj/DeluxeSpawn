@@ -1,13 +1,21 @@
 package com.pixesoj.filesmanager.spawn;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
+import com.pixesoj.utils.common.Comments;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainSpawnConfigManager {
     private final CustomSpawnConfig configFile;
+    private final DeluxeSpawn plugin;
 
     public boolean ByWorld;
     public int TeleportDelay;
@@ -26,20 +34,88 @@ public class MainSpawnConfigManager {
     public boolean CooldownEnabled;
     public int CooldownTime;
     public ConfigurationSection AliasSection;
+    public int ConfigVersion;
 
     public void reloadConfig() {
         configFile.reloadSpawnConfig();
         loadSpawnConfig();
     }
 
+    public FileConfiguration getConfig(){
+        return configFile.getConfig();
+    }
+
+    public void saveConfig(){
+        configFile.saveSpawnConfig();
+        loadSpawnConfig();
+    }
+
     public MainSpawnConfigManager(DeluxeSpawn plugin) {
+        this.plugin = plugin;
         configFile = new CustomSpawnConfig("spawn.yml", null, plugin);
         configFile.registerSpawnConfig();
         loadSpawnConfig();
     }
 
+    public void updateSpawnConfig() {
+        FileConfiguration config = this.getConfig();
+        int version = config.getInt("config_version");
+        int newVersion = (int) 4;
+
+        if (version != newVersion) {
+            boolean changed = addMissingFields(config, config);
+
+            if (version < newVersion) {
+                List<String> spawnCommands = new ArrayList<>();
+                spawnCommands.add("spawn");
+                config.set("commands_alias", spawnCommands);
+                config.setComments("commands_alias", Comments.SpawnCommandsAlias);
+                changed = true;
+            }
+
+            createFile("spawn-new.yml", "spawn.yml", plugin);
+            File tempFile = new File(plugin.getDataFolder(), "spawn-new.yml");
+
+            try {
+                FileConfiguration newConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(new FileInputStream(tempFile), StandardCharsets.UTF_8));
+                config.set("config_version", newVersion);
+                if (changed) {
+                    this.saveConfig();
+                }
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } finally {
+                tempFile.delete();
+            }
+        }
+    }
+
+    private void createFile(String name, String from, DeluxeSpawn plugin) {
+        String prefix = "[DeluxeSpawn] ";
+        File file = new File(plugin.getDataFolder(), name);
+        if (!file.exists()) {
+            try {
+                Files.copy(plugin.getResource(from), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                throw new RuntimeException(prefix + "Unable to create " + name + " file for DeluxeSpawn!" + e);
+            }
+        }
+    }
+
+    private boolean addMissingFields(FileConfiguration currentConfig, FileConfiguration newConfig) {
+        boolean changed = false;
+        for (String key : newConfig.getKeys(true)) {
+            if (!currentConfig.contains(key)) {
+                currentConfig.set(key, newConfig.get(key));
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
     public void loadSpawnConfig() {
         FileConfiguration config = configFile.getConfig();
+        ConfigVersion = config.getInt("config_version");
 
         ByWorld = config.getBoolean("by_world");
         AliasSection = config.getConfigurationSection("aliases");
@@ -132,5 +208,9 @@ public class MainSpawnConfigManager {
 
     public ConfigurationSection getAliasSection() {
         return AliasSection;
+    }
+
+    public int getConfigVersion() {
+        return ConfigVersion;
     }
 }

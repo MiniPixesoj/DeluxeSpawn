@@ -9,9 +9,11 @@ import com.pixesoj.filesmanager.messages.MainMessagesManager;
 import com.pixesoj.filesmanager.permissions.MainPermissionsManager;
 import com.pixesoj.filesmanager.spawn.MainSpawnConfigManager;
 import com.pixesoj.listeners.*;
+import com.pixesoj.managers.commands.CommandRegisterManager;
 import com.pixesoj.managers.playerdata.PlayerDataManager;
 import com.pixesoj.managers.UpdateCheckManager;
 import com.pixesoj.model.internal.UpdateCheckResult;
+import com.pixesoj.utils.common.JavaVersion;
 import com.pixesoj.utils.common.MySQLUtils;
 import com.pixesoj.utils.common.ServerVersion;
 import com.pixesoj.utils.spigot.MessagesUtils;
@@ -19,12 +21,14 @@ import com.pixesoj.managers.dependencies.Metrics;
 import com.pixesoj.utils.common.UpdaterUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.List;
 
 public class DeluxeSpawn extends JavaPlugin {
 
@@ -42,6 +46,7 @@ public class DeluxeSpawn extends JavaPlugin {
     public static ServerVersion serverVersion;
     private UpdaterUtils updater;
     private MySQLUtils mySQLUtils;
+    private CommandRegisterManager commandRegisterManager;
 
     public static void colored(String message) {
         Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage(message));
@@ -51,18 +56,19 @@ public class DeluxeSpawn extends JavaPlugin {
         version = getDescription().getVersion();
         prefix = ChatColor.translateAlternateColorCodes('&', "&8[&eDeluxeSpawn&8] ");
 
+        mainMessagesManager = new MainMessagesManager(this);
+        locationsManager = new LocationsManager(this);
         mainConfigManager = new MainConfigManager(this);
+        playerDataManager = new PlayerDataManager(this);
+        commandRegisterManager = new CommandRegisterManager(this);
         mainLobbyConfigManager = new MainLobbyConfigManager(this);
         mainSpawnConfigManager = new MainSpawnConfigManager(this);
-        mainMessagesManager = new MainMessagesManager(this);
         mainPermissionsManager = new MainPermissionsManager(this);
-        playerDataManager = new PlayerDataManager(this);
-        locationsManager = new LocationsManager(this);
-        locationsManager.loadLocationsFile();
 
-        registerCommands();
-        registerEvents();
         registerMessages();
+        registerEvents();
+        registerCommands();
+        getCommandsRegisterManager();
 
         this.updateCheckerManager = new UpdateCheckManager(this.version);
         if (this.getMainConfigManager().isCheckUpdate()) {
@@ -79,7 +85,8 @@ public class DeluxeSpawn extends JavaPlugin {
         int pluginId = 21247;
         Metrics metrics = new Metrics(this, pluginId);
 
-        getServer().getScheduler().runTaskLater(this, this::update, 20L);
+        getServer().getScheduler().runTaskLater(this, this::update, 50L);
+        getServer().getScheduler().runTaskLater(this, this::updateConfigs, 1L);
         setVersion();
 
         colored("&6 ____   ___");
@@ -87,11 +94,6 @@ public class DeluxeSpawn extends JavaPlugin {
         colored("&6 )(_) )\\__ \\  " + "&8Running on " + getServerSoftwareName());
         colored("&6(____/ (___/");
         colored(" ");
-        colored(prefix + "&aLoading configuration...");
-        colored(prefix + "&aLoading player data...");
-        colored(prefix + "&aLoading permissions...");
-        colored(prefix + "&aLoading locations...");
-        colored(prefix + "&aLoading messages...");
     }
 
     private String getServerSoftwareName() {
@@ -121,6 +123,15 @@ public class DeluxeSpawn extends JavaPlugin {
     public void onDisable() {
         Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage(prefix + "&7Version: &a" + this.version));
         Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage(prefix + "&7Author: &bPixesoj"));
+    }
+
+    public void getCommandsRegisterManager (){
+        int currentJavaVersion = JavaVersion.getCurrentJavaVersionNo();
+        if (JavaVersion.getCurrentJavaVersion().ordinal() < JavaVersion.JAVA_11.ordinal()) {
+            colored(prefix + "&cThis plugin requires Java 11 or higher to enjoy all its features, you can use &8(&6" + currentJavaVersion + "&8) &cbut command aliases will not work");
+            return;
+        }
+        commandRegisterManager.registerCommands();
     }
 
     public void registerCommands() {
@@ -207,6 +218,14 @@ public class DeluxeSpawn extends JavaPlugin {
         String message = "&eDeluxeSpawn &8»  &bLooking for updates...";
         colored(message);
         updater = new UpdaterUtils(currentVersion, jarName, true, resourceID, pathName, getServer().getConsoleSender());
+    }
+
+    public void updateConfigs(){
+        getMainConfigManager().updateConfig();
+        getMainMessagesManager().updateMessages();
+        getMainSpawnConfigManager().updateSpawnConfig();
+        getMainLobbyConfigManager().updateLobbyConfig();
+        getMainPermissionsManager().updatePermissions();
     }
 
     public void registerMessages(){

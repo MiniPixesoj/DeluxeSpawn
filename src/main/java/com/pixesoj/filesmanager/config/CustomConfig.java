@@ -8,6 +8,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 public class CustomConfig {
     private DeluxeSpawn plugin;
@@ -15,11 +17,14 @@ public class CustomConfig {
     private FileConfiguration fileConfiguration = null;
     private File file = null;
     private String folderName;
+    private final CustomConfig customConfig;
 
     public CustomConfig(String fileName, String folderName, DeluxeSpawn plugin){
         this.fileName = fileName;
         this.folderName = folderName;
         this.plugin = plugin;
+        this.registerConfig();
+        this.customConfig = plugin.getCustomConfig();
     }
 
     public String getPath(){

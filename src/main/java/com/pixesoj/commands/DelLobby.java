@@ -9,6 +9,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class DelLobby implements CommandExecutor {
     private final DeluxeSpawn plugin;
 
@@ -35,7 +37,6 @@ public class DelLobby implements CommandExecutor {
         } else {
             getLobby(sender);
         }
-
         return true;
     }
 

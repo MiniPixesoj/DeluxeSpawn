@@ -43,4 +43,18 @@ public class OtherUtils {
             return null;
         }
     }
+
+    public static int[] parseVersion(String versionString) {
+        String[] versionParts = versionString.split("\\.");
+        int[] versionNumbers = new int[versionParts.length];
+        for (int i = 0; i < versionParts.length; i++) {
+            try {
+                versionNumbers[i] = Integer.parseInt(versionParts[i]);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return versionNumbers;
+    }
 }

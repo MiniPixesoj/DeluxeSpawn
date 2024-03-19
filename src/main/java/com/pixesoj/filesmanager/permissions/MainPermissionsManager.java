@@ -3,9 +3,18 @@ package com.pixesoj.filesmanager.permissions;
 import com.pixesoj.deluxespawn.DeluxeSpawn;
 import com.pixesoj.filesmanager.permissions.CustomPermissions;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainPermissionsManager {
     private final CustomPermissions permissionsFile;
+    private final DeluxeSpawn plugin;
 
     public String Lobby;
     public boolean LobbyDefault;
@@ -58,10 +67,72 @@ public class MainPermissionsManager {
         loadPermissions();
     }
 
+    public FileConfiguration getPermissions(){
+        return permissionsFile.getPermissions();
+    }
+
+    public void savePermissions(){
+        permissionsFile.savePermissions();
+        loadPermissions();
+    }
+
     public MainPermissionsManager(DeluxeSpawn plugin) {
+        this.plugin = plugin;
         permissionsFile = new CustomPermissions("permissions.yml", null, plugin);
         permissionsFile.registerPermissions();
         loadPermissions();
+    }
+
+    public void updatePermissions() {
+        FileConfiguration config = this.getPermissions();
+        int version = config.getInt("permissions_version");
+        int newVersion = 4;
+
+        if (version != newVersion) {
+            boolean changed = addMissingFields(config, config);
+
+            if (version < newVersion) {
+                changed = true;
+            }
+
+            createFile("permissions-new.yml", "permissions.yml", plugin);
+            File tempFile = new File(plugin.getDataFolder(), "permissions-new.yml");
+
+            try {
+                FileConfiguration newConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(new FileInputStream(tempFile), StandardCharsets.UTF_8));
+                config.set("permissions_version", newVersion);
+                if (changed) {
+                    this.savePermissions();
+                }
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } finally {
+                tempFile.delete();
+            }
+        }
+    }
+
+    private void createFile(String name, String from, DeluxeSpawn plugin) {
+        String prefix = "[DeluxeSpawn] ";
+        File file = new File(plugin.getDataFolder(), name);
+        if (!file.exists()) {
+            try {
+                Files.copy(plugin.getResource(from), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                throw new RuntimeException(prefix + "Unable to create " + name + " file for DeluxeSpawn!" + e);
+            }
+        }
+    }
+
+    private boolean addMissingFields(FileConfiguration currentConfig, FileConfiguration newConfig) {
+        boolean changed = false;
+        for (String key : newConfig.getKeys(true)) {
+            if (!currentConfig.contains(key)) {
+                currentConfig.set(key, newConfig.get(key));
+                changed = true;
+            }
+        }
+        return changed;
     }
 
     public void loadPermissions() {

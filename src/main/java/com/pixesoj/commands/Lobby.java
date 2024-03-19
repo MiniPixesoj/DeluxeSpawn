@@ -22,24 +22,26 @@ import java.util.List;
 import java.util.Objects;
 
 public class Lobby implements CommandExecutor {
+
     private final DeluxeSpawn plugin;
 
     public Lobby(DeluxeSpawn deluxeSpawn) {
         this.plugin = deluxeSpawn;
     }
 
+    @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         String prefix = plugin.getMainMessagesManager().getPrefix();
+        FileConfiguration config = plugin.getMainLobbyConfigManager().getConfig();
+
         if (!(sender instanceof Player)) {
             if (args.length > 0) {
                 commandConsole(sender, args);
                 return true;
             }
-
             sendMessage(sender, prefix, args, "ConsoleUsage");
             return true;
         }
-
         commandPlayer(sender, args);
         return true;
     }

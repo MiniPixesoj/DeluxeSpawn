@@ -2,8 +2,15 @@ package com.pixesoj.filesmanager.messages;
 
 import com.pixesoj.deluxespawn.DeluxeSpawn;
 import com.pixesoj.filesmanager.messages.CustomMessages;
+import com.pixesoj.utils.spigot.MessagesUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 public class MainMessagesManager {
@@ -105,11 +112,85 @@ public class MainMessagesManager {
         messageFile.reloadMessages();
         loadMessages();
     }
+
+    public void saveMessages(){
+        messageFile.saveMessages();
+        loadMessages();
+    }
+
+    public FileConfiguration getMessages(){
+        return messageFile.getMessages();
+    }
+
+    public static void colored(String message) {
+        Bukkit.getConsoleSender().sendMessage(MessagesUtils.getColoredMessage(message));
+    }
+
     public MainMessagesManager(DeluxeSpawn plugin){
         this.plugin = plugin;
         messageFile = new CustomMessages("messages-es.yml", "lang", plugin);
         messageFile.registerMessages();
         loadMessages();
+    }
+
+    public void updateMessages() {
+        FileConfiguration config = plugin.getConfig();
+        String lang = config.getString("lang", "en");
+        String prefix = "&eDeluxeSpawn &8»";
+        FileConfiguration messages = this.getMessages();
+        int version = messages.getInt("messages_version");
+        int newVersion = 4;
+
+        if (version != newVersion) {
+            colored(prefix + "&aUpdating messages to the latest version...");
+            boolean changed = addMissingFields(messages, messages);
+
+            if (version < newVersion) {
+                /*messages.set("test", "test");*/
+                changed = true;
+            }
+
+            createFile("messages-" + lang + "-new.yml", "lang/messages-" + lang + ".yml", plugin);
+            File tempFile = new File(plugin.getDataFolder() + "/lang", "messages-" + lang + "-new.yml");
+
+            try {
+                FileConfiguration newConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(new FileInputStream(tempFile), StandardCharsets.UTF_8));
+                messages.set("messages_version", newVersion);
+                if (changed) {
+                    this.saveMessages();
+                    colored(MessagesUtils.getColoredMessage(prefix + "&aDone! Updated messages!"));
+                } else {
+                    colored(MessagesUtils.getColoredMessage(prefix + "&aNo changes needed in the messages file"));
+                }
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } finally {
+                tempFile.delete();
+            }
+        }
+    }
+
+    private void createFile(String name, String from, DeluxeSpawn plugin) {
+        String prefix = "[DeluxeSpawn] ";
+        File file = new File(plugin.getDataFolder() + "/lang", name);
+        if (!file.exists()) {
+            try {
+                Files.copy(plugin.getResource(from), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                throw new RuntimeException(prefix + "Unable to create " + name + " file for DeluxeSpawn!" + e);
+            }
+        }
+    }
+
+    private boolean addMissingFields(FileConfiguration currentConfig, FileConfiguration newConfig) {
+        boolean changed = false;
+        for (String key : newConfig.getKeys(true)) {
+            if (!currentConfig.contains(key)) {
+                currentConfig.set(key, newConfig.get(key));
+                changed = true;
+            }
+        }
+        return changed;
     }
 
 

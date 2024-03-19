@@ -1,10 +1,17 @@
-# This file contains all the permissions available in DeluxeSpawn.
-# How to use this file:
-# DeluxeSpawn:
-#   permission: This is where the permission that you can give to your players goes, you can change this value.
-#   default: Here you choose whether this permission will be by default for everyone.
-#     true: It will be available to all players.
-#     false: Only available to OP players or those who have the permission above with some permissions plugin like LuckPerms.
+#=============================================================================================================================#
+#                                                                                                                             #
+# This file contains all the permissions available in DeluxeSpawn.                                                            #
+# How to use this file:                                                                                                       #
+# DeluxeSpawn:                                                                                                                #
+#   permission: This is where the permission that you can give to your players goes, you can change this value.               #
+#   default: Here you choose whether this permission will be by default for everyone.                                         #
+#     true: It will be available to all players.                                                                              #
+#     false: Only available to OP players or those who have the permission above with some permissions plugin like LuckPerms. #
+#                                                                                                                             #
+#=============================================================================================================================#
+
+# This is the version of this configuration, this number updates itself, do not delete or change it
+permissions_version: 3.6
 
 # Use the /lobby command to go to lobby
 lobby:

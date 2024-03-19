@@ -1,8 +1,20 @@
-#================================================================================#
-#                                                                                #
-#                                  LOBBY OPTIONS                                 #
-#                                                                                #
-#================================================================================#
+#====================================================================================#
+#                            __    _____  ____  ____  _  _                           #
+#                           (  )  (  _  )(  _ \(  _ \( \/ )                          #
+#                            )(__  )(_)(  ) _ < ) _ < \  /                           #
+#                           (____)(_____)(____/(____/ (__)                           #
+#                                                                                    #
+# This is the configuration file for the lobby                                       #
+# If you would like any new features or need help let me know on my discord server:  #
+# https://discord.com/invite/gcGarEbbbb                                              #
+#====================================================================================#
+
+# This is the version of this configuration, this number updates itself, do not delete or change it
+config_version: 3.6
+
+# Here you can add alias commands in addition to /lobby
+# Restart your server after adding or removing an alias
+commands_alias: [ ]
 
 # Sets whether /lobby and /setlobby will be enabled
 enabled: false
@@ -53,6 +65,13 @@ commands:
   console:
     - eco take %player% 500
 
+#================================================================================#
+#   __      __    ___  ____    __    _____  ___    __   ____  ____  _____  _  _  #
+#  (  )    /__\  / __)(_  _)  (  )  (  _  )/ __)  /__\ (_  _)(_  _)(  _  )( \( ) #
+#   )(__  /(__)\ \__ \  )(     )(__  )(_)(( (__  /(__)\  )(   _)(_  )(_)(  )  (  #
+#  (____)(__)(__)(___/ (__)   (____)(_____)\___)(__)(__)(__) (____)(_____)(_)\_) #
+#                                                                                #
+#================================================================================#
 
 # Settings for the player's last location
 # Useful for simulating a network on a single server
